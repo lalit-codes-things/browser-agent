@@ -1,0 +1,1710 @@
+BROWSER AGENT — CODING RULES
+=============================
+
+Purpose
+-------
+This file is a binding implementation rule set for the Browser Agent repository.
+
+Read and obey, in this order:
+
+1. docs/spec/ and the current architecture specification
+2. catalog/constraints.yaml
+3. catalog/ui-catalog-addendum.yaml
+4. DESIGN.md
+5. this file
+6. existing repository conventions
+
+If two rules conflict, the higher item in that order wins unless the repository contains
+an explicit, newer ADR that supersedes it.
+
+This project is a local desktop application, not a SaaS product.
+
+Never optimize for:
+- demos over correctness
+- visual polish over runtime truth
+- convenience over trust boundaries
+- passing a shallow test by weakening a locked constraint
+- invented UX states
+- placeholder implementations represented as complete
+- generic framework conventions that conflict with the system design
+
+===============================================================================
+1. CORE RULE: DO NOT INVENT SYSTEM TRUTH
+===============================================================================
+
+The backend is authoritative for all security-relevant truth.
+
+Frontend code must never invent or infer:
+- task state
+- Policy verdict
+- authorization tier
+- verification outcome
+- amount
+- recipient
+- origin
+- browser epoch
+- commitment validity
+- network/egress state
+- model integrity state
+- audit integrity
+- expiry timestamps
+- recovery state
+- credential state
+
+If the backend has not emitted the value:
+- do not fabricate it
+- do not guess it
+- do not optimistically display it
+- do not substitute a "friendly" equivalent
+- do not silently fall back to another value
+
+Use explicit unresolved states such as:
+- UNKNOWN
+- NOT_TESTED
+- NOT_VERIFIABLE_YET
+- SAFE_ABORT
+- PENDING
+
+===============================================================================
+2. SOURCE OF TRUTH / CATALOG
+===============================================================================
+
+catalog/constraints.yaml is the machine-readable source of truth.
+
+Never:
+- renumber C-IDs
+- delete a locked C-ID to make code pass
+- weaken a constraint without an explicit spec change
+- modify the catalog simply because implementation is difficult
+- mark a constraint VERIFIED without evidence
+- treat PROPOSED as LOCKED
+- silently assign values to undefined parameters
+
+Every implementation touching a requirement must identify the affected C-ID(s)
+in code comments, test names, commit messages, or PR metadata where practical.
+
+For Policy changes:
+- explicitly reference affected C-IDs
+- add/update tests
+- update dependency edges if behavior changes
+
+Use stable IDs.
+
+Use explicit relationships:
+- depends_on
+- amends
+- supersedes
+
+Do not duplicate the constraint catalog into handwritten frontend or backend policy
+files unless the duplicated values are generated or intentionally versioned.
+
+===============================================================================
+3. STATUS DISCIPLINE
+===============================================================================
+
+Specification status:
+- LOCKED
+- TUNABLE
+- PROVISIONAL
+- MEASUREMENT-ADR
+- PROPOSED
+- SUPERSEDED
+
+Verification status:
+- NOT-VERIFIABLE-YET
+- SCHEDULED
+- PARTIAL
+- VERIFIED
+- FAILED-BLOCKING
+
+Never collapse specification status and verification status into one status.
+
+Examples:
+- LOCKED + NOT-VERIFIABLE-YET is valid.
+- PROPOSED + VERIFIED is not equivalent to production-approved.
+- PASS on a unit test does not imply SECURITY_GATE = PASS.
+
+===============================================================================
+4. RUST IS THE TRUSTED CORE
+===============================================================================
+
+Rust owns:
+- task authority
+- task progress
+- browser state
+- epochs
+- Policy
+- authorization tiers
+- taint/provenance
+- credential scopes
+- secure fill
+- execution authorization
+- verification
+- vault/key handling
+- network/egress control
+- model integrity
+- audit chain
+- hard stops
+- recovery decisions
+- human intervention state
+
+Type these boundaries explicitly.
+
+Prefer enums and tagged structs over:
+- strings representing state
+- untyped maps
+- loosely structured JSON
+- boolean combinations that allow invalid states
+
+Use exhaustive matching.
+
+Do not use "magic strings" for security-critical states.
+
+===============================================================================
+5. NO ARBITRARY MODEL-CONTROLLED JAVASCRIPT
+===============================================================================
+
+The model action surface is exactly:
+
+- NAVIGATE
+- CLICK
+- TYPE
+- SELECT
+- SCROLL
+- WAIT
+- PRESS_KEY
+- SECURE_FILL
+- REQUEST_CONFIRMATION
+
+Do not expose:
+- eval
+- arbitrary JavaScript execution
+- arbitrary page scripts
+- model-controlled CDP commands
+- model-controlled browser debugging primitives
+
+A future primitive requires:
+1. catalog entry or explicit specification authority
+2. threat-model review
+3. typed API
+4. Policy mapping
+5. tests
+6. documentation
+
+===============================================================================
+6. ACTION EPOCH SAFETY
+===============================================================================
+
+Every model-proposed action must carry the state epoch from which it was derived.
+
+Before execution, validate:
+- epoch
+- target identity
+- frame
+- loader
+- any required commitment state
+
+If relevant state changed:
+- reject stale action
+- invalidate it
+- re-perceive
+- regenerate
+- continue only from fresh state
+
+Never "try anyway".
+
+Never silently refresh an invalid action.
+
+Never catch stale-epoch errors and continue with the same action.
+
+===============================================================================
+7. ACTION CLASSIFICATION
+===============================================================================
+
+Side-effect classes are exactly:
+
+- READ
+- REVERSIBLE_WRITE
+- IRREVERSIBLE
+- UNKNOWN -> IRREVERSIBLE
+
+Authorization tier is separate:
+
+- NONE
+- POLICY_ONLY
+- NATIVE_CONFIRM
+- BIOMETRIC_CONFIRM
+
+Do not merge these dimensions.
+
+Do not infer authorization tier in the frontend.
+
+Do not allow the model to emit a tier.
+
+The model can only emit:
+REQUEST_CONFIRMATION
+
+Policy derives the tier from trusted runtime data.
+
+Tier uncertainty fails upward.
+
+===============================================================================
+8. HIGH-STAKES BIOMETRIC RULE
+===============================================================================
+
+Biometric confirmation is NOT required for every irreversible action.
+
+Fresh biometric confirmation is reserved for HIGH_STAKES actions as defined by
+the current Policy specification.
+
+Ordinary:
+- login
+- browsing
+- typing
+- credential fill by itself
+- reversible actions
+- routine execution
+
+must not automatically trigger biometrics.
+
+Never add a biometric prompt from frontend logic.
+
+Frontend only renders the backend authorization state.
+
+Biometric approval must be backend-driven.
+
+===============================================================================
+9. COMMITMENT INTEGRITY
+===============================================================================
+
+Approval commitments must bind all relevant security context.
+
+At minimum honor the backend contract for:
+- task
+- target/frame/loader
+- epoch
+- element
+- action
+- side-effect class
+- authorization tier
+- amount
+- destination
+- data flow
+- timestamp/freshness
+
+If execution-time Policy differs from the approved commitment:
+- invalidate commitment
+- re-stabilize
+- re-perceive
+- allow at most the specified re-approval
+- enter recovery/hard stop as defined
+
+Never mutate an already-approved commitment in place.
+
+===============================================================================
+10. UNKNOWN IS A REAL STATE
+===============================================================================
+
+UNKNOWN must be explicit.
+
+Never convert:
+- UNKNOWN -> success
+- UNKNOWN -> failure
+- UNKNOWN -> "probably done"
+- UNKNOWN -> retry automatically
+
+For irreversible actions, ambiguous outcomes must follow the specified verification
+and retry policy.
+
+Unknown authorization/classification must fail upward.
+
+===============================================================================
+11. RETRY / IDEMPOTENCY
+===============================================================================
+
+Retry behavior is class-driven and verification-driven.
+
+Never auto-retry an irreversible operation merely because:
+- the request timed out
+- the UI did not change
+- a success banner was absent
+- the model thinks it failed
+- the browser became quiet
+
+A retry requires Policy/verification evidence that the retry is allowed.
+
+Remember:
+authorization-tier safety does not replace side-effect-class safety.
+
+Irreversible-as-reversible misclassification is a security bug.
+
+===============================================================================
+12. SECRET HANDLING
+===============================================================================
+
+Raw secrets must never enter:
+- model context
+- frontend state
+- normal audit evidence
+- logs
+- error messages
+- telemetry
+- screenshots
+- copied UI text
+- browser page data
+
+Examples:
+- passwords
+- cookies
+- session secrets
+- authentication headers
+- access tokens
+- secret credential values
+
+If a type contains a secret, make it impossible to accidentally serialize.
+
+Prefer dedicated secret wrapper types over String.
+
+Never implement Debug/Display in a way that reveals secret material.
+
+===============================================================================
+13. SECURE FILL
+===============================================================================
+
+SECURE_FILL is a trusted runtime primitive.
+
+It must be bound to trusted context including:
+- scheme
+- host
+- port
+- frame
+- loader
+- field
+- task authority
+- credential identity
+
+Credential selection is not determined by the page-visible username field.
+
+Same-origin ambiguous accounts must not silently choose one.
+
+Credential-to-public flows are blocked according to Policy.
+
+===============================================================================
+14. UNTRUSTED PAGE CONTENT
+===============================================================================
+
+Treat all page-derived content as untrusted:
+
+- HTML
+- JS
+- DOM text
+- accessibility data
+- clipboard
+- files
+- network responses
+- URLs
+- deep-link content
+- page messages
+- model prose reflecting page content
+
+Page content must never redefine:
+- system instructions
+- task authority
+- Policy
+- authorization tier
+- credential scope
+- trusted confirmation
+
+Prompt injection is untrusted input.
+
+Never create a code path where page text becomes trusted instruction simply because
+it appears authoritative.
+
+===============================================================================
+15. TRUST BOUNDARIES
+===============================================================================
+
+An isolated execution world is not, by itself, a security boundary.
+
+Do not write comments or architecture notes claiming:
+"isolated world = trusted".
+
+The trusted boundary is implemented through:
+- Rust runtime
+- typed IPC
+- Policy
+- trusted state
+- explicit validation
+
+The browser preview is untrusted page representation.
+
+Trusted authorization UI must never render inside the untrusted browser content area.
+
+===============================================================================
+16. IPC RULES
+===============================================================================
+
+IPC is allowlisted.
+
+Every IPC command/event must have:
+- explicit type
+- schema
+- authorization expectation
+- error behavior
+- test coverage
+
+Prefer typed Rust <-> TypeScript contracts generated or validated from one schema.
+
+Never pass arbitrary object blobs for security-sensitive commands.
+
+Never expose:
+- secret values
+- raw vault key material
+- unrestricted browser execution
+- unrestricted filesystem access
+- unrestricted network access
+
+Do not let the frontend call privileged capabilities directly.
+
+===============================================================================
+17. FRONTEND OWNERSHIP
+===============================================================================
+
+Frontend owns only:
+- rendering
+- event reduction
+- layout
+- animation
+- list virtualization
+- focus management
+- presentation-only state
+- sort/filter/view selection
+
+Frontend must not own:
+- Policy
+- authorization tier derivation
+- verification
+- task authority
+- secret handling
+- browser truth
+- security timestamps
+- amount parsing for security decisions
+- origin canonicalization
+- trust decisions
+
+Do not duplicate backend security logic in TypeScript.
+
+===============================================================================
+18. FRONTEND STATE
+===============================================================================
+
+Use a typed event union.
+
+Frontend state should be a reducer/projection of backend events.
+
+Do not use:
+- arbitrary window globals
+- hidden mutable singleton state
+- duplicated server truth
+- scattered local booleans
+
+Presentation state may include:
+- expanded
+- collapsed
+- selected
+- sort order
+- local visual preference
+
+Security state must come from backend events.
+
+===============================================================================
+19. BACKEND COPY / UI COPY
+===============================================================================
+
+Do not invent runtime status wording in React.
+
+The frontend may provide static:
+- surface labels
+- column headers
+- control verbs
+- definitions of stable technical terms
+
+Backend provides:
+- status messages
+- reasons
+- failure explanations
+- task states
+- Policy reasons
+- verification reasons
+- expiry
+- runtime descriptions
+
+Never convert:
+"SAFE_ABORT"
+into:
+"Oops, something went wrong."
+
+Never convert:
+"UNKNOWN"
+into:
+"Almost complete."
+
+Use the system vocabulary.
+
+===============================================================================
+20. SECURITY STRING RENDERING
+===============================================================================
+
+Security strings must be rendered verbatim from the backend.
+
+Frontend must not:
+- locale-format amounts
+- alter case
+- strip punctuation
+- normalize IDNs
+- perform bidi cleanup
+- truncate silently
+- replace currency symbols
+- change decimal separators
+
+If truncation is necessary, the backend must supply a display-safe string or truncation
+metadata.
+
+Security data uses IBM Plex Mono.
+
+===============================================================================
+21. CONFIRMATION UI
+===============================================================================
+
+Confirmation content is security-sensitive.
+
+Trusted values and page-derived values must remain visually separate.
+
+Trusted fields include things such as:
+- origin
+- amount
+- destination
+- recipient
+- side-effect class
+- authorization tier
+- evidence
+
+Page-derived values must be clearly marked as untrusted.
+
+Never:
+- interleave trusted and untrusted strings
+- let page content render inside the trusted confirmation surface
+- animate security values
+- use generic "Are you sure?"
+- use OK/Cancel
+
+Use consequence-specific controls.
+
+===============================================================================
+22. SECURITY CONTENT MUST NOT ANIMATE
+===============================================================================
+
+Never animate:
+- amounts
+- origins
+- recipients
+- authorization tiers
+- Policy verdicts
+- hashes
+- evidence values
+- security decisions
+
+No:
+- count-up
+- string morph
+- tweened monetary values
+- changing-value animation
+
+A security value appears at full fidelity.
+
+===============================================================================
+23. GSAP / ANIME.JS
+===============================================================================
+
+Use both libraries.
+
+GSAP:
+- structural transitions
+- surface changes
+- panel/drawer transitions
+- recovery transitions
+- workspace geometry
+
+Anime.js:
+- micro interactions
+- non-security metric emphasis
+- small state accents
+- local data presentation
+
+Never animate the same property with both libraries.
+
+Motion must correspond to a real runtime change.
+
+No:
+- AI sparkle
+- particles
+- parallax
+- ambient animation
+- endless motion
+- celebratory effects
+- bounce/elastic UI
+
+Respect prefers-reduced-motion.
+
+===============================================================================
+24. NO ICON SYSTEM
+===============================================================================
+
+Do not install or import:
+- Lucide
+- Heroicons
+- Font Awesome
+- arbitrary icon packs
+
+Do not replace one icon library with another.
+
+Use:
+- text
+- rules
+- geometry
+- data structures
+- native affordances where unavoidable
+
+Avoid icon-only actions.
+
+===============================================================================
+25. NO SAAS UI
+===============================================================================
+
+Never add:
+- pricing
+- subscription
+- billing
+- payment
+- upgrade
+- workspace
+- teams
+- invitations
+- usage plans
+- cloud dashboard
+- engagement metrics
+- landing hero
+- testimonial sections
+- customer-logo walls
+- "Get started"
+- "Live now"
+- conversion CTAs
+
+This is a local desktop instrument.
+
+===============================================================================
+26. NO PLACEHOLDER DATA
+===============================================================================
+
+Do not seed production surfaces with:
+- fake tasks
+- fake timestamps
+- fake metrics
+- fake audit records
+- fake browser origins
+- fake verification results
+- fake notifications
+- fake network traffic
+- fake model stats
+
+Mocks belong only in:
+- mock-sites
+- tests
+- replay fixtures
+- benchmark fixtures
+- explicitly named development environments
+
+Never confuse test fixtures with real runtime data.
+
+===============================================================================
+27. NO PREMATURE SUCCESS
+===============================================================================
+
+Do not set:
+- VERIFIED_SUCCESS
+- POLICY ALLOW
+- AUTHORIZED
+- VERIFIED
+- CHAIN VERIFIED
+- MODEL VERIFIED
+- EGRESS ENFORCED
+
+until the backend has actually emitted the corresponding state.
+
+Never turn a load/initialization event into verification.
+
+Never show a success animation before the backend event exists.
+
+===============================================================================
+28. VERIFICATION
+===============================================================================
+
+Verification is independent of model self-report.
+
+Valid outcome categories:
+
+- VERIFIED_SUCCESS
+- LIKELY_SUCCESS
+- UNKNOWN
+- LIKELY_FAILURE
+- VERIFIED_FAILURE
+
+Do not collapse the categories.
+
+Do not color LIKELY_SUCCESS as verified-green.
+
+Do not treat a page-controlled success banner as independent evidence.
+
+Do not use the model's statement "done" as proof.
+
+===============================================================================
+29. AUDIT
+===============================================================================
+
+Audit is append-only and tamper-evident.
+
+Do not write code that:
+- edits prior audit records
+- removes audit events
+- silently truncates history
+- clears history as part of normal operation
+
+Audit UI must consume backend audit data.
+
+Secret values must not be logged.
+
+If a security-sensitive event cannot be safely logged without exposing secrets,
+log a typed/redacted representation.
+
+===============================================================================
+30. NETWORK / EGRESS
+===============================================================================
+
+Do not make the frontend responsible for network security decisions.
+
+Frontend may display:
+- backend egress state
+- destination classifications
+- correlation status
+- QUIC/DoH state
+
+Frontend must not:
+- override egress Policy
+- disable fail-closed behavior
+- bypass proxy boundaries
+- directly call external network services as a shortcut
+- use CDN assets
+
+No runtime web requests should be introduced merely for:
+- fonts
+- icons
+- analytics
+- telemetry
+- UI content
+- model downloads
+
+===============================================================================
+31. MODEL ARTIFACTS
+===============================================================================
+
+Runtime model loading must follow the locked artifact pipeline.
+
+Repository:
+models/
+
+Runtime:
+~/Library/Application Support/<app>/models/
+
+Verify SHA-256 before load.
+
+Never add a runtime model downloader.
+
+Never add automatic external model downloads.
+
+Do not silently replace the approved model.
+
+Model identity and configuration come from the manifest.
+
+===============================================================================
+32. BROWSER CONTROL
+===============================================================================
+
+Use the specified CDP architecture.
+
+Prefer chromiumoxide.
+
+Raw CDP is an escape hatch, not a second uncontrolled architecture.
+
+Playwright is for test/reference usage only.
+
+Use:
+--remote-debugging-pipe
+
+Never introduce:
+- TCP debug endpoints
+- unsafe Chromium flags
+- disabled sandbox
+- disabled site isolation
+- arbitrary browser extensions
+
+===============================================================================
+33. PROFILE SAFETY
+===============================================================================
+
+High-risk profile default:
+EPHEMERAL
+
+Persistent per-site profiles require:
+- explicit user opt-in
+- expiry
+- storage cap
+- purge
+
+Do not invent numeric expiry/cap values if the catalog marks them undefined.
+
+Undefined values must be surfaced as unresolved configuration requirements.
+
+===============================================================================
+34. BUDGETS
+===============================================================================
+
+Hard budget categories must exist for:
+- MAX_STEPS
+- MAX_LLM_CALLS
+- MAX_RECOVERY_ATTEMPTS
+- MAX_TASK_DURATION
+- MAX_CONFIRMATIONS
+- graph size
+- screenshot size/count
+- response/streaming size
+- download size
+- unified memory pressure
+
+Do not invent undefined production values.
+
+When a budget is exceeded:
+- stop according to hard-stop semantics
+- preserve safe state
+- record root cause
+- notify
+- require explicit intervention/resumption as specified
+
+===============================================================================
+35. ERROR HANDLING — RUST
+===============================================================================
+
+Rust production code must avoid:
+- panic! for recoverable runtime conditions
+- unwrap()
+- expect()
+- unreachable!() for attacker-controlled states
+- unchecked indexing
+- silent error swallowing
+
+Use typed errors.
+
+Errors should carry enough context to diagnose:
+- subsystem
+- operation
+- task
+- epoch where safe
+- relevant C-ID/test ID where practical
+
+Do not include secrets in errors.
+
+Use explicit recovery paths.
+
+===============================================================================
+36. ERROR HANDLING — TYPESCRIPT
+===============================================================================
+
+Do not:
+- catch and ignore errors
+- replace runtime errors with generic toasts
+- keep rendering stale security data after a failed refresh
+- silently retry IPC security operations
+
+Handle:
+- IPC failure
+- stale state
+- event ordering issues
+- component disposal
+- timeout
+- renderer shutdown
+
+Use typed error/result boundaries.
+
+===============================================================================
+37. CONCURRENCY
+===============================================================================
+
+Assume events may arrive quickly and out of order at subsystem boundaries.
+
+Use:
+- event IDs
+- backend timestamps
+- epochs
+- task IDs
+- correlation IDs
+
+Do not use frontend arrival order as authoritative chronology when backend order metadata
+exists.
+
+Do not run multiple high-risk browser processes if the runtime constraint says one.
+
+===============================================================================
+38. MEMORY
+===============================================================================
+
+Respect the application unified-memory budget.
+
+Frontend:
+- virtualize large lists
+- lazy-load heavy surfaces
+- release screenshot resources
+- release hidden trace/evidence data where safe
+- avoid unbounded caches
+- avoid holding entire audit logs in React state
+
+Never keep every screenshot from a long task in frontend memory.
+
+Do not retain large browser captures after their surface is no longer active.
+
+===============================================================================
+39. LISTS / TABLES
+===============================================================================
+
+Any list likely to exceed 100 rows must be virtualized.
+
+Applies to:
+- action ledger
+- audit
+- network destinations
+- skills
+- traces
+- event stream
+
+Do not render thousands of DOM rows.
+
+Do not solve the problem by silently truncating data.
+
+Virtualization must preserve:
+- row selection
+- keyboard navigation
+- stable keys
+- timestamp ordering
+
+===============================================================================
+40. LAZY LOADING
+===============================================================================
+
+Lazy-load heavy surfaces.
+
+Initial shell:
+- task composer
+- core runtime state
+- status spine
+- essential notifications
+
+Lazy-load:
+- audit
+- trace explorer
+- diagnostic analyzers
+- large evidence views
+- benchmark visualizations
+- heavy model diagnostics
+
+Do not lazy-load a surface required for:
+- abort
+- hard stop
+- authorization
+- safety-critical intervention
+
+===============================================================================
+41. COMPONENT LIBRARIES
+===============================================================================
+
+shadcn and Watermelon UI are editable sources.
+
+Do not treat their defaults as binding.
+
+On import:
+- remove rounded variants
+- remove shadows
+- remove gradients
+- remove decorative icon slots
+- apply Browser Agent tokens
+- verify keyboard behavior
+- verify accessibility
+- verify state semantics
+
+If a component conflicts with the design contract:
+rebuild it.
+
+===============================================================================
+42. DEPENDENCIES
+===============================================================================
+
+Every dependency is a liability.
+
+Before adding a dependency ask:
+1. Is it necessary?
+2. Can standard Rust/TS solve it safely?
+3. Does it expand the attack surface?
+4. Does it increase binary/bundle size materially?
+5. Does its license fit?
+6. Is it maintained?
+7. Does it introduce network behavior?
+8. Does it introduce telemetry?
+9. Does it duplicate an existing dependency?
+
+Do not add packages simply for:
+- icons
+- animation beyond GSAP/Anime.js
+- UI themes
+- analytics
+- telemetry
+- hosted services
+
+Lock versions.
+
+Audit dependencies.
+
+===============================================================================
+43. FILE / STORAGE ACCESS
+===============================================================================
+
+Use least privilege.
+
+Do not let the frontend directly read:
+- vault files
+- raw audit segments
+- model binaries
+- browser profile internals
+
+Use typed backend operations.
+
+Use quarantine for downloads.
+
+Never auto-open downloads.
+
+===============================================================================
+44. HUMAN INTERVENTION
+===============================================================================
+
+Human intervention is a first-class runtime state.
+
+Supported examples:
+- CAPTCHA
+- 2FA
+- passkeys
+- explicit authorization
+
+Do not classify intervention as generic failure.
+
+Intervention:
+- parks the task
+- preserves safe state
+- gives control to the user
+- expires according to backend state
+- requires explicit resume
+- resumes from fresh epoch/re-perception
+
+===============================================================================
+45. RECOVERY
+===============================================================================
+
+Recovery is not a place for improvisation.
+
+On recovery:
+- use tighter budgets where required
+- invalidate stale context
+- re-perceive
+- re-check Policy
+- revalidate commitments
+- never blindly repeat an irreversible action
+
+If recovery cannot establish safe conditions:
+SAFE_ABORT
+
+===============================================================================
+46. ROOT-CAUSE TAXONOMY
+===============================================================================
+
+Failure records must preserve the actual cause category.
+
+Examples:
+- perception miss
+- unresolved ambiguity
+- reasoning error
+- Policy over-block
+- Policy under-block
+- execution failure
+- verification ambiguity
+- stabilization failure
+- harness bug
+- tier-classification error
+- irreversible/class misclassification
+
+Do not label every problem "runtime error".
+
+===============================================================================
+47. TESTING RULES
+===============================================================================
+
+Every security-critical feature needs:
+- unit tests
+- negative tests
+- integration coverage
+- adversarial coverage where applicable
+
+Test both:
+- expected success
+- forbidden behavior
+
+Examples:
+- stale action must be rejected
+- arbitrary JS must be rejected
+- secret must never cross model boundary
+- page text must not redefine Policy
+- tier downgrade must trigger re-evaluation
+- threshold splitting must be detected
+- proxy death must fail closed
+- model tampering must fail verification
+- skill drift must suspend
+- fake success banners must not verify success
+
+===============================================================================
+48. TEST ENVIRONMENT SAFETY
+===============================================================================
+
+Real HIGH_STAKES actions must never be performed by:
+- CI
+- replay
+- headless benchmark paths
+- fuzzing
+- adversarial ablations
+- synthetic regression suites
+
+Use isolated synthetic Policy and mock sites.
+
+No shortcut is acceptable merely to make automated tests easier.
+
+===============================================================================
+49. FUZZING
+===============================================================================
+
+Maintain fuzz targets for:
+- CDP parser
+- canonical request representation
+- Unicode normalization
+- schema validation
+- SkillCommitment parser
+- tier derivation
+
+Fuzzing failures are blocking until triaged.
+
+Do not disable fuzzing because it is inconvenient.
+
+===============================================================================
+50. LOGGING
+===============================================================================
+
+Logs must be:
+- structured
+- bounded
+- redacted
+- correlated
+- useful for root-cause analysis
+
+Never log:
+- passwords
+- cookies
+- tokens
+- raw secret values
+- full request bodies when they can contain secrets
+
+Avoid logging raw page data unnecessarily.
+
+===============================================================================
+51. TIMING
+===============================================================================
+
+Use monotonic clocks for internal duration budgets.
+
+Use backend-issued timestamps for event chronology.
+
+Do not derive security expiry from frontend wall-clock assumptions.
+
+Do not mix:
+- duration clock
+- wall clock
+- backend timestamp
+without explicit semantics.
+
+===============================================================================
+52. MODEL INFERENCE
+===============================================================================
+
+Every inference call requires:
+- timeout
+- abort path
+- task cancellation support
+- bounded output
+- schema validation
+
+Separate metrics:
+- schema-valid
+- semantically-correct
+
+Do not interpret schema-valid as semantically correct.
+
+If task abort occurs:
+cancel in-flight inference.
+
+If memory pressure occurs:
+follow the model-residency policy.
+
+===============================================================================
+53. MODEL RESIDENCY
+===============================================================================
+
+Under external memory pressure:
+- unload according to policy
+- park task if required
+- reload within budget
+- avoid jetsam
+- preserve safe task state
+
+Do not keep the model resident regardless of system pressure.
+
+===============================================================================
+54. FRONTEND ANIMATION ERROR RULE
+===============================================================================
+
+Animation failure must never affect runtime correctness.
+
+If:
+- GSAP errors
+- Anime.js errors
+- animation component fails
+
+the underlying state must still:
+- render
+- remain accessible
+- remain accurate
+- remain actionable
+
+Animation is presentation only.
+
+===============================================================================
+55. ACCESSIBILITY
+===============================================================================
+
+All interactive controls:
+- keyboard accessible
+- visible focus
+- semantic role
+- accessible name
+
+Do not rely on:
+- color
+- animation
+- hover
+- icons
+
+for essential meaning.
+
+Security content must remain readable with reduced motion.
+
+===============================================================================
+56. NO SHORTCUT DEPENDENCE
+===============================================================================
+
+The product must not require keyboard shortcuts for basic operation.
+
+Keyboard shortcuts may exist, but:
+- they are optional
+- they are documented in Settings -> Keyboard
+- they are not rendered as decorative command glyphs
+- every primary operation remains available through visible UI
+
+Do not use a command-palette architecture as the primary navigation mechanism.
+
+===============================================================================
+57. NO COMMAND-PALETTE UI
+===============================================================================
+
+Do not add:
+- command palette
+- command menu
+- quick-command overlay
+- macOS Command glyph chips
+
+Task entry is the task composer.
+
+Navigation is the text-based rail.
+
+===============================================================================
+58. INTERACTION LABELS
+===============================================================================
+
+Buttons must describe the consequence.
+
+Good:
+- SUBMIT TASK
+- BEGIN TASK
+- REVISE
+- ABORT
+- RESUME TASK
+- CONFIRM PURCHASE — <amount>
+- DENY AND STOP TASK
+- VERIFY CHAIN
+- EXPORT SIGNED
+- REVEAL IN FINDER
+- APPROVE RE-PROMOTION
+
+Bad:
+- OK
+- Cancel
+- Yes
+- No
+- Continue
+- Do it
+- Go
+- Nice
+- Done
+
+===============================================================================
+59. NO SILENT FALLBACKS
+===============================================================================
+
+Do not use the word "fallback" in user-facing UI.
+
+Internally, alternate mechanisms may exist where the architecture defines them.
+
+Any alternate path must:
+- be explicit in code
+- preserve security semantics
+- be observable when relevant
+- not silently weaken Policy
+
+Example:
+If a perception path changes, do not silently present stale data.
+
+===============================================================================
+60. PRESERVE SAFE STATE
+===============================================================================
+
+For hard stops:
+- stop execution
+- preserve safe state
+- invalidate unsafe pending actions
+- record reason
+- notify
+- require explicit resumption
+
+Never:
+- continue silently
+- restart an irreversible operation automatically
+- reuse stale authorization
+- suppress the stop because the UI is inconvenient
+
+===============================================================================
+61. BROWSER PREVIEW
+===============================================================================
+
+The preview is controlled state representation.
+
+Do not:
+- inject page DOM into the Tauri UI webview
+- allow the frontend to become a second uncontrolled browser
+- let page content render trusted confirmation
+- bind security controls to page DOM
+
+The browser preview is an instrument readout.
+
+===============================================================================
+62. NETWORK ASSETS
+===============================================================================
+
+The application must not rely on runtime external assets.
+
+Do not fetch:
+- fonts
+- icons
+- themes
+- analytics scripts
+- remote UI configuration
+
+Bundle approved assets locally.
+
+No CDN dependencies at runtime.
+
+===============================================================================
+63. BUILD / CI
+===============================================================================
+
+CI should enforce where practical:
+- catalog lint
+- formatting
+- Rust compilation
+- TypeScript type checking
+- tests
+- dependency/license audit
+- frontend design lint
+- no emoji
+- no gradients
+- no icon imports
+- radius ≤2px
+- no runtime CDN references
+- no forbidden marketing copy
+- no OK/Cancel labels
+- no secret fields in IPC schemas
+- affected C-ID references for Policy changes
+
+A failed security lint is not "just a warning" until triaged.
+
+===============================================================================
+64. CODE STYLE — RUST
+===============================================================================
+
+Prefer:
+- small typed modules
+- explicit ownership
+- immutable data where practical
+- Result/Option
+- exhaustive enums
+- explicit error types
+- deterministic behavior
+- bounded allocations
+
+Avoid:
+- giant modules
+- global mutable state
+- hidden side effects
+- dynamic reflection
+- implicit singleton state
+
+Any unsafe Rust requires:
+- written rationale
+- narrow scope
+- test coverage
+- security review
+
+===============================================================================
+65. CODE STYLE — TYPESCRIPT/REACT
+===============================================================================
+
+Prefer:
+- strict TypeScript
+- explicit props
+- discriminated unions
+- pure render functions
+- small focused components
+- typed event handlers
+- stable keys
+- memoization only where measured
+
+Avoid:
+- `any`
+- unsafe casts
+- global mutable state
+- hidden effects
+- giant components
+- state duplication
+- effect chains that simulate backend state
+- local security decisions
+
+Enable strict type checking.
+
+===============================================================================
+66. ASYNC / EFFECT RULES — REACT
+===============================================================================
+
+Every effect must have a clear ownership and cleanup path.
+
+For subscriptions:
+- subscribe once
+- unsubscribe on disposal
+
+For async work:
+- cancel or ignore stale results
+- verify task/entity identity before committing presentation state
+
+Do not let an old task overwrite the current task's UI.
+
+Use:
+- task ID
+- event ID
+- epoch where applicable
+
+===============================================================================
+67. SERIALIZATION
+===============================================================================
+
+Security-sensitive schemas must be versioned.
+
+Do not rely on:
+- ad-hoc JSON shape assumptions
+- property-name coincidence
+- optional fields with ambiguous meaning
+
+When a schema changes:
+- update migration logic
+- update tests
+- update catalog mappings if affected
+- document compatibility
+
+===============================================================================
+68. DATABASE / MIGRATIONS
+===============================================================================
+
+Every storage schema change requires:
+- migration
+- backwards/forwards compatibility decision
+- test
+- rollback consideration where applicable
+
+Never destroy existing audit data as part of a migration.
+
+Never make password changes invalidate audit chain integrity.
+
+===============================================================================
+69. FEATURE IMPLEMENTATION RULE
+===============================================================================
+
+For every new feature:
+
+1. Identify the owning subsystem.
+2. Identify affected C-ID(s).
+3. Define backend state/event contract.
+4. Define Policy implications.
+5. Define failure behavior.
+6. Define verification behavior.
+7. Define frontend projection.
+8. Add positive tests.
+9. Add negative/security tests.
+10. Add docs/ADR if architecture changes.
+
+Do not start with the UI and invent backend semantics later.
+
+===============================================================================
+70. STUB RULE
+===============================================================================
+
+Stubs must be obvious.
+
+Allowed:
+- TODO with explicit scope
+- `NOT_IMPLEMENTED`
+- explicit feature gate
+- `PROPOSED`
+- `NOT_VERIFIABLE_YET`
+
+Not allowed:
+- fake successful response
+- hardcoded production state
+- fake verification
+- fake security approval
+- fake audit verification
+- silent mock service in production path
+
+===============================================================================
+71. "DONE" RULE
+===============================================================================
+
+Do not report:
+- fully implemented
+- secure
+- verified
+- production-ready
+- release-ready
+
+unless the evidence supports it.
+
+Every implementation report should distinguish:
+- implemented
+- tested
+- verified
+- blocked
+- not-verifiable-yet
+- proposed
+
+===============================================================================
+72. RELEASE BLOCKERS
+===============================================================================
+
+Treat as release-blocking when the current catalog defines them as such, including
+but not limited to:
+- security gate failure
+- excessive tier under-classification
+- excessive irreversible-as-reversible errors
+- proxy fail-closed failure
+- model integrity failure
+- secret leakage
+- arbitrary execution path
+- stale commitment execution
+- verification bypass
+- audit tamper failure
+- forbidden real HIGH_STAKES execution in test paths
+
+Never suppress a blocking failure to make CI green.
+
+===============================================================================
+73. REPORTING RULE
+===============================================================================
+
+When finishing implementation work, report:
+
+1. files changed
+2. components implemented
+3. tests run
+4. tests passed
+5. tests failed
+6. relevant C-IDs
+7. verification status
+8. blockers
+9. unresolved parameters
+10. intentionally unimplemented pieces
+
+Do not replace this with:
+"Everything is done."
+
+===============================================================================
+74. FINAL RULE
+===============================================================================
+
+When uncertain:
+
+STOP.
+
+Check:
+- the catalog
+- the architecture
+- the design contract
+- the relevant ADR
+- the backend contract
+
+Then make the smallest safe implementation.
+
+The project's governing principle is:
+
+THE MODEL PROPOSES.
+THE RUNTIME CONTROLS.
+POLICY AUTHORIZES.
+TYPED EXECUTION ACTS.
+VERIFICATION CHECKS.
+THE AUDIT RECORDS.
+
+Do not break that chain for convenience.

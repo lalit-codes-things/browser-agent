@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schema.tauri.app/config/2/capability.schema.json",
+  "identifier": "restrictive",
+  "description": "Restrictive capability for sensitive surfaces",
+  "windows": ["main"],
+  "permissions": [
+    "core:default"
+  ]
+}

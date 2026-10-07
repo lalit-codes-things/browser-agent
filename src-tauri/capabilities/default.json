@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.tauri.app/config/2/capability.schema.json",
+  "identifier": "default",
+  "description": "Default allowlisted capabilities for Browser Agent",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-set-focus",
+    "core:window:allow-is-maximized",
+    "core:window:allow-is-minimized",
+    "core:window:allow-is-fullscreen",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-title",
+    "core:webview:allow-set-title",
+    "core:webview:allow-create-webview-window",
+    "core:webview:allow-attach-prevhost-raw",
+    "core:webview:allow-create-webview-panel"
+  ]
+}

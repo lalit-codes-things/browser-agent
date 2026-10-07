@@ -1,0 +1,70 @@
+named_revision_2_constraints:
+  C-AUTH-TIER:
+    catalog_ids:
+      - C-14
+      - C-15
+      - C-16
+      - C-17
+      - C-139
+  C-AUTH-UNAWARE:
+    catalog_ids:
+      - C-22
+  C-AUTH-FAILSAFE:
+    catalog_ids:
+      - C-09
+      - C-24
+      - C-25
+      - C-26
+      - C-140
+  C-MODEL-ARTIFACT:
+    catalog_ids:
+      - C-37
+      - C-38
+      - C-39
+      - C-40
+      - C-41
+      - C-42
+      - C-43
+      - C-44
+      - C-136
+  C-PROFILE-EPHEMERAL:
+    catalog_ids:
+      - C-12
+      - C-13
+  C-PROXY-SCOPE:
+    catalog_ids:
+      - C-76
+  C-HEADFUL-ADR:
+    catalog_ids:
+      - C-77
+  C-PROVENANCE-8-10:
+    catalog_ids:
+      - C-90
+      - C-108
+      - C-109
+      - C-110
+      - C-111
+      - C-112
+      - C-113
+      - C-114
+      - C-115
+      - C-116
+      - C-117
+      - C-118
+      - C-119
+      - C-120
+      - C-121
+      - C-122
+      - C-123
+      - C-124
+      - C-125
+      - C-126
+      - C-127
+      - C-128
+      - C-129
+      - C-130
+      - C-131
+      - C-132
+      - C-133
+      - C-134
+      - C-135

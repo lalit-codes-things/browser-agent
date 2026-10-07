@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "src-tauri",
+    "helper/pf-helper",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Browser Agent Maintainers"]
+license = "Apache-2.0"
+rust-version = "1.80"
+
+[workspace.dependencies]
+# Keep these lean. We add major deps explicitly in member Cargo.tomls.

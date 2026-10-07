@@ -1,0 +1,38 @@
+node_modules
+dist
+.target
+.target-*
+**/*.rs.bk
+Cargo.lock
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.env
+.env.*
+*.pem
+*.key
+*.secret
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Tauri / Rust build artifacts
+**/target/
+
+# Frontend build
+**/dist/
+**/build/
+
+# Local runtime data paths (Phase 10 layout); never commit these
+**/Application Support/
+**/Library/
+
+# IDE / agent local configs
+.vscode
+.idea
+*.swp
+*.swo
+
+# Temp development artifacts
+tmp/
+temp/

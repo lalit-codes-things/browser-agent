@@ -1,0 +1,17 @@
+{
+  "artifact_id": "qwen3-1.7b-q4_k_m",
+  "model": {
+    "family": "Qwen3-1.7B",
+    "format": "GGUF",
+    "quantization": "Q4_K_M"
+  },
+  "source": {
+    "repository": "Qwen/Qwen3-1.7B-GGUF",
+    "file": "Qwen3-1.7B-Q4_K_M.gguf"
+  },
+  "sha256": "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5",
+  "bytes": 1282439264,
+  "phase": "Phase 1 provisional",
+  "pin_policy": "pin from exact downloaded bytes; do not hardcode a model SHA-256 from floating main-branch metadata",
+  "notes": "Computed from the exact artifact in this repository. Until we download a chosen immutable HF revision and pin that exact file, this is the working artifact hash for the repo-local file."
+}

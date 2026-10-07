@@ -1,0 +1,17 @@
+{
+  "name": "browser-agent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter frontend tauri dev",
+    "build": "pnpm --filter frontend tauri build",
+    "tauri": "pnpm --filter frontend tauri",
+    "check": "pnpm --filter frontend exec nx run tsc -- --noEmit && pnpm --filter frontend exec biome check src",
+    "lint:catalog": "pnpm catalog:lint",
+    "generate:catalog": "pnpm catalog:generate",
+    "catalog:lint": "cargo run --manifest-path tools/catalog-lint/Cargo.toml -- lint catalog/constraints.yaml",
+    "catalog:generate": "cargo run --manifest-path tools/catalog-generate/Cargo.toml -- generate catalog/constraints.yaml catalog/constraint-catalog-v2.1.md",
+    "verify:model": "scripts/verify-model.sh"
+  },
+  "packageManager": "pnpm@12.9.0"
+}

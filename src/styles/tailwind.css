@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-0: #0E0F10;
+    --bg-1: #141517;
+    --bg-2: #1A1C1F;
+    --bg-3: #22252A;
+
+    --line: #2E3238;
+    --line-strong: #3E434B;
+
+    --text-0: #E8EAED;
+    --text-1: #A8ADB5;
+    --text-2: #6E747D;
+
+    --sem-verified: #3FB950;
+    --sem-caution: #D29922;
+    --sem-violation: #F85149;
+  }
+
+  html {
+    color-scheme: dark;
+    background-color: var(--bg-0);
+    color: var(--text-0);
+  }
+
+  body {
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: auto;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 1px;
+  }
+
+  /* Design token mapping */
+  .bg-surface-0 { background-color: var(--bg-0); }
+  .bg-surface-1 { background-color: var(--bg-1); }
+  .bg-surface-2 { background-color: var(--bg-2); }
+  .bg-surface-3 { background-color: var(--bg-3); }
+
+  .line { border-color: var(--line); }
+  .line-strong { border-color: var(--line-strong); }
+
+  .text-primary { color: var(--text-0); }
+  .text-secondary { color: var(--text-1); }
+  .text-muted { color: var(--text-2); }
+
+  .sem-verified { color: var(--sem-verified); }
+  .sem-caution { color: var(--sem-caution); }
+  .sem-violation { color: var(--sem-violation); }
+
+  .data-mono {
+    font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  .label-uppercase {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .section-header {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .body-text {
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .data-value {
+    font-size: 12.5px;
+    font-weight: 400;
+  }
+
+  .micro-annotation {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+
+  .no-radius { border-radius: 0; }
+  .max-radius-2 { border-radius: 2px; }
+}
+
+@layer utilities {
+  .tracking-wider-safe {
+    letter-spacing: 0.04em;
+  }
+
+  .border-1px {
+    border-width: 1px;
+  }
+
+  .fixed-width-amount {
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+  }
+}

@@ -1,0 +1,2933 @@
+catalog_version: '2.1'
+source: Consolidated Build Specification, Revision 2 (uploaded 2026-10-07)
+source_of_truth: catalog/constraints.yaml
+generation_note: Markdown is generated from this YAML; IDs are stable and appended, not renumbered.
+status_vocabulary:
+  spec_status:
+  - LOCKED
+  - TUNABLE
+  - PROVISIONAL
+  - MEASUREMENT-ADR
+  - PROPOSED
+  - SUPERSEDED
+  verification_status:
+  - NOT-VERIFIABLE-YET
+  - SCHEDULED
+  - PARTIAL
+  - VERIFIED
+  - FAILED-BLOCKING
+named_revision_2_constraints:
+  C-AUTH-TIER:
+    catalog_ids:
+    - C-14
+    - C-15
+    - C-16
+    - C-17
+    - C-139
+  C-AUTH-UNAWARE:
+    catalog_ids:
+    - C-22
+  C-AUTH-FAILSAFE:
+    catalog_ids:
+    - C-09
+    - C-24
+    - C-25
+    - C-26
+    - C-140
+  C-MODEL-ARTIFACT:
+    catalog_ids:
+    - C-37
+    - C-38
+    - C-39
+    - C-40
+    - C-41
+    - C-42
+    - C-43
+    - C-44
+    - C-136
+  C-PROFILE-EPHEMERAL:
+    catalog_ids:
+    - C-12
+    - C-13
+  C-PROXY-SCOPE:
+    catalog_ids:
+    - C-76
+  C-HEADFUL-ADR:
+    catalog_ids:
+    - C-77
+  C-PROVENANCE-8-10:
+    catalog_ids:
+    - C-90
+    - C-108
+    - C-109
+    - C-110
+    - C-111
+    - C-112
+    - C-113
+    - C-114
+    - C-115
+    - C-116
+    - C-117
+    - C-118
+    - C-119
+    - C-120
+    - C-121
+    - C-122
+    - C-123
+    - C-124
+    - C-125
+    - C-126
+    - C-127
+    - C-128
+    - C-129
+    - C-130
+    - C-131
+    - C-132
+    - C-133
+    - C-134
+    - C-135
+parameters:
+  PARAM-MAX-STEPS:
+    label: MAX_STEPS
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1
+    note: Existence is locked; numeric value is undefined in Revision 2.
+  PARAM-MAX-LLM-CALLS:
+    label: MAX_LLM_CALLS
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1
+    note: Existence is locked; numeric value is undefined in Revision 2.
+  PARAM-MAX-RECOVERY-ATTEMPTS:
+    label: MAX_RECOVERY_ATTEMPTS
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1
+    note: Existence is locked; numeric value is undefined in Revision 2.
+  PARAM-MAX-TASK-DURATION:
+    label: MAX_TASK_DURATION
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1
+    note: Existence is locked; numeric value is undefined in Revision 2.
+  PARAM-MAX-CONFIRMATIONS:
+    label: MAX_CONFIRMATIONS
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1
+    note: Existence is locked; numeric value is undefined in Revision 2.
+  PARAM-GRAPH-CAPS:
+    label: graph size caps
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 3
+    note: Existence is locked; numeric cap values are undefined in Revision 2.
+  PARAM-SCREENSHOT-CAPS:
+    label: screenshot size/count caps
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 2 / 3
+    note: Existence is locked; numeric cap values are undefined in Revision 2.
+  PARAM-RESPONSE-STREAM-CAPS:
+    label: response/streaming size caps
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 2
+    note: Existence is locked; numeric cap values are undefined in Revision 2.
+  PARAM-DOWNLOAD-CAP:
+    label: download size cap
+    owner_constraint: C-149
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 2 / 5
+    note: Existence is locked; numeric cap value is undefined in Revision 2.
+  PARAM-HIGH-STAKES-PURCHASE-THRESHOLD:
+    label: HIGH_STAKES purchase amount threshold
+    owner_constraint: C-08 / C-15 / C-117
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 4
+    note: Security-critical input to tier derivation; dedicated threshold-splitting attack exists. Must be defined before
+      Phase 4 exit.
+  PARAM-QUIET-WINDOW-MIN:
+    label: quiet-window minimum
+    owner_constraint: C-59
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1 / 3
+    note: Livelock trigger defaults are defined, but quiet-window min is not.
+  PARAM-QUIET-WINDOW-MAX:
+    label: quiet-window maximum
+    owner_constraint: C-59
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 1 / 3
+    note: Livelock trigger defaults are defined, but quiet-window max is not.
+  PARAM-CONFIRMATIONS-PER-TASK-UX:
+    label: confirmations-per-task UX ceiling
+    owner_constraint: C-112
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 8
+    note: Measured in Phase 8; ceiling value is not defined in Revision 2.
+  PARAM-PERSISTENT-PROFILE-EXPIRY:
+    label: persistent-profile expiry
+    owner_constraint: C-13
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 2
+    note: Expiry is required, but duration is not defined in Revision 2.
+  PARAM-PERSISTENT-PROFILE-STORAGE-CAP:
+    label: persistent-profile storage cap
+    owner_constraint: C-13
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 2
+    note: Storage cap is required, but value is not defined in Revision 2.
+  PARAM-PARKED-TASK-NOTIFICATION-EXPIRY:
+    label: parked-task notification expiry
+    owner_constraint: C-109
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 8
+    note: Expiry is required, but duration is not defined in Revision 2.
+  PARAM-CANARY-PASS-THRESHOLD:
+    label: behavioral canary battery pass threshold
+    owner_constraint: C-44
+    value_defined: false
+    status: TUNABLE
+    owner_phase: Phase 6 / 10
+    note: Canary gating is locked, but the numeric pass threshold is not defined in Revision 2.
+  PARAM-FP-CEILING:
+    label: false-positive ceiling
+    owner_constraint: C-10
+    value_defined: true
+    status: TUNABLE
+    owner_phase: Phase 9
+    value: ≤20% initially accepted
+    note: The ceiling is specified in Revision 2 as ≤20% and explicitly treated as initially accepted/tunable; it may not
+      weaken the locked FN gate.
+  PARAM-THERMAL-SOAK-RANGE:
+    label: thermal-soak range
+    owner_constraint: C-52
+    value_defined: true
+    status: TUNABLE
+    owner_phase: Phase 0 / 6 / 10
+    value: 20–30 minutes
+    note: Range is source-specified but the Phase-0 process treats the thermal-soak condition as tunable within the preregistration
+      process.
+constraints:
+- id: C-01
+  constraint: Architecture uses five engines, with Task Normalizer and Permission Check acting as orchestration, and Skill
+    Store as the data layer.
+  owner_phase:
+  - Phase 0
+  test_id: TEST-C-01
+  verification_evidence: Architecture review; constraint traceability matrix.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-02
+  constraint: Tauri is a thin UI with allowlisted IPC, hardened CSP, and screenshot/controlled-state previews only.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-02
+  verification_evidence: IPC allowlist test; CSP test; UI preview-path audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-03
+  constraint: Browser control prefers `chromiumoxide` over CDP, with raw-CDP escape hatch; Playwright is test/reference only.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-03
+  verification_evidence: Dependency/code audit; runtime integration test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-04
+  constraint: Chromium is launched with `--remote-debugging-pipe`; no TCP debugging endpoint.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-04
+  verification_evidence: Launch configuration and negative network test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-05
+  constraint: Chromium sandbox and site isolation remain enabled; forbidden flags are not used.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-05
+  verification_evidence: Launch-flag audit and browser isolation tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-06
+  constraint: Action classes are exactly READ / REVERSIBLE_WRITE / IRREVERSIBLE / UNKNOWN→IRREVERSIBLE.
+  owner_phase:
+  - Phase 0
+  - Phase 4
+  test_id: TEST-C-06
+  verification_evidence: Enum/schema test; policy unit tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-07
+  constraint: 'Authorization tier is a separate dimension: NONE / POLICY_ONLY / NATIVE_CONFIRM / BIOMETRIC_CONFIRM.'
+  owner_phase:
+  - Phase 0
+  - Phase 4
+  test_id: TEST-C-07
+  verification_evidence: Tier derivation tests; catalog audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-08
+  constraint: Authorization tier is derived by Policy, never by the model, using side-effect class plus taint, destination,
+    data flow, amount thresholds, and task authority.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-08
+  verification_evidence: Unit/integration tests with adversarial cases.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: Amount thresholds are required inputs to tier derivation; the HIGH_STAKES purchase threshold is not defined
+    in Revision 2.
+- id: C-09
+  constraint: UNKNOWN consequential actions are treated as IRREVERSIBLE and tiered conservatively/upward on uncertainty.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-09
+  verification_evidence: Unknown-action fixtures; fail-safe tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints:
+  - C-AUTH-FAILSAFE
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-10
+  constraint: The ≤0.5% false-negative gate applies to authorization-tier under-classification and to irreversible-as-REVERSIBLE_WRITE
+    class errors, measured from the same independently labeled corpus; >1% is an automatic security failure and the ≤20% FP
+    ceiling is the initial accepted ceiling.
+  owner_phase:
+  - Phase 0
+  - Phase 4
+  - Phase 9
+  test_id: TEST-C-10
+  verification_evidence: Classification corpus; confidence/sequential gate; release gate.
+  spec_status: LOCKED
+  verification_status: NOT-VERIFIABLE-YET
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-11
+  verification: ≥600-action classification corpus; independent labels for side-effect class and tier; confidence/sequential
+    gate; class-FN and tier-FN reports; release gate.
+  value_notes: The FN thresholds are specified; the ≤20% FP ceiling is accepted initially and may be tuned without weakening
+    the locked FN failure boundary.
+  tunable_values:
+  - ≤20% FP ceiling (accepted initially)
+- id: C-11
+  constraint: Classification corpus targets ≥600 independently labeled actions and includes both side-effect class and authorization
+    tier labels.
+  owner_phase:
+  - Phase 0
+  - Phase 9
+  test_id: TEST-C-11
+  verification_evidence: Corpus audit; independent relabel sample; count check.
+  spec_status: LOCKED
+  verification_status: NOT-VERIFIABLE-YET
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-12
+  constraint: High-risk browser profiles are ephemeral by default.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-12
+  verification_evidence: Profile-lifecycle integration test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints:
+  - C-PROFILE-EPHEMERAL
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-13
+  constraint: Persistent per-site high-risk profiles require explicit user opt-in and must have expiry, storage caps, and
+    purge.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  - Phase 10
+  test_id: TEST-C-13
+  verification_evidence: Settings/UI test; lifecycle and purge test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROFILE-EPHEMERAL
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: Expiry and storage-cap values are required but not specified.
+- id: C-14
+  constraint: Confirmation is tiered; fresh Touch ID is not required for every irreversible action.
+  owner_phase:
+  - Phase 0
+  - Phase 4
+  test_id: TEST-C-14
+  verification_evidence: Policy matrix tests and UX telemetry.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints:
+  - C-AUTH-TIER
+  supersedes:
+  - 'Revision-1: fresh Touch ID for every irreversible action'
+  amends:
+  - catalog-v2.0:C-14
+  depends_on: []
+- id: C-15
+  constraint: Fresh Touch ID is required only for HIGH_STAKES payments/financial actions and important sensitive decisions.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-15
+  verification_evidence: Positive/negative policy fixtures for each HIGH_STAKES category.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints:
+  - C-AUTH-TIER
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: The HIGH_STAKES purchase amount threshold is a security-critical parameter and is not defined in Revision 2.
+- id: C-16
+  constraint: Ordinary login, browsing, typing, credential fill, reversible actions, and routine task execution do not use
+    biometrics.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-16
+  verification_evidence: Negative biometric invocation tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints:
+  - C-AUTH-TIER
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-17
+  constraint: Other consequential actions use appropriate native confirmation and Policy controls without biometrics.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-17
+  verification_evidence: Authorization matrix tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints:
+  - C-AUTH-TIER
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-18
+  constraint: High-stakes biometric prompts are rate-limited to 3 rejected attempts per 60 seconds; the native-confirmation
+    + master-password fallback is symmetrically rate-limited and audited.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-18
+  verification_evidence: Rate-limit and audit tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-19
+  constraint: Screen lock/sleep invalidates pending biometric approvals.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-19
+  verification_evidence: Sleep/wake invalidation test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-20
+  constraint: Policy has no silent written-policy override that disables HIGH_STAKES authorization.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-20
+  verification_evidence: Negative configuration/override test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-21
+  constraint: CI, headless, and replay paths cannot perform real HIGH_STAKES actions outside isolated synthetic policy.
+  owner_phase:
+  - Phase 4
+  - Phase 9
+  test_id: TEST-C-21
+  verification_evidence: Harness isolation test; real-site negative test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-22
+  constraint: The model knows only `REQUEST_CONFIRMATION`; it does not know or control the biometric mechanism.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-22
+  verification_evidence: Typed-action API audit; model-output fuzzing.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints:
+  - C-AUTH-UNAWARE
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-23
+  constraint: Payments/financial transfers require typed confirmation (e.g. re-enter amount or recipient) within HIGH_STAKES.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-23
+  verification_evidence: Confirmation-flow integration tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-24
+  constraint: Approval commitments include `authorization_tier`; execution-time tier mismatch is a commitment mismatch.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-24
+  verification_evidence: Commitment schema and mutation tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints:
+  - C-AUTH-FAILSAFE
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-07
+  - C-08
+- id: C-25
+  constraint: On commitment mismatch, invalidate → re-stabilize → re-perceive → at most one fresh native re-approval → recover.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-25
+  verification_evidence: Tier/element swap adversarial test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 5 — Verification / Trust
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-AUTH-FAILSAFE
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-26
+  constraint: No page may relabel an approved ordinary submission into/out of a biometric-gated action without re-approval.
+  owner_phase:
+  - Phase 4
+  - Phase 5
+  - Phase 9
+  test_id: TEST-C-26
+  verification_evidence: Tier-downgrade and tier-upgrade injection tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-AUTH-FAILSAFE
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-27
+  constraint: Exact-origin credentials are the default; multi-subdomain scope requires an explicit scope object and wildcards
+    are restrictive.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-27
+  verification_evidence: Origin/scope policy tests and navigation-race tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-28
+  constraint: Credentials are modeled as `(origin, account)` pairs; account disambiguation is driven by task authority, not
+    a page-visible username field.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-28
+  verification_evidence: Same-origin multi-account fixtures.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-29
+  constraint: Same-origin account conflicts fail to clarification rather than silently choosing an account.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-29
+  verification_evidence: Ambiguous-account negative test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-30
+  constraint: Session-surviving taint is preserved until explicit declassification.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-30
+  verification_evidence: Taint-flow integration tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-31
+  constraint: Sensitive-to-public data flow maps explicitly to HIGH_STAKES; credential-to-public is blocked.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-31
+  verification_evidence: Data-flow policy matrix.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-32
+  constraint: Navigation URLs are treated as potential exfiltration channels.
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-32
+  verification_evidence: URL-exfiltration injector.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-33
+  constraint: 'Task-authority parameters must reconcile with action parameters: exact recipient/account/destination match,
+    locale-aware bounded amount deltas, and item identity match; divergence is STOP.'
+  owner_phase:
+  - Phase 4
+  test_id: TEST-C-33
+  verification_evidence: Reconciliation test suite.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-34
+  constraint: Every skill/macro step is independently policy checked.
+  owner_phase:
+  - Phase 4
+  - Phase 7
+  test_id: TEST-C-34
+  verification_evidence: Skill execution policy tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-35
+  constraint: Recovery mode uses tighter budgets and is protected against attacker-triggered uncertainty with rate limiting.
+  owner_phase:
+  - Phase 4
+  - Phase 3
+  test_id: TEST-C-35
+  verification_evidence: Recovery attack tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-36
+  constraint: LLM/evidence logic is never the authority for HIGH_STAKES authorization; trusted runtime data composes the confirmation.
+  owner_phase:
+  - Phase 4
+  - Phase 5
+  test_id: TEST-C-36
+  verification_evidence: Architecture review plus forged-page-value tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-37
+  constraint: Model artifact manifest and SHA256 identity are stored in ordinary Git; multi-GB model binaries live in Git
+    LFS or a signed release artifact, not ordinary Git history.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  - Phase 10
+  test_id: TEST-C-37
+  verification_evidence: Repository audit; artifact verification test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-38
+  constraint: Build/package verification checks the model hash against the in-repo manifest before packaging.
+  owner_phase:
+  - Phase 0
+  - Phase 10
+  test_id: TEST-C-38
+  verification_evidence: Build pipeline test with tampered artifact.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-39
+  constraint: Installed models are copied at install time to `~/Library/Application Support/<app>/models/`.
+  owner_phase:
+  - Phase 0
+  - Phase 10
+  test_id: TEST-C-39
+  verification_evidence: Installer integration test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-40
+  constraint: Runtime loads models only from the app-data models directory, never from the Git checkout.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-40
+  verification_evidence: Load-path negative tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-41
+  constraint: SHA-256 is verified at every model load.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-41
+  verification_evidence: Tamper/reload tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-42
+  constraint: The application never downloads a model at runtime from Hugging Face, OpenAI, Anthropic, or any external service.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  - Phase 10
+  test_id: TEST-C-42
+  verification_evidence: Egress tests during model load; source audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-43
+  constraint: Phase 1 uses the provisional model and Phase 6 promotes the benchmark winner into `models/manifests/production.json`.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-43
+  verification_evidence: Manifest transition test; benchmark report.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-44
+  constraint: Every model-file change is gated by `models/canary/behavioral-tests.json`; hash pinning alone is insufficient
+    to prove behavioral integrity.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  - Phase 10
+  test_id: TEST-C-44
+  verification_evidence: Canary CI test with known-bad model variant.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Model Artifact Pipeline
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: Behavioral-canary pass threshold is required but not specified.
+- id: C-45
+  constraint: The Phase-1 provisional model is qwen3-1.7b Q4 GGUF (~1.1 GB) unless replaced by the preregistered benchmark
+    winner.
+  owner_phase:
+  - Phase 0
+  - Phase 1
+  test_id: TEST-C-45
+  verification_evidence: Manifest/hash verification and benchmark record.
+  spec_status: PROVISIONAL
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Updated file structure
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-46
+  constraint: Model/runtime memory budget is ≤2.5 GB inclusive of KV cache at maximum operational context and grammar buffers.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-46
+  verification_evidence: Memory instrumentation under maximum context.
+  spec_status: LOCKED
+  verification_status: NOT-VERIFIABLE-YET
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-47
+  constraint: Structured inference p95 per proposal is ≤2.0 seconds.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-47
+  verification_evidence: Frozen benchmark and p95 latency report.
+  spec_status: LOCKED
+  verification_status: NOT-VERIFIABLE-YET
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-48
+  constraint: Vertical-slice task success is ≥80%.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-48
+  verification_evidence: Held-out benchmark with preregistered decision rule.
+  spec_status: LOCKED
+  verification_status: NOT-VERIFIABLE-YET
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-49
+  constraint: Overall peak memory is ≤6.0 GB under the stated release gate.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  - Phase 10
+  test_id: TEST-C-49
+  verification_evidence: Clean-boot and realistic-workload measurements.
+  spec_status: LOCKED
+  verification_status: NOT-VERIFIABLE-YET
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-50
+  constraint: Benchmark difficulty rubric is authored before tuning, with development/frozen held-out split.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-50
+  verification_evidence: Preregistration timestamp and artifact audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-51
+  constraint: Benchmark gating uses sequential/Bayesian rules accounting for sampling error; 80% at n=30–50 is treated as
+    approximately ±12-point CI.
+  owner_phase:
+  - Phase 0
+  test_id: TEST-C-51
+  verification_evidence: Preregistration review; benchmark report.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-52
+  constraint: Thermal-soak condition is 20–30 minutes on the fanless Air, with a sustained-load run; clean-boot baseline is
+    required for the 6.0 GB gate plus a realistic-workload second-gate decision.
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  - Phase 10
+  test_id: TEST-C-52
+  verification_evidence: Recorded thermal/workload run.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+  tunable_values:
+  - 20–30 minute thermal-soak range
+- id: C-53
+  constraint: 'Model-gate failure uses the ordered failure ladder: narrow vertical → trade browser concurrency for model budget
+    → skill-first deterministic execution with model-only disambiguation → reduced autonomy with more human checkpoints.'
+  owner_phase:
+  - Phase 0
+  - Phase 6
+  test_id: TEST-C-53
+  verification_evidence: Gate-miss report and ladder decision record.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-54
+  constraint: LLM-every-step is replaced by uncertainty-triggered reasoning once Phase 6 validates the shift; deterministic
+    skills/primitives run without LLM calls until defined uncertainty/recovery triggers occur.
+  owner_phase:
+  - Phase 6
+  test_id: TEST-C-54
+  verification_evidence: Same-model/schema/environment ablation.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-55
+  constraint: The uncertainty triggers include target-resolution failure, ambiguity, unexpected state, failed invariant, unresolved
+    parameters, contradictory state, Policy clarification, and recovery-mode entry.
+  owner_phase:
+  - Phase 6
+  test_id: TEST-C-55
+  verification_evidence: Trigger coverage tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-56
+  constraint: Screenshot reasoning with a small VLM is a separate gated experiment, not part of the core mandatory path.
+  owner_phase:
+  - Phase 6
+  test_id: TEST-C-56
+  verification_evidence: Experiment gate record.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-57
+  constraint: Deterministic decoding is the baseline; sampling is only a separately evaluated experiment.
+  owner_phase:
+  - Phase 6
+  - Phase 9
+  test_id: TEST-C-57
+  verification_evidence: Decoder configuration audit and ablation.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-58
+  constraint: Perception must track target/session/frame/loader identity and maintain a bounded semantic state graph.
+  owner_phase:
+  - Phase 1
+  - Phase 3
+  test_id: TEST-C-58
+  verification_evidence: State graph and lifecycle tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-59
+  constraint: Semantic stabilization uses the locked livelock detector, with defaults of 8 epoch changes within 2 seconds
+    and 3 failed windows within 10 seconds.
+  owner_phase:
+  - Phase 0
+  - Phase 1
+  - Phase 3
+  test_id: TEST-C-59
+  verification_evidence: Stabilization/livelock fixtures.
+  spec_status: TUNABLE
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends:
+  - catalog-v2.0:C-59
+  depends_on: []
+  value_notes: Quiet-window min/max are not specified; only 8 epoch changes/2s and 3 failed windows/10s are given.
+- id: C-60
+  constraint: No-panic/no-unwrap policy is enforced from the first commit and audited for release.
+  owner_phase:
+  - Phase 1
+  - Phase 10
+  test_id: TEST-C-60
+  verification_evidence: Static/code audit and CI gate.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-61
+  constraint: Budgets use monotonic clocks.
+  owner_phase:
+  - Phase 1
+  test_id: TEST-C-61
+  verification_evidence: Timing unit tests under wall-clock changes.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-62
+  constraint: The audit is HMAC-chained from the first commit.
+  owner_phase:
+  - Phase 1
+  - Phase 5
+  test_id: TEST-C-62
+  verification_evidence: Chain-verifier tool and tamper test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-63
+  constraint: Hard stop behavior is preserve safe state → audit → notify → require intervention; resumption never reuses stale
+    state.
+  owner_phase:
+  - Phase 1
+  - Phase 8
+  test_id: TEST-C-63
+  verification_evidence: Fault-injection/resumption tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-64
+  constraint: The Phase-1 slice invokes the model deterministically at every step using the fixed model, prompt/schema, quantization,
+    runtime, decoding configuration, and seed.
+  owner_phase:
+  - Phase 1
+  test_id: TEST-C-64
+  verification_evidence: Reproducibility manifest and run comparison.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  named_constraints: []
+  supersedes: []
+  amends:
+  - catalog-v2.0:C-64
+  depends_on: []
+- id: C-65
+  constraint: Phase-1 controlled mutations include reordering, irrelevant nodes, ARIA-label changes, layout shifts, delayed
+    loading, target replacement, OOPIF changes, overlays, prompt injection, fake success banners, and perception→execution
+    changes.
+  owner_phase:
+  - Phase 1
+  test_id: TEST-C-65
+  verification_evidence: Mutation harness coverage.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-66
+  constraint: Every action log records epoch, target/frame/loader identity, semantic reference, Policy result including tier,
+    action type, execution result, and verification result.
+  owner_phase:
+  - Phase 1
+  test_id: TEST-C-66
+  verification_evidence: Audit schema/trace assertions.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-67
+  constraint: Generalization harness begins in Phase 1 with ≥20 recorded-experience variations; it is a categorization harness
+    and not the Skill Store.
+  owner_phase:
+  - Phase 1
+  - Phase 7
+  test_id: TEST-C-67
+  verification_evidence: Harness count and separation test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-68
+  constraint: Browser concurrency has one high-risk Chromium process maximum; high-risk work is queued and memory-aware.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-68
+  verification_evidence: Process-count/concurrency test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-69
+  constraint: Chromium extensions are off; sync/component-update/pings are disabled where compatible; unnecessary permissions
+    are denied; downloads are quarantined and never automatically opened.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-69
+  verification_evidence: Launch/configuration and network egress tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends:
+  - catalog-v2.0:C-69
+  depends_on: []
+- id: C-70
+  constraint: '`Target.setAutoAttach({flatten:true})` is validated; stale references are invalidated.'
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-70
+  verification_evidence: CDP target lifecycle tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-71
+  constraint: Network enforcement uses local proxy plus `pf`; mutating requests (non-GET plus navigations) pause at CDP until
+    proxy release; reads are passively observed.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-71
+  verification_evidence: Interception/correlation integration tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-72
+  constraint: Correlation key uses requestId, destination, method, and body digest where available; correlation miss defaults
+    to deny.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-72
+  verification_evidence: Deliberate correlation-loss test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-73
+  constraint: Proxy death must fail closed with zero direct egress; PAC, fallback proxy, and QUIC bypasses are prohibited.
+  owner_phase:
+  - Phase 2
+  - Phase 9
+  test_id: TEST-C-73
+  verification_evidence: Standing proxy-death release-blocking test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-74
+  constraint: Privileged `pf` helper is signed/versioned and installed via SMAppService; degradation mode is honestly documented
+    when it is absent.
+  owner_phase:
+  - Phase 2
+  - Phase 10
+  test_id: TEST-C-74
+  verification_evidence: Install/degradation test; release review.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-75
+  constraint: UDP/443 is blocked so QUIC falls back to TCP through the proxy; DoH is disabled.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-75
+  verification_evidence: Packet/network integration test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-76
+  constraint: Proxy authority is destination/egress control only; HTTPS body/action semantics come from browser instrumentation,
+    not trusted HTTPS interception.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-76
+  verification_evidence: Architecture review and negative body-inspection assumptions.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints:
+  - C-PROXY-SCOPE
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-77
+  constraint: Headful/backgrounded operation is decided from measured App Nap/window-occlusion evidence and recorded in an
+    ADR; there is no hidden foreground requirement.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  test_id: TEST-C-77
+  verification_evidence: Background throttling experiment + ADR.
+  spec_status: MEASUREMENT-ADR
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints:
+  - C-HEADFUL-ADR
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: Headful/backgrounded operation is intentionally decided by evidence and ADR; no fixed outcome is specified.
+- id: C-78
+  constraint: Jetsam-aware safe-state preservation distinguishes watchdog stops from SIGKILL; renderer/memory watchdogs, caps,
+    and safe termination are required.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-78
+  verification_evidence: Fault-injection and memory-pressure tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-79
+  constraint: Readiness combines semantic stabilization, lifecycle signals, bounded waits, and relevant network evidence;
+    it never uses network idle as the sole readiness criterion.
+  owner_phase:
+  - Phase 2
+  test_id: TEST-C-79
+  verification_evidence: Readiness race tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-80
+  constraint: Comprehensive perception is per-frame with OOPIF aggregation; open shadow DOM is supported, closed shadow DOM
+    is not promised.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-80
+  verification_evidence: Frame/shadow/OOPIF fixtures.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-81
+  constraint: Accessibility/rendered-state/geometry analysis must produce semantic actionability filtering and mutation-noise
+    suppression.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-81
+  verification_evidence: Actionability and noise fixtures.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-82
+  constraint: Unicode normalization uses NFKC plus zero-width, bidi, homoglyph, and mixed-script detection.
+  owner_phase:
+  - Phase 3
+  - Phase 10
+  test_id: TEST-C-82
+  verification_evidence: Unicode adversarial corpus and fuzzing.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-83
+  constraint: Semantic compression is bounded by graph/context/attribute caps.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-83
+  verification_evidence: Oversized DOM/token flooding tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-84
+  constraint: Fallback ladder is formalized as targeted partial AX over pierce'd DOM snapshots → DOM heuristic actionable
+    extraction → bounded native-DPR screenshot.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-84
+  verification_evidence: Fallback-path tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-85
+  constraint: Formal semantic references are stable abstractions, not page-controlled selectors.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-85
+  verification_evidence: Reference-resolution tampering tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-86
+  constraint: Candidate ambiguity with material accessible-name vs rendered-text disagreement resolves to UNKNOWN.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-86
+  verification_evidence: Accessibility spoofing fixtures.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-87
+  constraint: Recursive OOPIF hit-testing descends through frame hosts with coordinate translation and re-testing inside child
+    sessions.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-87
+  verification_evidence: Nested-OOPIF hit-test suite.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-88
+  constraint: Hybrid typing uses per-key events for final chunks of framework-controlled inputs and `insertText` + synthetic
+    events for bulk; model cannot control JavaScript.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-88
+  verification_evidence: Framework input fixtures; API restriction audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-89
+  constraint: Canvas/virtualized-list limitations produce defined UNKNOWN semantics.
+  owner_phase:
+  - Phase 3
+  test_id: TEST-C-89
+  verification_evidence: Capability/UNKNOWN tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-90
+  constraint: Phase 3 prepares the user-intervention state with distinct epoch semantics so user-caused mutations do not burn
+    recovery budgets or trigger livelock; Phase 8 completes and operationalizes that behavior during human checkpoints.
+  owner_phase:
+  - Phase 3
+  - Phase 8
+  test_id: TEST-C-90
+  verification_evidence: Phase 3 state-machine/schema fixtures; Phase 8 human-checkpoint integration tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 3 — Complete Perception
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends:
+  - catalog-v2.0:C-90
+  depends_on: []
+  phase_8_scope_status: PROPOSED
+- id: C-91
+  constraint: 'Verification has exactly five outcome categories: VERIFIED_SUCCESS, LIKELY_SUCCESS, UNKNOWN, LIKELY_FAILURE,
+    VERIFIED_FAILURE.'
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-91
+  verification_evidence: Typed outcome/schema tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-92
+  constraint: Irreversible actions are never auto-retried after LIKELY_SUCCESS or UNKNOWN. VERIFIED_FAILURE retries only when
+    Policy proves repeatability.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-92
+  verification_evidence: Retry-policy fixtures.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-93
+  constraint: VERIFIED_SUCCESS requires sufficiently independent evidence; page-controlled banners are not independent truth.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-93
+  verification_evidence: Fake-banner and evidence-dependence tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-94
+  constraint: Secure-fill verification relies on input-state mutation plus form transition and never reads the secret value
+    back.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-94
+  verification_evidence: Secure-fill verification test.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-95
+  constraint: Download verification checks size and type bounds before VERIFIED_SUCCESS.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-95
+  verification_evidence: Malicious/oversized download tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-96
+  constraint: Audit is encrypted, append-only, HMAC-chained with rotated-segment linkage, redacted, retained under policy,
+    user-exportable, and locally verifiable; signed export is provided.
+  owner_phase:
+  - Phase 5
+  - Phase 10
+  test_id: TEST-C-96
+  verification_evidence: Audit tamper/export/replay tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-97
+  constraint: Root-cause taxonomy includes tier-classification errors.
+  owner_phase:
+  - Phase 5
+  - Phase 9
+  test_id: TEST-C-97
+  verification_evidence: Failure-classification coverage.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-98
+  constraint: 'Latency has dual gates: per-proposal inference p95 and end-to-end step p95.'
+  owner_phase:
+  - Phase 5
+  - Phase 6
+  test_id: TEST-C-98
+  verification_evidence: Benchmark report with both metrics.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-99
+  constraint: Full-versus-no-Verification ablation measures verification effect on silent wrong actions.
+  owner_phase:
+  - Phase 5
+  - Phase 9
+  test_id: TEST-C-99
+  verification_evidence: Frozen paired ablation.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-100
+  constraint: Skill records and SkillVersions are immutable; macro execution is represented through canonical semantic SkillCommitments.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-100
+  verification_evidence: Storage/schema immutability tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-101
+  constraint: Skill commitments are origin-bound by default and require unique, safe resolution of required roles/relationships;
+    fuzzy DOM fingerprint similarity is prohibited.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-101
+  verification_evidence: Drift/ambiguity fixtures.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-102
+  constraint: Material skill drift automatically suspends a skill; critical security bugs trigger immediate revocation; in-flight
+    tasks abort safely; no automatic re-promotion from resemblance.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-102
+  verification_evidence: Drift and revocation tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-103
+  constraint: Skill memory is allowlist-defined structural/semantic metadata only; it must not retain field values, text excerpts,
+    token-bearing URLs, or page-derived content beyond structure.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-103
+  verification_evidence: Stored-memory schema/content tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-104
+  constraint: Skill shadow evaluation is replay-based; live shadow inference is not used because it would double inference
+    on the 8 GB envelope.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-104
+  verification_evidence: Replay harness audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-105
+  constraint: Side-effectful skill candidates are evaluated only in mock/replay/dry-run/sandbox.
+  owner_phase:
+  - Phase 7
+  - Phase 9
+  test_id: TEST-C-105
+  verification_evidence: Execution-environment guard tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-106
+  constraint: Generalization must measure ≥20 variations; if >80% are site-specific, characterize the system honestly as procedural-cache/acceleration
+    with measured break-even.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-106
+  verification_evidence: Generalization report.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-107
+  constraint: Role-to-field residual risk is measured by form-field-swap and invariant-failure rates and feeds the root-cause
+    taxonomy.
+  owner_phase:
+  - Phase 7
+  test_id: TEST-C-107
+  verification_evidence: Form-field swap benchmark.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 7 — Skills / Macros / Learning
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-108
+  constraint: Phase 8 integrates controlled long-horizon workflows across the stated workflow library rather than adding a
+    new intelligence architecture.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-108
+  verification_evidence: End-to-end controlled workflow suite.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-109
+  constraint: CAPTCHA, 2FA, and passkeys park tasks in stable state and hand control to the user; parked-task UX has explicit
+    expiry.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-109
+  verification_evidence: Human-checkpoint/resume tests.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: Parked-task notification expiry is required but not specified.
+- id: C-110
+  constraint: Human checkpoints are exempt from the attacker-uncertainty rate limiter.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-110
+  verification_evidence: CAPTCHA/uncertainty interaction test.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-111
+  constraint: App quit/crash persists task state, but resumption is always explicit and never silent; stale invalidation rules
+    still apply.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-111
+  verification_evidence: Crash/restart/resume suite.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-112
+  constraint: Confirmation-friction strategy is already locked as tiered authorization; Phase 8 only measures confirmations-per-task
+    against the UX ceiling.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-112
+  verification_evidence: UX benchmark.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+  value_notes: Confirmations-per-task UX ceiling is required but not specified.
+- id: C-113
+  constraint: Low-risk concurrency defaults to 1 until measured otherwise.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-113
+  verification_evidence: Concurrency experiment.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-114
+  constraint: Phase 8 exit requires survival of long multi-step controlled workflows plus safe/read-only real-site smoke tests;
+    this is not proof of broad real-world autonomy.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-114
+  verification_evidence: Exit report with scope statement.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-115
+  constraint: Phase 9 is the release-blocking security gate and owns the ≥600-action tier-labeled corpus.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-115
+  verification_evidence: '`SECURITY_GATE` pipeline.'
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-116
+  constraint: At least one externally authored task set is required for calibration.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-116
+  verification_evidence: External benchmark artifact.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-117
+  constraint: Phase 9 includes tier-downgrade injection and threshold-splitting attack injectors.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-117
+  verification_evidence: Injector coverage report.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on:
+  - PARAM-HIGH-STAKES-PURCHASE-THRESHOLD
+  value_notes: Threshold-splitting cannot be calibrated until the purchase threshold is defined.
+- id: C-118
+  constraint: Phase 9 includes the full adversarial injector suite covering policy, perception, network, model, skill, Unicode,
+    resource, browser-crash, and tier attacks listed by the specification.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-118
+  verification_evidence: Injector manifest and pass/fail report.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-119
+  constraint: Ablations are run under frozen configurations with deterministic baseline decoding, confidence intervals, paired
+    comparisons, and sequential decision rules.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-119
+  verification_evidence: Ablation preregistration/report.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-120
+  constraint: Zero-failure outcomes are reported as empirical bounds, not as proof of perfect safety.
+  owner_phase:
+  - Phase 0
+  - Phase 9
+  test_id: TEST-C-120
+  verification_evidence: Statistical report wording check.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-121
+  constraint: Public live sites remain limited to safe/read-only smoke testing; unsafe ablations never run against real irreversible
+    workflows.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-121
+  verification_evidence: Environment guard + live-site policy test.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-122
+  constraint: Phase 9 formal output is `SECURITY_GATE = PASS \| FAIL \| CONDITIONAL` with documented conditions, owners, and
+    expiry.
+  owner_phase:
+  - Phase 9
+  test_id: TEST-C-122
+  verification_evidence: Release pipeline artifact.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends:
+  - catalog-v2.0:C-122
+  depends_on: []
+- id: C-123
+  constraint: Phase 10 adds no new intelligence, autonomy, or security architecture; a Phase-10 gap means the implementation
+    is not releasable.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-123
+  verification_evidence: Scope-review checklist.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-124
+  constraint: App release is notarized and uses hardened runtime.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-124
+  verification_evidence: Notarization/signing verification.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-125
+  constraint: Updates use signed Tauri updater manifests with Ed25519 and a documented release-key ceremony.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-125
+  verification_evidence: Update-signing verification.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-126
+  constraint: Chromium security updates follow a re-pinning pipeline with regression gating.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-126
+  verification_evidence: Dependency/re-pin CI.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-127
+  constraint: Schema/key migrations are safe and release-gated.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-127
+  verification_evidence: Migration downgrade/upgrade tests.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-128
+  constraint: CI fuzzing covers CDP parser, canonical request representation, Unicode normalization, schema validation, SkillCommitment
+    parsing, and tier derivation with coverage thresholds.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-128
+  verification_evidence: Fuzz CI artifact.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-129
+  constraint: Dependencies are audited, SBOM is produced, versions are locked, and postinstall behavior is minimized.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-129
+  verification_evidence: Dependency/SBOM audit.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-130
+  constraint: Privacy statement is scoped to app-initiated external communication and discloses Gatekeeper/OCSP residual traffic.
+  owner_phase:
+  - Phase 0
+  - Phase 10
+  test_id: TEST-C-130
+  verification_evidence: Privacy-doc review.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-131
+  constraint: Lost master password has no recovery path and this residual risk is documented.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-131
+  verification_evidence: Documentation acceptance test.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-132
+  constraint: Onboarding covers first-run auth, vault population, privileged-helper install with degradation path, and related
+    setup.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-132
+  verification_evidence: First-run test.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-133
+  constraint: Uninstall/purge covers high-risk profiles, audit segments, models, and traces.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-133
+  verification_evidence: Uninstall/purge integration test.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-134
+  constraint: Constraint-catalog traceability matrix maps every C-ID to phase, test, and status.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-134
+  verification_evidence: Matrix completeness check.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-135
+  constraint: Final acceptance runs all gates under thermal-soak and realistic-workload conditions with release reproducibility
+    metadata.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-135
+  verification_evidence: Final acceptance artifact.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 10 — Release Engineering (PROPOSED EXPANSION)
+  named_constraints:
+  - C-PROVENANCE-8-10
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-136
+  constraint: Runtime model location is only `~/Library/Application Support/<app>/models/`; adjacent runtime data includes
+    app DB, audit segments, skills, traces, high-risk profiles, and quarantine; Keychain holds wrapped master key, vault item
+    keys, and audit keys.
+  owner_phase:
+  - Phase 10
+  test_id: TEST-C-136
+  verification_evidence: Runtime-layout and filesystem/keychain audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Runtime layout / Phase → tree
+  named_constraints:
+  - C-MODEL-ARTIFACT
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-137
+  constraint: Repository tree includes dedicated `models/`, `policy/tiers.rs`, tier injectors, classification corpus, model-pin/canary
+    tooling, and Phase 8–10 phase documents with provenance labels.
+  owner_phase:
+  - Phase 0
+  - Phase 10
+  test_id: TEST-C-137
+  verification_evidence: Tree/traceability audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Updated file structure
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-138
+  constraint: Runtime architecture chain is `5 engines → orchestrator-owned progress → semantic state graph → deterministic
+    baseline → tiered Policy → typed execution → verification → immutable skills`.
+  owner_phase:
+  - Phase 0
+  - Phase 10
+  test_id: TEST-C-138
+  verification_evidence: Architecture conformance review.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Closing locked chain
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-139
+  constraint: Previously security-critical categories — payments, transfers, sensitive publication/transmission, and account/security
+    changes — remain behind fresh biometrics; ordinary irreversible actions use native confirmation only.
+  owner_phase:
+  - Phase 4
+  - Phase 9
+  test_id: TEST-C-139
+  verification_evidence: Policy matrix and adversarial gate.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Closing locked chain
+  named_constraints:
+  - C-AUTH-TIER
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-140
+  constraint: Tier under-classification is treated as the measured, gated, adversarially tested safety property.
+  owner_phase:
+  - Phase 0
+  - Phase 9
+  test_id: TEST-C-140
+  verification_evidence: Corpus, threshold, injector, and SECURITY_GATE evidence.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Revision 2 change log / reconciliation decisions
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  - Rev-2 §Closing locked chain
+  named_constraints:
+  - C-AUTH-FAILSAFE
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-141
+  constraint: Model-proposed actions are bound to the state epoch they were derived from; stale actions are rejected when
+    relevant state changes before execution.
+  owner_phase:
+  - Phase 1
+  - Phase 3
+  test_id: TEST-C-141
+  verification_evidence: Stale-epoch rejection fixtures; perception→execution mutation tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-142
+  constraint: The Execution Engine exposes only typed operations (`NAVIGATE`, `CLICK`, `TYPE`, `SELECT`, `SCROLL`, `WAIT`,
+    `PRESS_KEY`, `SECURE_FILL`, `REQUEST_CONFIRMATION`); arbitrary model-controlled JavaScript is prohibited in all phases.
+  owner_phase:
+  - Phase 0
+  - Phase 1
+  test_id: TEST-C-142
+  verification_evidence: Action-surface audit; schema fuzzing; negative JS-injection tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-143
+  constraint: Raw secrets, cookies, authentication headers, and secret values never enter model context or verification evidence;
+    `secure_fill` is a trusted runtime primitive bound to exact scheme/host/port, frame, loader, field, task, and credential
+    identity; HTTPS required, certificate errors denied, punycode/homograph mismatch checked; credential identity is never
+    exposed as an arbitrary list.
+  owner_phase:
+  - Phase 4
+  - Phase 5
+  test_id: TEST-C-143
+  verification_evidence: Context-capture instrumentation; secret-leakage metric; secure-fill binding tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-144
+  constraint: All page-derived content (HTML, JS, accessibility data, DOM text, clipboard, files, network responses, URL/deep-link
+    content) and model prose reflecting it are untrusted input; no page-controlled data can redefine task authority, policy,
+    or authorization tier; prompt injection is an untrusted-input problem.
+  owner_phase:
+  - Phase 0
+  - Phase 4
+  test_id: TEST-C-144
+  verification_evidence: Prompt-injection and fake-system-message injector suite; task-authority integrity assertions.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-145
+  constraint: 'Trusted confirmation dialogs apply spoofing hardening: forced paragraph direction, bidi-control stripping,
+    punycode display for IDN, fixed-width amount rendering, page-derived strings only in a visually quarantined "as reported
+    by page" zone.'
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-145
+  verification_evidence: Bidi/homograph amount fixtures; dialog rendering tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-146
+  constraint: Every inference call has a per-call wall-clock timeout with abort callbacks wired through the runtime; task
+    abort cancels in-flight generation.
+  owner_phase:
+  - Phase 6
+  test_id: TEST-C-146
+  verification_evidence: Wedged-generation fault injection; abort-latency measurement.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-147
+  constraint: 'A model-residency policy handles external memory pressure: pressure-keyed unload, task parking, budgeted reload,
+    jetsam avoidance.'
+  owner_phase:
+  - Phase 6
+  test_id: TEST-C-147
+  verification_evidence: Memory-pressure fault injection under external workload.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-148
+  constraint: 'Vault key hierarchy: master password → Argon2id KEK → Keychain-resident master key wrapping distinct vault-item
+    and audit keys; password change re-wraps keys without breaking HMAC chain verification across rotated segments.'
+  owner_phase:
+  - Phase 4
+  - Phase 5
+  test_id: TEST-C-148
+  verification_evidence: Password-change/key-rotation tests with chain verification.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 4 — Complete Policy / Data Security
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-149
+  constraint: Hard budgets exist for MAX_STEPS, MAX_LLM_CALLS, MAX_RECOVERY_ATTEMPTS, MAX_TASK_DURATION, MAX_CONFIRMATIONS,
+    graph size, screenshot size/count, response/streaming size, download size, and safe unified-memory pressure; exceeding
+    any triggers the C-63 stop semantics.
+  owner_phase:
+  - Phase 1
+  - Phase 2
+  - Phase 3
+  test_id: TEST-C-149
+  verification_evidence: Per-budget exhaustion tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: false
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-63
+  value_notes: All named budget values/caps exist as locked requirements but are numerically undefined in Revision 2; exceeding
+    them invokes C-63 stop semantics.
+- id: C-150
+  constraint: Root-cause taxonomy fields exist on every failure record from the first Phase-1 commit (perception miss / unresolved
+    ambiguity / reasoning error / policy over-/under-block / execution failure / verification ambiguity / stabilization failure
+    / harness bug), extended with tier-classification errors in Phase 5.
+  owner_phase:
+  - Phase 1
+  - Phase 5
+  test_id: TEST-C-150
+  verification_evidence: Failure-record schema tests; attribution coverage.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-151
+  constraint: Metrics separate schema-valid rate from semantically-correct-action rate; grammar-constrained decoding overhead
+    is measured separately.
+  owner_phase:
+  - Phase 6
+  test_id: TEST-C-151
+  verification_evidence: Benchmark metric definitions and reports.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 6 — Local Reasoning + Uncertainty
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-152
+  constraint: Isolated execution worlds are not treated as an independent trust boundary (shared DOM/storage with the page).
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-152
+  verification_evidence: Architecture conformance review; evidence-tier tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-153
+  constraint: Co-pilot / manual takeover carries explicit authority boundaries defined before any takeover is possible.
+  owner_phase:
+  - Phase 8
+  test_id: TEST-C-153
+  verification_evidence: Takeover authority-boundary tests.
+  spec_status: PROPOSED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-154
+  constraint: The orchestrator-owned typed task-progress object is updated deterministically after each verified action and
+    supplied to the model at every step from Phase 1 onward.
+  owner_phase:
+  - Phase 1
+  - Phase 8
+  test_id: TEST-C-154
+  verification_evidence: Progress-integrity tests; multi-step drift containment measurements.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 8 — Integration + Long-Horizon Execution (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-155
+  constraint: The Phase-1 slice performs basic click hit-test validation before execution; Phase 3 completes the recursive
+    OOPIF descent per C-87.
+  owner_phase:
+  - Phase 1
+  - Phase 3
+  test_id: TEST-C-155
+  verification_evidence: Slice hit-test fixtures; nested-OOPIF hit-test suite.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 1 — Prove the Core Loop
+  - Rev-2 §Phase 3 — Complete Perception
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-156
+  constraint: Agent-process egress is zero by design; browser background destinations are explicitly permitted per measured
+    Chromium behavior; unexpected network traffic is a first-class tracked metric and adversarial injector.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  - Phase 9
+  test_id: TEST-C-156
+  verification_evidence: Egress instrumentation; unexpected-traffic injector; background-destination allowlist audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  - Rev-2 §Phase 2 — Harden Browser / Runtime / Network
+  - Rev-2 §Phase 9 — Adversarial / Security Gate (PROPOSED EXPANSION)
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-157
+  constraint: Phase-0 process artifacts (risk register, isolation matrix, ADR log) exist and are maintained; later architectural
+    decisions are recorded as numbered ADRs.
+  owner_phase:
+  - Phase 0
+  test_id: TEST-C-157
+  verification_evidence: Artifact audit; ADR completeness.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 0 — Freeze, Preregister, Catalog
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+- id: C-158
+  constraint: Verification is independent of the model; model self-report of success is never verification evidence.
+  owner_phase:
+  - Phase 5
+  test_id: TEST-C-158
+  verification_evidence: Architecture conformance; self-report-only negative tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - Rev-2 §Phase 5 — Verification / Trust
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on: []
+ci_lint_rules:
+- IDs must be unique and sequential C-01..C-158 unless a future catalog revision explicitly adds stable IDs.
+- spec_status and verification_status must use the declared vocabularies.
+- Every LOCKED entry must have a named test_id and at least one owner phase.
+- No PROPOSED entry may be referenced as release-blocking by any Phase 0–7 gate.
+- Every named Revision-2 constraint mapping must resolve bidirectionally to existing catalog IDs.
+- value_defined=false must fail/flag when the owner phase of the parameter has started, unless an explicit ADR records the
+  missing value and its owner.
+- Every depends_on/supersedes/amends reference must resolve to a catalog ID, parameter ID, or explicit revision-history token.
+- PRs touching src-tauri/src/core/policy/** must reference at least one affected C-ID.
+- C-10 must retain both tier-FN and irreversible-as-reversible class-FN coverage; neither surface may silently drop from the
+  gate.
