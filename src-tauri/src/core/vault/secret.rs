@@ -138,6 +138,14 @@ impl VaultPassword {
         self.inner.len()
     }
 
+    /// Copy the password bytes into a caller-owned buffer for key-derivation
+    /// use inside the vault subsystem. The returned buffer must be treated
+    /// as secret material and zeroized when no longer needed; it is never
+    /// exposed through IPC, Debug, or the frontend.
+    pub fn cloned_bytes(&self) -> Vec<u8> {
+        self.inner.clone_to_owned()
+    }
+
     /// Test-only accessor for the wrapped secret buffer. Only used in tests
     /// that assert redaction behavior; never exposed to the UI or IPC layer.
     #[cfg(test)]
@@ -194,13 +202,11 @@ impl ProcessHardening {
                 fn setrlimit(resource: libc::c_int, rlim: *const libc::rlimit) -> libc::c_int;
             }
 
-            let mut rlim = libc::rlimit {
+            let rlim = libc::rlimit {
                 rlim_cur: 0,
                 rlim_max: 0,
             };
-            let res = unsafe {
-                setrlimit(libc::RLIMIT_CORE, &rlim as *const _)
-            };
+            let res = unsafe { setrlimit(libc::RLIMIT_CORE, &rlim) };
             if res == 0 {
                 Ok(())
             } else {

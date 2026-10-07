@@ -14,9 +14,8 @@ use crate::core::payment::commitment::{
     OperationType, PaymentAuthorizationCapability, PaymentCommitment,
 };
 use crate::core::payment::durability::{DurablePaymentRecord, IdempotencyKey, PaymentDurableState};
-use crate::core::payment::payment::{Payable, PaymentMethod, Currency};
-use crate::core::security::clocks::MonotonicClock;
-use rand::Rng;
+use crate::core::payment::payment::{Currency, Payable, PaymentMethod};
+use crate::security::clocks::MonotonicClock;
 
 /// The result of verifying an authorization capability for a durable payment
 /// record and a current commitment before execution.
@@ -51,8 +50,8 @@ pub enum AuthorizationVerificationResult {
 /// human checkpoint and fresh verification.
 ///
 /// `verify_authorization_capability` is defined in `policy/tiers.rs` and
-/// publicly re-exported here so the execution layer can call the Policy-owned
-/// binding semantics without duplicating them.
+/// called by full path so the execution layer uses the Policy-owned binding
+/// semantics without duplicating them.
 pub fn verify_before_execution(
     capability: &PaymentAuthorizationCapability,
     durable: &DurablePaymentRecord,
@@ -81,10 +80,10 @@ pub fn verify_before_execution(
     }
 
     match durable.durable_state {
-        crate::core::payment::durability::PaymentDurableState::Submitted
-        | crate::core::payment::durability::PaymentDurableState::WaitingForExternalAuth
-        | crate::core::payment::durability::PaymentDurableState::Processing
-        | crate::core::payment::durability::PaymentDurableState::Unknown => {
+        PaymentDurableState::Submitted
+        | PaymentDurableState::WaitingForExternalAuth
+        | PaymentDurableState::Processing
+        | PaymentDurableState::Unknown => {
             AuthorizationVerificationResult::UnresolvedRequiresHumanCheckpoint
         }
         _ => AuthorizationVerificationResult::Authorized {
@@ -119,17 +118,15 @@ pub fn execute_payment(
         | AuthorizationVerificationResult::Expired => Err(crate::Error::StateMismatch(
             "Authorization capability does not match current commitment/epoch".into(),
         )),
-        AuthorizationVerificationResult::NotApplicable => {
-            Err(crate::Error::PolicyBlocked("Authorization capability not applicable to this action".into()))
-        }
+        AuthorizationVerificationResult::NotApplicable => Err(crate::Error::PolicyBlocked(
+            "Authorization capability not applicable to this action".into(),
+        )),
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::policy::tiers::verify_authorization_capability;
-    use rand::Rng;
 
     fn now_monotonic() -> u64 {
         MonotonicClock::now_nanos()
@@ -147,8 +144,17 @@ mod tests {
         }
     }
 
-    fn capability_for(commitment: &PaymentCommitment, nonce: [u8; 32]) -> PaymentAuthorizationCapability {
-        PaymentAuthorizationCapability::new(commitment, OperationType::Payment, nonce, now_monotonic(), 300_000)
+    fn capability_for(
+        commitment: &PaymentCommitment,
+        nonce: [u8; 32],
+    ) -> PaymentAuthorizationCapability {
+        PaymentAuthorizationCapability::new(
+            commitment,
+            OperationType::Payment,
+            nonce,
+            now_monotonic(),
+            300_000,
+        )
     }
 
     fn durable(state: PaymentDurableState) -> DurablePaymentRecord {
@@ -156,46 +162,7 @@ mod tests {
             durable_id: "dr-1".into(),
             task_id: "t-1".into(),
             payment_commitment_hash: [0u8; 32],
-            idempotency_key: IdempotencyKey::new("ik-1".into(), 1_000_000),
-            durable_state: state,
-            origin_authority: "native:auth".into(),
-            recipient: "merchant@payee".into(),
-            amount_minor_units: 1000,
-            currency: Currency::INR,
-            payment_method: PaymentMethod::Upi,
-            order: None,
-            submission_epoch: 7,
-            created_at_monotonic: now_monotonic(),
-        }
-    }
-
-    #[test]
-    fn verify_authorization_capability_is_reachable_from_execution_layer() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
-        let nonce: [u8; 32] = rand::random();
-        let cap = PaymentAuthorizationCapability::new(&commitment, OperationType::Payment, nonce, now_monotonic(), 300_000);
-        assert!(crate::core::policy::tiers::verify_authorization_capability(&cap, &commitment, &nonce, now_monotonic()));
-    }
-
-    #[test]
-    fn verify_authorization_capability_is_reachable_from_policy_layer() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
-        let nonce: [u8; 32] = rand::random();        let cap = PaymentAuthorizationCapability::new(&commitment, OperationType::Payment, nonce, now_monotonic(), 300_000);
-        assert!(crate::core::policy::tiers::verify_authorization_capability(&cap, &commitment, &nonce, now_monotonic()));
-    }
-
-    #[test]
-    fn verify_authorization_capability_is_reachable_from_policy_layer() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
-        let nonce: [u8; 32] = rand::random();
-        let cap = PaymentAuthorizationCapability::new(&commitment, OperationType::Payment, nonce, now_monotonic(), 300_000);
-        assert!(crate::core::policy::tiers::verify_authorization_capability(&cap, &commitment, &nonce, now_monotonic()));
-    }
-}        DurablePaymentRecord {
-            durable_id: "dr-1".into(),
-            task_id: "t-1".into(),
-            payment_commitment_hash: [0u8; 32],
-            idempotency_key: IdempotencyKey::new("ik-1".into(), 1_000_000),
+            idempotency_key: IdempotencyKey::new("ik-1".into(), u64::MAX),
             durable_state: state,
             origin_authority: "native:auth".into(),
             recipient: "merchant@payee".into(),
@@ -210,52 +177,113 @@ mod tests {
 
     #[test]
     fn verification_passes_for_exact_commitment_before_dispatch() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
-        let nonce = rand::random();
+        let commitment = PaymentCommitment::new(
+            "task-1".into(),
+            None,
+            base_payable(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let nonce: [u8; 32] = rand::random();
         let cap = capability_for(&commitment, nonce);
         let dur = durable(PaymentDurableState::Ready);
-        let r = verify_before_execution(&cap, &dur, &commitment, &nonce);
-        assert_eq!(r, AuthorizationVerificationResult::Authorized {
-            durable_id: "dr-1".into(),
-            durable_state: PaymentDurableState::Ready,
-        });
+        assert_eq!(
+            verify_before_execution(&cap, &dur, &commitment, &nonce),
+            AuthorizationVerificationResult::Authorized {
+                durable_id: "dr-1".into(),
+                durable_state: PaymentDurableState::Ready,
+            }
+        );
     }
 
     #[test]
     fn unresolved_durable_never_authorizes() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
-        let nonce = rand::random();
+        let commitment = PaymentCommitment::new(
+            "task-1".into(),
+            None,
+            base_payable(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let nonce: [u8; 32] = rand::random();
         let cap = capability_for(&commitment, nonce);
         let dur = durable(PaymentDurableState::Submitted);
-        let r = verify_before_execution(&cap, &dur, &commitment, &nonce);
-        assert_eq!(r, AuthorizationVerificationResult::UnresolvedRequiresHumanCheckpoint);
+        assert_eq!(
+            verify_before_execution(&cap, &dur, &commitment, &nonce),
+            AuthorizationVerificationResult::UnresolvedRequiresHumanCheckpoint
+        );
     }
 
     #[test]
     fn execute_fails_on_unresolved() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
-        let nonce = rand::random();
+        let commitment = PaymentCommitment::new(
+            "task-1".into(),
+            None,
+            base_payable(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let nonce: [u8; 32] = rand::random();
         let cap = capability_for(&commitment, nonce);
         let dur = durable(PaymentDurableState::Submitted);
         assert!(execute_payment(&cap, &dur, &commitment, &nonce).is_err());
     }
 
     #[test]
+    fn execute_succeeds_on_authorized_ready_state() {
+        let commitment = PaymentCommitment::new(
+            "task-1".into(),
+            None,
+            base_payable(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let nonce: [u8; 32] = rand::random();
+        let cap = capability_for(&commitment, nonce);
+        let dur = durable(PaymentDurableState::Ready);
+        assert!(execute_payment(&cap, &dur, &commitment, &nonce).is_ok());
+    }
+
+    #[test]
     fn wrong_nonce_fails_verification() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
+        let commitment = PaymentCommitment::new(
+            "task-1".into(),
+            None,
+            base_payable(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
         let cap = capability_for(&commitment, rand::random());
         let dur = durable(PaymentDurableState::Ready);
+        let wrong_nonce: [u8; 32] = rand::random();
         assert_eq!(
-            verify_before_execution(&cap, &dur, &commitment, &rand::random()),
+            verify_before_execution(&cap, &dur, &commitment, &wrong_nonce),
             AuthorizationVerificationResult::CommitmentMismatch,
         );
     }
 
     #[test]
     fn verify_authorization_capability_is_reachable_from_execution_layer() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, base_payable(), 7, 300_000, now_monotonic());
+        let commitment = PaymentCommitment::new(
+            "task-1".into(),
+            None,
+            base_payable(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
         let nonce: [u8; 32] = rand::random();
-        let cap = PaymentAuthorizationCapability::new(&commitment, OperationType::Payment, nonce, now_monotonic(), 300_000);
-        assert!(verify_authorization_capability(&cap, &commitment, &nonce, now_monotonic()));
+        let cap = capability_for(&commitment, nonce);
+        assert!(crate::core::policy::tiers::verify_authorization_capability(
+            &cap,
+            &commitment,
+            &nonce,
+            now_monotonic()
+        ));
     }
 }

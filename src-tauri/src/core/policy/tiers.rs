@@ -46,7 +46,9 @@ impl AuthorizationTier {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+// Borrowing derivation input: the input references trusted runtime data and
+// is never owned, serialized, or reconstructed from page text.
+#[derive(Debug, Clone)]
 pub struct TierDerivationInput<'a> {
     pub action_class: crate::core::policy::classes::SideEffectClass,
     pub taint: Option<&'a crate::core::policy::taint::TaintFlag>,
@@ -91,13 +93,12 @@ pub fn authorize_payment_commitment(
     commitment: &PaymentCommitment,
     operation_type: OperationType,
 ) -> PaymentAuthorizationCapability {
-    use rand::rngs::OsRng;
     let nonce: [u8; 32] = rand::random();
     PaymentAuthorizationCapability::new(
         commitment,
         operation_type,
         nonce,
-        rand::random::<u64>().max(1),
+        crate::security::clocks::MonotonicClock::now_nanos(),
         300_000,
     )
 }
@@ -125,7 +126,6 @@ pub fn verify_authorization_capability(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::Rng;
 
     fn now_monotonic() -> u64 {
         1_000_000
@@ -145,14 +145,16 @@ mod tests {
 
     #[test]
     fn authorization_is_bound_to_commitment() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+        let commitment =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
         let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
         assert!(cap.authorizes_commitment(&commitment));
     }
 
     #[test]
     fn authorization_does_not_authorize_different_commitment() {
-        let base = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+        let base =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
         let cap = authorize_payment_commitment(&base, OperationType::Payment);
         let changed = PaymentCommitment::new(
             "task-1".into(),
@@ -170,49 +172,72 @@ mod tests {
 
     #[test]
     fn authorization_invalidated_by_epoch_change() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+        let commitment =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
         let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
-        let changed_epoch = PaymentCommitment::new("task-1".into(), None, payable(), 8, 300_000, now_monotonic());
+        let changed_epoch =
+            PaymentCommitment::new("task-1".into(), None, payable(), 8, 300_000, now_monotonic());
         assert!(!cap.authorizes_commitment(&changed_epoch));
     }
 
     #[test]
     fn verification_uses_capability_binding() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+        let commitment =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
         let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
-        assert!(verify_authorization_capability(&cap, &commitment, &cap.authorization_nonce, now_monotonic() + 100));
+        assert!(verify_authorization_capability(
+            &cap,
+            &commitment,
+            &cap.authorization_nonce,
+            now_monotonic() + 100
+        ));
     }
 
     #[test]
     fn wrong_nonce_fails_verification() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+        let commitment =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
         let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
         let wrong_nonce: [u8; 32] = rand::random();
-        assert!(!verify_authorization_capability(&cap, &commitment, &wrong_nonce, now_monotonic()));
+        assert!(!verify_authorization_capability(
+            &cap,
+            &commitment,
+            &wrong_nonce,
+            now_monotonic()
+        ));
     }
 
     #[test]
     fn expiry_invalidates_verification() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 100, now_monotonic());
+        let commitment =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 100, now_monotonic());
         let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
         let later = cap.expires_at_monotonic + 1;
+        assert!(!verify_authorization_capability(
+            &cap,
+            &commitment,
+            &cap.authorization_nonce,
+            later
+        ));
     }
 
     #[test]
     fn verify_authorization_capability_is_reachable_from_policy_layer() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let nonce: [u8; 32] = rand::Rng::random();
-        let cap = PaymentAuthorizationCapability::new(&commitment, OperationType::Payment, nonce, now_monotonic(), 300_000);
-        assert!(verify_authorization_capability(&cap, &commitment, &nonce, now_monotonic()));
-    }
-        assert!(!verify_authorization_capability(&cap, &commitment, &cap.authorization_nonce, later));
-    }
-
-    #[test]
-    fn verify_authorization_capability_is_reachable_from_policy_layer() {
-        let commitment = PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let nonce: [u8; 32] = rand::Rng::random();
-        let cap = PaymentAuthorizationCapability::new(&commitment, OperationType::Payment, nonce, now_monotonic(), 300_000);
-        assert!(verify_authorization_capability(&cap, &commitment, &nonce, now_monotonic()));
+        let commitment =
+            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+        let nonce: [u8; 32] = rand::random();
+        let cap = PaymentAuthorizationCapability::new(
+            &commitment,
+            OperationType::Payment,
+            nonce,
+            now_monotonic(),
+            300_000,
+        );
+        assert!(verify_authorization_capability(
+            &cap,
+            &commitment,
+            &nonce,
+            now_monotonic()
+        ));
     }
 }
