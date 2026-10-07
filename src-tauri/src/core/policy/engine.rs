@@ -7,28 +7,17 @@
 //
 // The engine coordinates classes, tiers, taint, scopes, provenance,
 // declassification, reconciliation, locale amounts, recovery mode, rate
-// limiting, and confirmation.
+// limiting, and confirmation. Submodule files live alongside this file
+// in core/policy/ (declared in mod.rs); engine.rs re-exports them.
 
-pub mod classes;
-pub mod tiers;
-pub mod scopes;
-pub mod taint;
-pub mod provenance;
-pub mod declassify;
-pub mod reconcile;
-pub mod locale_amount;
-pub mod recovery_mode;
-pub mod rate_limit;
-pub mod confirmation;
-
-pub use classes::SideEffectClass;
-pub use tiers::{AuthorizationTier, TierDerivation, TierDerivationInput};
-pub use scopes::CredentialScope;
-pub use taint::TaintFlag;
-pub use provenance::{DataFlowClass, DataFlowSummary};
-pub use declassify::DeclassificationPolicy;
-pub use reconcile::{Reconciliation, ReconciliationResult};
-pub use locale_amount::AmountDisplay;
-pub use recovery_mode::RecoveryBudgetPolicy;
-pub use rate_limit::ConfirmationRateLimiter;
-pub use confirmation::{ConfirmationPolicy, ConfirmationRequirement};
+pub use super::classes::SideEffectClass;
+pub use super::tiers::{AuthorizationTier, TierDerivation, TierDerivationInput};
+pub use super::scopes::CredentialScope;
+pub use super::taint::TaintFlag;
+pub use super::provenance::{DataFlowClass, DataFlowSummary};
+pub use super::declassify::DeclassificationPolicy;
+pub use super::reconcile::{Reconciliation, ReconciliationResult};
+pub use super::locale_amount::AmountDisplay;
+pub use super::recovery_mode::RecoveryBudgetPolicy;
+pub use super::rate_limit::ConfirmationRateLimiter;
+pub use super::confirmation::{ConfirmationPolicy, ConfirmationRequirement};

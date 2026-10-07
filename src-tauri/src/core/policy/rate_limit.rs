@@ -40,7 +40,7 @@ impl ConfirmationRateLimiter {
         }
     }
 
-    pub fn can_prompt(&self, now: Instant) -> bool {
+    pub fn can_prompt(&self, _now: Instant) -> bool {
         self.rejected_attempts.len() < self.max_rejected as usize
     }
 

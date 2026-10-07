@@ -15,8 +15,17 @@ pub enum VerificationOutcome {
 }
 
 impl VerificationOutcome {
+    /// Success family for classification: VERIFIED_SUCCESS and
+    /// LIKELY_SUCCESS. UI treatment differs (DESIGN.md: LIKELY_SUCCESS
+    /// never receives verified-green styling); see is_verified.
     pub fn is_success_family(&self) -> bool {
         matches!(self, Self::VerifiedSuccess | Self::LikelySuccess)
+    }
+
+    /// True only for VERIFIED_SUCCESS: the sole outcome permitted
+    /// verified-green treatment and success claims.
+    pub fn is_verified(&self) -> bool {
+        matches!(self, Self::VerifiedSuccess)
     }
 
     pub fn is_failure_family(&self) -> bool {
@@ -38,8 +47,14 @@ mod tests {
     }
 
     #[test]
-    fn likely_success_is_not_verified_success() {
-        assert!(!VerificationOutcome::LikelySuccess.is_success_family() && !matches!(VerificationOutcome::LikelySuccess, VerificationOutcome::VerifiedSuccess));
+    fn likely_success_is_success_family_but_never_verified() {
+        // LIKELY_SUCCESS classifies as success-family for triage, but is
+        // distinct from VERIFIED_SUCCESS and must never receive
+        // verified-green treatment (DESIGN.md #6).
+        let outcome = VerificationOutcome::LikelySuccess;
+        assert!(outcome.is_success_family());
+        assert!(!outcome.is_verified());
+        assert_ne!(outcome, VerificationOutcome::VerifiedSuccess);
     }
 
     #[test]

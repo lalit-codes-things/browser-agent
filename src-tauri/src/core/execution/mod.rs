@@ -16,3 +16,5 @@ pub mod secure_fill;
 pub mod serialization;
 pub mod idempotency;
 pub mod retry;
+pub mod payment;
+pub mod authorization;

@@ -1,6 +1,12 @@
-// Deprecated app root reexporter.
-// Prefer `crate::app::lifecycle`, `crate::app::settings`, `crate::app::diagnostics`.
+// Application shell modules.
+//
+// Anchors runtime-side lifecycle, settings, and diagnostics concerns.
+// Subsystem code lives under core/, cdp/, browser/, net/, etc.
 
-pub use crate::app::lifecycle::*;
-pub use crate::app::settings::*;
-pub use crate::app::diagnostics::*;
+pub mod lifecycle;
+pub mod settings;
+pub mod diagnostics;
+
+pub use diagnostics::*;
+pub use lifecycle::*;
+pub use settings::*;

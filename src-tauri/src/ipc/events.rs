@@ -24,7 +24,7 @@ pub struct TaskStateEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "UPPERCASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum TaskStatus {
     Pending,
     Running,
@@ -44,7 +44,7 @@ pub struct ModelStateEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "UPPERCASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ModelResidency {
     Loaded,
     Parked,
@@ -70,4 +70,12 @@ pub struct VerificationOutcomeEvent {
 pub struct AuthorizationRequiredEvent {
     pub tier: String,
     pub summary: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PaymentDurableStateEvent {
+    pub durable_id: String,
+    pub durable_state: String,
+    pub payment_commitment_hash: String,
+    pub task_id: String,
 }

@@ -1,0 +1,15 @@
+[package]
+name = "pf-helper"
+version = "0.1.0"
+edition = "2021"
+description = "Privileged macOS pf enforcement helper"
+license = "Apache-2.0"
+
+[[bin]]
+name = "pf-helper"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"

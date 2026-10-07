@@ -6,7 +6,6 @@
 // This module is the API surface between reasoning and the browser runtime.
 
 use crate::core::reasoning::schema::ModelAction;
-use crate::core::policy::classes::SideEffectClass;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ExecutionInput {

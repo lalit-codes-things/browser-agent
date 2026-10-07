@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 /// Runtime configuration surfaces.
 ///
 /// Security-critical undefined parameters must not receive

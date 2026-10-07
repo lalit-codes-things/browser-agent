@@ -1,12 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { resolvePath } from "vite-plugin-tauri";
 
+// Plain Vite config: @tauri-apps/cli owns the dev-server contract
+// (devUrl http://127.0.0.1:1420, strictPort) from tauri.conf.json.
 export default defineConfig({
-  plugins: [
-    react(),
-    resolvePath() as any,
-  ],
+  plugins: [react()],
   clearScreen: false,
   server: {
     port: 1420,

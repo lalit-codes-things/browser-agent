@@ -1,7 +1,8 @@
 import { useCallback, memo, useState, useRef } from "react";
-import { AppState, submitTask } from "../../state/app";
+import { AppState } from "../../state/app";
+import { submitTask } from "../../ipc/client";
 import { formatIpcError } from "../../ipc/errors";
-import { ScreenshotPreview } from "../preview/ScreenshotPreview";
+import { ScreenshotPreview } from "../../components/preview/ScreenshotPreview";
 import { TaskLedger } from "./TaskLedger";
 
 export const ConsoleShell = memo(function ConsoleShell({ state }: { state: AppState }) {
@@ -13,7 +14,7 @@ export const ConsoleShell = memo(function ConsoleShell({ state }: { state: AppSt
     if (!draft.trim()) return;
     setLocalError(null);
     try {
-      await submitTask(submitTask(draft.trim()));
+      await submitTask({ task_text: draft.trim() });
       setDraft("");
     } catch (err) {
       setLocalError(formatIpcError(err));

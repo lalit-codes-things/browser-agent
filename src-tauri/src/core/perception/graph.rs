@@ -16,7 +16,7 @@ pub struct SemanticStateGraph {
     pub epoch: u64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct GraphNode {
     pub role: String,
     pub label: Option<String>,
@@ -35,7 +35,7 @@ pub struct FrameNode {
     pub child_frame_count: u32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct GeometryBounds {
     pub x: i32,
     pub y: i32,

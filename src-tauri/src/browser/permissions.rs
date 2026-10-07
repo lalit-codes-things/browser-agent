@@ -10,15 +10,15 @@ pub struct PermissionGrant {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum PermissionKind {
-    geolocation,
-    notifications,
-    clipboardRead,
-    clipboardWrite,
-    camera,
-    microphone,
-    paymentHandler,
+    Geolocation,
+    Notifications,
+    ClipboardRead,
+    ClipboardWrite,
+    Camera,
+    Microphone,
+    PaymentHandler,
 }
 
 pub struct PermissionManager;
@@ -26,13 +26,13 @@ pub struct PermissionManager;
 impl PermissionManager {
     pub fn default_deny_all() -> Vec<PermissionGrant> {
         vec![
-            PermissionGrant { kind: PermissionKind::geolocation, granted: false },
-            PermissionGrant { kind: PermissionKind::notifications, granted: false },
-            PermissionGrant { kind: PermissionKind::clipboardRead, granted: false },
-            PermissionGrant { kind: PermissionKind::clipboardWrite, granted: true },
-            PermissionGrant { kind: PermissionKind::camera, granted: false },
-            PermissionGrant { kind: PermissionKind::microphone, granted: false },
-            PermissionGrant { kind: PermissionKind::paymentHandler, granted: false },
+            PermissionGrant { kind: PermissionKind::Geolocation, granted: false },
+            PermissionGrant { kind: PermissionKind::Notifications, granted: false },
+            PermissionGrant { kind: PermissionKind::ClipboardRead, granted: false },
+            PermissionGrant { kind: PermissionKind::ClipboardWrite, granted: true },
+            PermissionGrant { kind: PermissionKind::Camera, granted: false },
+            PermissionGrant { kind: PermissionKind::Microphone, granted: false },
+            PermissionGrant { kind: PermissionKind::PaymentHandler, granted: false },
         ]
     }
 }

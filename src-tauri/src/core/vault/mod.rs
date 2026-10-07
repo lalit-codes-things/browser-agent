@@ -9,3 +9,6 @@ pub mod keys;
 pub mod items;
 pub mod import;
 pub mod auth;
+pub mod header;
+pub mod secret;
+pub mod blind_index;

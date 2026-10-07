@@ -26,4 +26,5 @@ export function render(container: HTMLElement, initial: AppState) {
   root.render(app());
 }
 
-export { reduceEvent, AppState };
+export { reduceEvent };
+export type { AppState };

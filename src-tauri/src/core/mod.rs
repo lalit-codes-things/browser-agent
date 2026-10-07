@@ -15,3 +15,5 @@ pub mod execution;
 pub mod verification;
 pub mod skills;
 pub mod vault;
+pub mod payment;
+pub mod secure_field;

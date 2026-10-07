@@ -12,6 +12,12 @@ name = "browser_agent_lib"
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
+[features]
+default = []
+# Gates browser-runtime-dependent subsystems (core, cdp, browser, net,
+# inference, audit, storage, security) until the runtime attaches.
+runtime-core = []
+
 [dependencies]
 tauri = { version = "2", features = ["devtools"] }
 serde = { version = "1", features = ["derive"] }
@@ -22,7 +28,11 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 once_cell = "1"
 parking_lot = "0.12"
 unicode-normalization = "0.1"
-password-hash = { version = "0.5", features = ["argon2"] }
+argon2 = { version = "0.5", features = ["std"] }
+sha2 = "0.10"
+hkdf = "0.12"
+zeroize = "1"
+rand = "0.8"
 
 
 [profile.release]

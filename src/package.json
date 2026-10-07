@@ -8,20 +8,22 @@
     "build": "tsc -p tsconfig.json && vite build",
     "tsc": "tsc --noEmit",
     "lint": "eslint src",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tauri": "tauri"
   },
   "dependencies": {
     "react": "19.x",
-    "react-dom": "19.x"
+    "react-dom": "19.x",
+    "@tauri-apps/api": "^2"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "@types/react": "19.x",
     "@types/react-dom": "19.x",
     "@vitejs/plugin-react": "latest",
     "typescript": "latest",
     "vite": "latest",
-    "vite-plugin-tauri": "latest",
-    "tailwindcss": "latest",
+    "tailwindcss": "^3.4.0",
     "autoprefixer": "latest",
     "postcss": "latest"
   }

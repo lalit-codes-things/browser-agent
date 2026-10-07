@@ -7,7 +7,6 @@
 // We use monotonic time for budgets (C-61).
 
 use std::sync::{Arc, Mutex};
-use crate::security::clocks::MonotonicClock;
 use crate::core::orchestrator::budgets::BudgetPolicy;
 
 pub struct InferenceTimeout {

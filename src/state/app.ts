@@ -3,7 +3,6 @@
 // This is a projection of typed backend IPC events. It does not invent
 // security truth. Where a backend field is absent, we keep it absent or
 // express it as an explicit unknown state (C-01 discipline).
-import { SubmitTaskRequest } from "../ipc/schemas";
 
 export interface AppState {
   eventLog: AppEvent[];
@@ -108,7 +107,3 @@ export const initialState: AppState = {
   authorization: null,
   ui: { panels: {} },
 };
-
-export function submitTask(text: string): SubmitTaskRequest {
-  return { task_text: text };
-}

@@ -1,19 +1,18 @@
 import { memo } from "react";
 import { AppState, TaskStatus } from "../../state/app";
 
-const STATUS_COLOR: Record<TaskStatus | "UNKNOWN", string> = {
+const STATUS_COLOR: Record<TaskStatus, string> = {
   PENDING: "text-muted",
   RUNNING: "text-primary",
   VERIFIED: "sem-verified",
-  LIKELY_SUCCESS: "text-muted",
+  LIKELY_SUCCESS: "text-secondary",
   UNKNOWN: "text-muted",
   FAILED: "sem-violation",
   ABORTED: "sem-violation",
   PARKED: "sem-caution",
-  UNKNOWN: "text-muted",
 };
 
-function statusClass(status: TaskStatus | "UNKNOWN"): string {
+function statusClass(status: TaskStatus): string {
   return STATUS_COLOR[status] ?? "text-muted";
 }
 

@@ -74,7 +74,7 @@ impl LivelockMonitor {
         }
     }
 
-    pub fn is_livelocked(&self, now: Instant) -> bool {
+    pub fn is_livelocked(&self, _now: Instant) -> bool {
         self.epoch_changes.len() > self.config.max_epoch_changes_in_window as usize
             || self.failed_windows.len() > self.config.max_failed_windows_in_window as usize
     }

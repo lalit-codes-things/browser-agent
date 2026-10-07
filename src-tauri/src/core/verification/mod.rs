@@ -18,3 +18,4 @@ pub mod tiers;
 pub mod postconditions;
 pub mod network_evidence;
 pub mod download_check;
+pub mod redaction;

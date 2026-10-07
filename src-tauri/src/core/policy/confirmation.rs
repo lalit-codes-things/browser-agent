@@ -26,7 +26,7 @@ impl ConfirmationPolicy {
         // Placeholder: real confirmation policy is Policy-owned and audited.
         ConfirmationRequirement {
             required: false,
-            tier,
+            tier: _tier,
             reason: Some("Confirmation policy is scheduled".into()),
         }
     }

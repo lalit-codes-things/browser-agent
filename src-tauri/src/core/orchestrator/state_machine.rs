@@ -19,6 +19,10 @@ pub struct StateMachine;
 
 impl StateMachine {
     pub fn can_transition(from: TaskState, to: TaskState) -> bool {
+        Self::allowed(from, &to)
+    }
+
+    fn allowed(from: TaskState, to: &TaskState) -> bool {
         matches!(
             (from, to),
             (TaskState::Pending, TaskState::Running)
@@ -37,7 +41,7 @@ impl StateMachine {
     }
 
     pub fn transition(from: TaskState, to: TaskState) -> Result<TaskState, TransitionError> {
-        if Self::can_transition(from, to) {
+        if Self::allowed(from, &to) {
             Ok(to)
         } else {
             Err(TransitionError::NotAllowed)
@@ -63,5 +67,11 @@ mod tests {
     #[test]
     fn aborted_is_stable() {
         assert!(StateMachine::can_transition(Aborted, Aborted));
+    }
+
+    #[test]
+    fn transition_returns_state() {
+        assert_eq!(StateMachine::transition(Running, Verified), Ok(Verified));
+        assert!(StateMachine::transition(Pending, Verified).is_err());
     }
 }
