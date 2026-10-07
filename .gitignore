@@ -36,3 +36,4 @@ Thumbs.db
 # Temp development artifacts
 tmp/
 temp/
+models/provisional/qwen3-1.7b/*.gguf
