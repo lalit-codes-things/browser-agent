@@ -71,7 +71,7 @@ impl RedactedFieldDescriptor {
     ///
     /// Sensitive content is never carried here.
     pub fn payment_secret(
-        field_id: String,
+        field_id: impl Into<String>,
         origin: Option<String>,
         frame_id: Option<String>,
         loader_id: Option<String>,
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn payment_secret_field_does_not_carry_content() {
         let desc = RedactedFieldDescriptor::payment_secret(
-            "F-CVV-1".into(),
+            "F-CVV-1",
             Some("example.com".into()),
             Some("F1".into()),
             Some("L1".into()),

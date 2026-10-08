@@ -37,7 +37,7 @@ impl BlindIndexKey {
     /// the derivation is domain-separated so this key is never usable for
     /// encryption, wrapping, commitments, or audit MACs.
     pub fn derive_from_vault_master_key(vault_master_key: &[u8]) -> Self {
-        let hk = Hkdf::<Sha256>::new(Some(vault_master_key));
+        let hk = Hkdf::<Sha256>::new(Some(vault_master_key), BLIND_INDEX_INFO);
         let mut raw = [0u8; 32];
         hk.expand(BLIND_INDEX_INFO, &mut raw)
             .expect("HKDF expand must not fail for a 32-byte output");
@@ -108,7 +108,7 @@ mod tests {
         let master = b"vault-master-key-material-32-bytes!!";
         let blind = BlindIndexKey::derive_from_vault_master_key(master);
         let mut other = [0u8; 32];
-        let hk = Hkdf::<Sha256>::new(Some(master));
+        let hk = Hkdf::<Sha256>::new(Some(master), b"encryption-v1");
         hk.expand(b"encryption-v1", &mut other)
             .expect("expand");
         assert_ne!(blind.as_bytes(), &other);
@@ -122,9 +122,9 @@ mod tests {
         let key = BlindIndexKey::derive_from_vault_master_key(master);
         let index = blind_index_for(&key, "https://payee.example");
         // The index should not be equal to the key material.
-        assert_ne!(index, key.as_bytes());
+        assert_ne!(index, *key.as_bytes());
         // A naive inspection of the column must not reveal the plaintext
         // origin.
-        assert!(!index.as_ref().contains(b"payee.example"));
+        assert!(!index.as_ref().contains(&b"payee.example"[..]));
     }
 }

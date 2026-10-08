@@ -7,7 +7,7 @@
 
 use crate::core::payment::commitment::PaymentCommitment;
 use crate::core::payment::durability::IdempotencyKey;
-use rand::Rng;
+use sha2::Digest;
 
 /// Derive a durable idempotency key tied to the payment commitment and the
 /// task context, with an expiry at which the key is not reused.
@@ -28,11 +28,9 @@ pub fn idempotency_key_for(
     buf.push(b'\0');
     buf.extend_from_slice(&commitment.canonical_for_hashing());
     buf.extend_from_slice(&nonce);
-    let digest = sha2::Digest::digest(&buf);
+    let digest = sha2::Sha256::digest(&buf);
     let key_bytes: [u8; 32] = digest.into();
     let safe = base16_lower_hex(&key_bytes);
-    IdempotencyKey::new(format!("pk-{}-{}", task_id, safe), expires_at_monotonic)
-    let safe = base16_lower_hex(&digest);
     IdempotencyKey::new(
         format!("pk-{}-{}", task_id, safe),
         expires_at_monotonic,

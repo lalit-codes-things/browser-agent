@@ -213,7 +213,7 @@ mod tests {
     fn task_authority_prompt_is_task_authority_only() {
         let region = QrRegion::new("qr-1".into(), "F1".into(), "L1".into(), 7, None);
         let hash = [1u8; 32];
-        let ctx = QrHandoffContext::begin(region, QrRegionHash::new(&region, hash), "Pay merchant@payee ₹1,250.00".into());
+        let ctx = QrHandoffContext::begin(region.clone(), QrRegionHash::new(&region, hash), "Pay merchant@payee ₹1,250.00".into());
         assert_eq!(ctx.task_authority_prompt(), Some("Pay merchant@payee ₹1,250.00".into()));
     }
 }

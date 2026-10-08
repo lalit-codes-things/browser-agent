@@ -15,6 +15,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::core::policy::scopes::CredentialScope;
 use crate::core::verification::redaction::RedactedSecretDescriptor;
+use crate::core::verification::redaction::RedactedFieldKind;
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
@@ -91,7 +93,7 @@ mod tests {
             "Payee".into(),
             HttpsCheckState::Pass,
             IdnHomographCheckState::Pass,
-            RedactedSecretDescriptor::payment_field("card number"),
+            RedactedSecretDescriptor::payment_field("card number", RedactedFieldKind::CardNumber),
         );
         assert!(format!("{:?}", ref_).contains("Payee"));
         assert!(format!("{:?}", ref_).contains("[redacted]"));

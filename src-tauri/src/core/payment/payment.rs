@@ -4,21 +4,21 @@
 //        typed and immutable once committed, never reconstructed from page
 //        text after commitment.
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Currency {
     INR,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PaymentMethod {
     Upi,
     Card { provider: String },
     SavedTokenized { provider: String },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PaymentState {
     Preparing,
     Reconciling,
@@ -41,20 +41,20 @@ pub enum PaymentState {
     VerifiedFailure,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OrderIdentity {
     pub order_id: Option<String>,
     pub items: Vec<OrderItem>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OrderItem {
     pub description: String,
     pub quantity: u32,
     pub unit_price_minor_units: Option<u64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Payable {
     /// Origin/authority that is the source of this commitment.
     ///
@@ -80,10 +80,22 @@ pub struct Payable {
     pub mandate_scope: Option<String>,
 }
 
+impl Default for Payable {
+    fn default() -> Self {
+        Self {
+            origin_authority: String::new(),
+            recipient: String::new(),
+            amount_minor_units: 0,
+            currency: Currency::INR,
+            payment_method: PaymentMethod::Upi,
+            order: None,
+            mandate_scope: None,
+        }
+    }
+}
+
 impl Payable {
     pub fn canonical_bytes_for_commitment(&self) -> Vec<u8> {
-        use serde::ser::SerializeStruct;
-
         // Deterministic canonical serialization: one pass, one shape.
         // Re-deriving canonical bytes from the same Payable must produce
         // identical output; field order, representation, and absence of
@@ -93,13 +105,13 @@ impl Payable {
         buf.push(b'\0');
         buf.extend_from_slice(self.recipient.as_bytes());
         buf.push(b'\0');
-    buf.extend_from_slice(&amount_minor_units_u64be(self.amount_minor_units));
-    buf.push(0u8);
-    buf.extend_from_slice(currency_repr(self.currency));
+        buf.extend_from_slice(&amount_minor_units_u64be(self.amount_minor_units));
+        buf.push(0u8);
+        buf.extend_from_slice(currency_repr(self.currency));
         buf.push(b'\0');
-        buf.extend_from_slice(payment_method_repr(&self.payment_method));
+        buf.extend_from_slice(&payment_method_repr(&self.payment_method));
         buf.push(b'\0');
-        buf.extend_from_slice(order_repr(&self.order));
+        buf.extend_from_slice(&order_repr(&self.order));
         buf.push(b'\0');
         if let Some(ref m) = self.mandate_scope {
             buf.extend_from_slice(m.as_bytes());

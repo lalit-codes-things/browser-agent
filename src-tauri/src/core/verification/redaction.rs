@@ -21,6 +21,7 @@ use serde::{Deserialize, Serialize};
 use crate::core::secure_field::payment_field::{
     FieldVisualStatus, RedactedFieldDescriptor, SecureFieldClassification,
 };
+use crate::security::clocks::MonotonicClock;
 
 /// A redacted secret descriptor for a payment field, as visible to the UI
 /// layer. Raw secret content is never carried here.
@@ -54,7 +55,8 @@ impl RedactedSecretDescriptor {
         field_id: impl Into<String>,
         kind: RedactedFieldKind,
     ) -> Self {
-        let safe_label = match kind {
+        let classification = kind.clone();
+        let safe_label = match &kind {
             RedactedFieldKind::CardNumber => Some("Card number".into()),
             RedactedFieldKind::Cvv => Some("CVV".into()),
             RedactedFieldKind::Expiry => Some("Expiry".into()),
@@ -66,9 +68,9 @@ impl RedactedSecretDescriptor {
         };
         Self {
             field_id: field_id.into(),
-            classification: kind,
+            classification,
             safe_label,
-            obscured_length: match kind {
+            obscured_length: match &kind {
                 RedactedFieldKind::CardNumber => Some(19),
                 RedactedFieldKind::Cvv => Some(4),
                 RedactedFieldKind::Expiry => Some(5),
@@ -114,21 +116,24 @@ impl RedactedSecretDescriptor {
 /// This is the structural redaction point before any frame/screenshot reaches
 /// the frontend pipeline. The returned representation does NOT contain raw
 /// secret values.
+///
 pub fn redacted_frame_representation(
-    frame_id: Option<String>,
-    loader_id: Option<String>,
-    fields: &[RedactedSecretDescriptor],
-) -> RedactedFrameRepresentation {
-    RedactedFrameRepresentation {
-        frame_id: frame_id.unwrap_or_default(),
-        loader_id: loader_id.unwrap_or_default(),
-        fields: fields
-            .iter()
-            .map(|f| f.as_ui_descriptor(frame_id, loader_id, None))
-            .collect(),
-        redacted_at_monotonic: crate::core::security::clocks::MonotonicClock::now_nanos(),
+        frame_id: Option<String>,
+        loader_id: Option<String>,
+        fields: &[RedactedSecretDescriptor],
+    ) -> RedactedFrameRepresentation {
+        let frame_id = frame_id.as_deref().unwrap_or_default();
+        let loader_id = loader_id.as_deref().unwrap_or_default();
+        RedactedFrameRepresentation {
+            frame_id: frame_id.to_string(),
+            loader_id: loader_id.to_string(),
+            fields: fields
+                .iter()
+                .map(|f| f.as_ui_descriptor(Some(frame_id.to_string()), Some(loader_id.to_string()), None))
+                .collect(),
+            redacted_at_monotonic: MonotonicClock::now_nanos(),
+        }
     }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RedactedFrameRepresentation {

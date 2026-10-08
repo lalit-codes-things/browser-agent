@@ -9,7 +9,8 @@
 // The idempotency key protects against double charges at the external
 // ecosystem, not at the agent runtime. It does not authorize retry.
 
-use crate::core::payment::durability::{DurablePaymentRecord, PaymentDurableState};
+use crate::core::payment::durability::{DurablePaymentRecord, IdempotencyKey, PaymentDurableState};
+use crate::core::payment::payment::Payable;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PaymentRecoveryOutcome {
@@ -47,8 +48,8 @@ impl PaymentDurableState {
     /// checkpoint; they are never treated as successful on resume.
     pub fn recovery_path(&self) -> PaymentRecoveryOutcome {
         match self {
-            PaymentDurableState::Preparing
-            | PaymentDurableState::Reconciling
+            PaymentDurableState::Prepared
+            | PaymentDurableState::Reconciled
             | PaymentDurableState::Ready
             | PaymentDurableState::Processing => {
                 // Processing is treated as unresolved until verified.
@@ -135,5 +136,18 @@ mod tests {
     fn reconciled_is_pre_submission() {
         let rec = rec(PaymentDurableState::Reconciled);
         assert_eq!(classify_durable_after_crash(&rec), PaymentRecoveryOutcome::PreSubmission);
+    }
+
+    #[test]
+    fn unknown_is_unknown_requires_human_checkpoint() {
+        let rec = rec(PaymentDurableState::Unknown);
+        assert_eq!(
+            classify_durable_after_crash(&rec),
+            PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint
+        );
+        assert_eq!(
+            rec.durable_state.recovery_path(),
+            PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint
+        );
     }
 }

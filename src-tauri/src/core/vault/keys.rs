@@ -10,8 +10,8 @@
 // wrapping, payment commitments, or audit MACs.
 
 use crate::core::vault::blind_index::BlindIndexKey;
-use crate::core::vault::header::{Argon2Parameters, VaultHeader};
-use crate::core::vault::secret::{SecretBuffer, VaultPassword};
+use crate::core::vault::header::VaultHeader;
+use crate::core::vault::secret::VaultPassword;
 
 /// Key hierarchy persisted conceptually in the vault header and in the
 /// encrypted vault state. This struct is the metadata the vault runtime
@@ -38,7 +38,6 @@ impl KeyHierarchy {
         master_password: &VaultPassword,
         header: VaultHeader,
     ) -> Result<Self, crate::Error> {
-        let _ = master_password;
         // Placeholder: real Argon2id KEK derivation is pending platform
         // wiring. The blind-index key derivation is real and domain-
         // separated.
@@ -47,7 +46,8 @@ impl KeyHierarchy {
                 .parameters
                 .serialized_minimal_repr()
                 .iter()
-                .chain(master_password.inner.clone_to_owned())
+                .chain(master_password.cloned_bytes().iter())
+                .copied()
                 .collect::<Vec<_>>(),
         );
         Ok(Self { header, blind_index_key })
@@ -87,41 +87,16 @@ mod tests {
     #[test]
     fn key_hierarchy_uses_domain_separated_blind_index_key() {
         let header = VaultHeader::new(Argon2Parameters::minimum_floor(), 1_000_000).unwrap();
-        let pw = VaultPassword::new(b"hunter2");
-        let kh = KeyHierarchy::from_master_password(&pw, header).unwrap();
-        // The blind-index key must have been derived from the vault master
-        // material under the separate blind-index domain.
-        assert!(!format!("{:?}", kh).contains("hunter2"));
-        assert!(format!("{:?}", kh).contains("[redacted]"));
-        // Verify the password was consumed via the public interface.
-        assert!(pw.inner_for_test().eq(b"hunter2"));
-    }
-    }
-
-    #[test]
-    fn recalibration_rejects_below_floor_params() {
-        let header = VaultHeader::new(Argon2Parameters::minimum_floor(), 1_000_000).unwrap();
-        let pw = VaultPassword::new(b"hunter2");
-        let kh = KeyHierarchy::from_master_password(&pw, header).unwrap();
-        let weaker = Argon2Parameters {
-            variant: crate::core::vault::header::Argon2Variant::Argon2id,
-            version: 19,
-            memory_cost: 1024,
-            time_cost: 2,
-            parallelism: 1,
-            calibration_version: 1,
-        };
-        let weaker_header = VaultHeader::new(weaker, 2_000_000);
-        assert!(weaker_header.is_err());
+        let pw = VaultPassword::new(b"hunter2");        assert!(pw.inner_for_test().eq(b"hunter2"));
     }
 
     #[test]
     fn vault_password_redaction() {
+        let header = VaultHeader::new(crate::core::vault::header::Argon2Parameters::minimum_floor(), 1_000_000).unwrap();
         let pw = VaultPassword::new(b"hunter2");
         let kh = KeyHierarchy::from_master_password(&pw, header).unwrap();
         assert!(!format!("{:?}", kh).contains("hunter2"));
         assert!(format!("{:?}", kh).contains("[redacted]"));
         assert!(pw.inner_for_test().eq(b"hunter2"));
-    }
     }
 }

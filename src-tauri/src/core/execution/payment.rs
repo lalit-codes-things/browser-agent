@@ -12,6 +12,8 @@
 
 use crate::core::payment::durability::{DurablePaymentRecord, PaymentDurableState};
 use crate::core::payment::commitment::commitment_hash;
+use crate::core::payment::PaymentCommitment;
+use crate::security::clocks::MonotonicClock;
 
 /// Convert a durable payment record to the shape emitted through IPC events.
 ///
@@ -23,8 +25,8 @@ pub fn durable_record_to_event(
     crate::ipc::events::PaymentDurableStateEvent {
         durable_id: rec.durable_id.clone(),
         durable_state: match rec.durable_state {
-            PaymentDurableState::Preparing => "PREPARING",
-            PaymentDurableState::Reconciling => "RECONCILING",
+            PaymentDurableState::Prepared => "PREPARING",
+            PaymentDurableState::Reconciled => "RECONCILING",
             PaymentDurableState::Ready => "READY",
             PaymentDurableState::Submitted => "SUBMITTED",
             PaymentDurableState::WaitingForExternalAuth => "WAITING_FOR_EXTERNAL_AUTH",
@@ -34,14 +36,10 @@ pub fn durable_record_to_event(
             PaymentDurableState::VerifiedFailure => "VERIFIED_FAILURE",
         }
         .to_string(),
-        payment_commitment_hash: hex_lower(rec.payment_commitment_hash),
+        payment_commitment_hash: hex_lower(&rec.payment_commitment_hash),
         task_id: rec.task_id.clone(),
     }
 }
-
-fn hex_lower
-
-fn hex_lower(bytes: &[u8; 32]) -> String {
 
 fn hex_lower(bytes: &[u8; 32]) -> String {
     use std::fmt::Write;
@@ -133,7 +131,7 @@ mod tests {
             payment_method: PaymentMethod::Upi,
             order: None,
             submission_epoch: 7,
-            created_at_monotonic: crate::core::security::clocks::MonotonicClock::now_nanos(),
+            created_at_monotonic: MonotonicClock::now_nanos(),
         };
         let ev = durable_record_to_event(&rec);
         assert!(!ev.payment_commitment_hash.contains("payee"));

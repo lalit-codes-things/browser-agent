@@ -35,7 +35,7 @@ pub struct FrameNode {
     pub child_frame_count: u32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct GeometryBounds {
     pub x: i32,
     pub y: i32,
@@ -56,5 +56,11 @@ impl GraphBounds {
             max_context_bytes: None,
             max_attributes_per_node: None,
         }
+    }
+}
+
+impl Default for GraphBounds {
+    fn default() -> Self {
+        Self::new()
     }
 }
