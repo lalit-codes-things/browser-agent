@@ -66,7 +66,8 @@ impl KeyHierarchy {
                     .parameters
                     .serialized_minimal_repr()
                     .iter()
-                    .chain(master_password.inner.clone_to_owned())
+                    .chain(master_password.cloned_bytes().iter())
+                    .copied()
                     .collect::<Vec<_>>(),
             );
             Ok(Some(Self {

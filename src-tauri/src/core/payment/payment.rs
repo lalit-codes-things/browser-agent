@@ -94,6 +94,7 @@ impl Default for Payable {
     }
 }
 
+
 impl Payable {
     pub fn canonical_bytes_for_commitment(&self) -> Vec<u8> {
         // Deterministic canonical serialization: one pass, one shape.

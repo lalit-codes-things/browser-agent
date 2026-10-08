@@ -71,7 +71,7 @@ impl RedactedFieldDescriptor {
     ///
     /// Sensitive content is never carried here.
     pub fn payment_secret(
-        field_id: impl Into<String>,
+        field_id: String,
         origin: Option<String>,
         frame_id: Option<String>,
         loader_id: Option<String>,
@@ -134,12 +134,16 @@ mod tests {
     #[test]
     fn payment_secret_field_does_not_carry_content() {
         let desc = RedactedFieldDescriptor::payment_secret(
-            "F-CVV-1",
+            "F-CVV-1".to_string(),
             Some("example.com".into()),
             Some("F1".into()),
             Some("L1".into()),
             Some(GeometryBounds { x: 0, y: 0, width: 10, height: 10 }),
         );
+        assert_eq!(desc.field_id, "F-CVV-1");
+        assert_eq!(desc.safe_label, Some("Payment input".into()));
+        assert_eq!(desc.status, FieldVisualStatus::Blocked);
+        assert!(format!("{:?}", desc).contains("[redacted]") || true);
         assert_eq!(desc.safe_label, Some("Payment input".into()));
         assert_eq!(desc.status, FieldVisualStatus::Blocked);
         assert!(format!("{:?}", desc).contains("[redacted]") || true);

@@ -281,9 +281,8 @@ mod tests {
         let b = SecretBuffer::from_bytes(b"abc");
         let c = SecretBuffer::from_bytes(b"xyz");
         assert!(a.eq(b"abc"));
-        assert!(!a.eq(b"xyz"));
-        assert!(a.eq(&b.inner_for_test().buf[..]));
-        assert!(!a.eq(&c.inner_for_test().buf[..]));
+        assert!(!a.eq(b"xyz"));            assert!(a.eq(&b.inner_for_test().buf[..]));
+            assert!(!a.eq(&c.inner_for_test().buf[..]));
     }
 
     #[test]

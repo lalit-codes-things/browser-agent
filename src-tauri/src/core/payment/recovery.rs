@@ -112,7 +112,7 @@ mod tests {
             PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint
         );
         assert_eq!(
-            rec.recovery_path(),
+            rec.durable_state.recovery_path(),
             PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint
         );
     }
@@ -141,6 +141,19 @@ mod tests {
     #[test]
     fn unknown_is_unknown_requires_human_checkpoint() {
         let rec = rec(PaymentDurableState::Unknown);
+        assert_eq!(
+            classify_durable_after_crash(&rec),
+            PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint
+        );
+        assert_eq!(
+            rec.durable_state.recovery_path(),
+            PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint
+        );
+    }
+
+    #[test]
+    fn submitted_requires_human_checkpoint() {
+        let rec = rec(PaymentDurableState::Submitted);
         assert_eq!(
             classify_durable_after_crash(&rec),
             PaymentRecoveryOutcome::UnknownRequiresHumanCheckpoint

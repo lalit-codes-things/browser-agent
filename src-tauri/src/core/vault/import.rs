@@ -19,6 +19,22 @@ impl VaultImport {
     ///
     /// This is the structural import entry point; the actual persistence
     /// (SQLite) is scheduled.
+    /// Derive a blind-index lookup value for an origin under the given
+    /// hierarchy. The origin plaintext is not stored; only the blind-index
+    /// value is.
+    pub fn blind_index_for(authority: &KeyHierarchy, origin: &str) -> BlindIndexValue {
+        let idx = crate::core::vault::blind_index::blind_index_for(
+            &authority.blind_index_key,
+            origin,
+        );
+        BlindIndexValue { value: idx }
+    }
+
+    /// Import a vault item under the given key hierarchy. The raw secret
+    /// never leaks to model context or frontend state.
+    ///
+    /// This is the structural import entry point; the actual persistence
+    /// (SQLite) is scheduled.
     pub fn import_item(
         _hierarchy: &KeyHierarchy,
         _master_password: &VaultPassword,
@@ -27,17 +43,6 @@ impl VaultImport {
         Err(crate::Error::NotImplemented(
             "VaultImport::import_item persistence is scheduled".into(),
         ))
-    }
-
-    /// Derive a blind-index lookup value for an origin under the given
-    /// hierarchy. The origin plaintext is not stored; only the blind-index
-    /// value is.
-    pub fn blind_index_for(&self, _import: &VaultImport, authority: &KeyHierarchy, origin: &str) -> BlindIndexValue {
-        let idx = crate::core::vault::blind_index::blind_index_for(
-            &authority.blind_index_key,
-            origin,
-        );
-        BlindIndexValue { value: idx }
     }
 }
 
@@ -52,9 +57,8 @@ mod tests {
         let header = VaultHeader::new(Argon2Parameters::minimum_floor(), 1_000_000).unwrap();
         let pw = VaultPassword::new(b"hunter2");
         let kh = KeyHierarchy::from_master_password(&pw, header).unwrap();
+        let bi = VaultImport::blind_index_for(&kh, "https://payee.example");
         let import = VaultImport;
-        let import = VaultImport;
-        let bi = VaultImport::blind_index_for(&import, &kh, "https://payee.example");
         assert!(!format!("{:?}", bi).contains("payee.example"));
         assert!(!format!("{:?}", kh).contains("hunter2"));
     }

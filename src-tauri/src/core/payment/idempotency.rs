@@ -62,6 +62,7 @@ mod tests {
             order: None,
             mandate_scope: None,
         };
+        let payable_for_c2 = payable.clone();
         let c = PaymentCommitment::new(
             "task-1".into(),
             None,
@@ -73,13 +74,15 @@ mod tests {
         let k1 = idempotency_key_for(&c, "t-1", rand::random(), 1_100_000);
         assert!(k1.alive_at(1_050_000));
         assert!(!k1.alive_at(1_200_000));
+
+        let payable2 = Payable {
+            recipient: "other@merchant".into(),
+            ..payable_for_c2
+        };
         let c2 = PaymentCommitment::new(
             "task-1".into(),
             None,
-            Payable {
-                recipient: "other@merchant".into(),
-                ..payable
-            },
+            payable2,
             7,
             300_000,
             1_000_000,
