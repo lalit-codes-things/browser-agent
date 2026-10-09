@@ -6,10 +6,10 @@
 // C-70: Target.setAutoAttach({flatten:true}) validated; stale references invalidated.
 
 pub mod connection;
-pub mod raw;
-pub mod targets;
-pub mod sessions;
-pub mod frames;
 pub mod contexts;
-pub mod loaders;
+pub mod frames;
 pub mod lifecycle;
+pub mod loaders;
+pub mod raw;
+pub mod sessions;
+pub mod targets;

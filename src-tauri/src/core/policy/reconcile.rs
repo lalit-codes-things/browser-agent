@@ -19,7 +19,12 @@ pub struct ReconciliationResult {
 pub struct Reconciliation;
 
 impl Reconciliation {
-    pub fn check(_authority: &TaskAuthority, _action_class: SideEffectClass, _destination: &str, _amount: Option<&str>) -> ReconciliationResult {
+    pub fn check(
+        _authority: &TaskAuthority,
+        _action_class: SideEffectClass,
+        _destination: &str,
+        _amount: Option<&str>,
+    ) -> ReconciliationResult {
         // Placeholder: real reconciliation is audited.
         ReconciliationResult {
             reconciled: false,

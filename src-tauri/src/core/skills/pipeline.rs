@@ -7,7 +7,12 @@
 pub struct SkillPipeline;
 
 impl SkillPipeline {
-    pub fn execute_step(_commitment: &crate::core::skills::commitment::SkillCommitment, _step_index: u32) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("SkillPipeline::execute_step is scheduled".into()))
+    pub fn execute_step(
+        _commitment: &crate::core::skills::commitment::SkillCommitment,
+        _step_index: u32,
+    ) -> Result<(), crate::Error> {
+        Err(crate::Error::NotImplemented(
+            "SkillPipeline::execute_step is scheduled".into(),
+        ))
     }
 }

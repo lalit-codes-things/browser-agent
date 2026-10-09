@@ -8,6 +8,9 @@ import { AppState } from "../../state/app";
 
 export const ScreenshotPreview = memo(function ScreenshotPreview({ state }: { state: AppState }) {
   const task = state.task;
+  const navigation = state.navigation;
+  const perception = state.perception;
+  const browser = state.browser;
 
   return (
     <div className="rounded-none border-1px line bg-surface-1 p-4">
@@ -18,7 +21,23 @@ export const ScreenshotPreview = memo(function ScreenshotPreview({ state }: { st
 
       <div className="aspect-video border-1px line-strong bg-surface-2 overflow-hidden">
         <div className="flex h-full items-center justify-center text-muted text-[12px] data-mono">
-          {task ? (
+          {browser && browser.available ? (
+            <>
+              <span className="block leading-relaxed">
+                RUNTIME: {browser.state}
+              </span>
+              {navigation?.url ? (
+                <span className="block leading-relaxed">
+                  URL: {navigation.url}
+                </span>
+              ) : null}
+              {perception?.frameId ? (
+                <span className="block leading-relaxed">
+                  FRAME: {perception.frameId}
+                </span>
+              ) : null}
+            </>
+          ) : task ? (
             <>
               <span className="block leading-relaxed">
                 ORIGIN: {task.authority ?? "UNKNOWN"}
@@ -35,24 +54,28 @@ export const ScreenshotPreview = memo(function ScreenshotPreview({ state }: { st
 
       <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[12px]">
         <div className="flex items-center gap-2">
+          <span className="text-muted label-uppercase">BROWSER</span>
+          <span className="text-primary data-mono">{browser?.state ?? "UNKNOWN"}</span>
+        </div>
+        <div className="flex items-center gap-2">
           <span className="text-muted label-uppercase">ORIGIN</span>
-          <span className="text-primary data-mono">{task?.authority ?? "UNKNOWN"}</span>
+          <span className="text-primary data-mono">{task?.authority ?? navigation?.origin ?? "UNKNOWN"}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-muted label-uppercase">EPOCH</span>
-          <span className="text-primary data-mono">{task?.progress ?? "UNKNOWN"}</span>
+          <span className="text-primary data-mono">{perception?.epoch ?? task?.progress ?? "UNKNOWN"}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-muted label-uppercase">LOADER</span>
-          <span className="text-muted data-mono">—</span>
+          <span className="text-muted data-mono">{perception?.loaderId ?? "—"}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-muted label-uppercase">FRAMES</span>
-          <span className="text-muted data-mono">—</span>
+          <span className="text-muted data-mono">{perception?.frameId ?? "—"}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-muted label-uppercase">PROCESS CLASS</span>
-          <span className="text-muted data-mono">—</span>
+          <span className="text-muted label-uppercase">ACTIONABLE</span>
+          <span className="text-muted data-mono">{perception?.actionableCount ?? 0}</span>
         </div>
       </div>
 

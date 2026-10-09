@@ -25,14 +25,21 @@ pub enum TraceError {
 }
 
 /// Validate a raw event stream and produce a persisted record.
-pub fn ingest(task_id: String, events: Vec<TraceEvent>, created_at: Option<String>) -> Result<crate::storage::models::trace::StoredTrace, TraceError> {
+pub fn ingest(
+    task_id: String,
+    events: Vec<TraceEvent>,
+    created_at: Option<String>,
+) -> Result<crate::storage::models::trace::StoredTrace, TraceError> {
     if events.is_empty() {
         return Err(TraceError::Empty);
     }
     Ok(crate::storage::models::trace::StoredTrace {
         id: format!("trace-{}", task_id),
         task_id,
-        events: events.into_iter().map(|e| format!("{} {}", e.at, e.event)).collect(),
+        events: events
+            .into_iter()
+            .map(|e| format!("{} {}", e.at, e.event))
+            .collect(),
         created_at,
     })
 }
@@ -42,14 +49,20 @@ mod tests {
     use super::*;
 
     fn event(at: &str, event: &str) -> TraceEvent {
-        TraceEvent { at: at.into(), event: event.into() }
+        TraceEvent {
+            at: at.into(),
+            event: event.into(),
+        }
     }
 
     #[test]
     fn ingests_nonempty_stream() {
         let trace = ingest(
             "T1".into(),
-            vec![event("t0", "TASK_STATE RUNNING"), event("t1", "POLICY ALLOW")],
+            vec![
+                event("t0", "TASK_STATE RUNNING"),
+                event("t1", "POLICY ALLOW"),
+            ],
             None,
         )
         .unwrap();

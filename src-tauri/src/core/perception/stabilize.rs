@@ -80,7 +80,10 @@ mod tests {
         let t0 = Instant::now();
         let mut w = StabilizationWatcher::new(policy(), t0);
         w.record_mutation(MutationClass::Relevant, t0 + Duration::from_millis(50));
-        assert_eq!(w.status(t0 + Duration::from_millis(100)), Stabilization::Waiting);
+        assert_eq!(
+            w.status(t0 + Duration::from_millis(100)),
+            Stabilization::Waiting
+        );
     }
 
     #[test]
@@ -88,7 +91,10 @@ mod tests {
         let t0 = Instant::now();
         let mut w = StabilizationWatcher::new(policy(), t0);
         w.record_mutation(MutationClass::Relevant, t0);
-        assert_eq!(w.status(t0 + Duration::from_millis(400)), Stabilization::Stable);
+        assert_eq!(
+            w.status(t0 + Duration::from_millis(400)),
+            Stabilization::Stable
+        );
     }
 
     #[test]
@@ -97,7 +103,10 @@ mod tests {
         let mut w = StabilizationWatcher::new(policy(), t0);
         w.record_mutation(MutationClass::Relevant, t0);
         w.record_mutation(MutationClass::Noise, t0 + Duration::from_millis(100));
-        assert_eq!(w.status(t0 + Duration::from_millis(400)), Stabilization::Stable);
+        assert_eq!(
+            w.status(t0 + Duration::from_millis(400)),
+            Stabilization::Stable
+        );
     }
 
     #[test]
@@ -106,6 +115,9 @@ mod tests {
         let mut w = StabilizationWatcher::new(policy(), t0);
         w.record_mutation(MutationClass::Relevant, t0);
         w.record_mutation(MutationClass::Uncertain, t0 + Duration::from_millis(350));
-        assert_eq!(w.status(t0 + Duration::from_millis(400)), Stabilization::Waiting);
+        assert_eq!(
+            w.status(t0 + Duration::from_millis(400)),
+            Stabilization::Waiting
+        );
     }
 }

@@ -20,21 +20,21 @@
 //         actions rejected when relevant state changes before execution.
 // C-65: Phase-1 controlled mutations.
 
-pub mod pipeline;
-pub mod mutation_watcher;
-pub mod noise;
-pub mod ax_extract;
-pub mod dom_extract;
-pub mod shadow_dom;
-pub mod frames;
 pub mod actionability;
-pub mod geometry;
-pub mod unicode;
-pub mod deception;
+pub mod ax_extract;
 pub mod compress;
-pub mod graph;
-pub mod reference;
-pub mod stabilize;
-pub mod livelock;
+pub mod deception;
+pub mod dom_extract;
 pub mod epoch;
 pub mod fallback;
+pub mod frames;
+pub mod geometry;
+pub mod graph;
+pub mod livelock;
+pub mod mutation_watcher;
+pub mod noise;
+pub mod pipeline;
+pub mod reference;
+pub mod shadow_dom;
+pub mod stabilize;
+pub mod unicode;

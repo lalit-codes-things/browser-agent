@@ -11,7 +11,7 @@
 //        amount rendering, page-derived strings only in visually quarantined
 //        "as reported by page" zone.
 
-pub mod unicode_tables;
+pub mod clocks;
 pub mod idn;
 pub mod trust_store;
-pub mod clocks;
+pub mod unicode_tables;

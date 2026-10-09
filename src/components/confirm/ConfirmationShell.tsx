@@ -1,5 +1,16 @@
+import { invoke } from "@tauri-apps/api/core";
 import { useCallback, memo } from "react";
 import { AppState } from "../../state/app";
+import { beginHumanHandoff } from "../../ipc/client";
+import type { HumanTakeoverMode } from "../../ipc/schemas";
+
+const HANDOFF_MODE_LABEL: Record<HumanTakeoverMode, string> = {
+  IDLE: "IDLE",
+  HANDOFF_REQUESTED: "HANDOFF REQUESTED",
+  HANDOFF_ACTIVE: "HANDOFF ACTIVE",
+  HANDOFF_DENIED: "HANDOFF DENIED",
+  HANDOFF_EXPIRED: "HANDOFF EXPIRED",
+};
 
 // Authorization interlock is the most important visual surface.
 // It is not a generic component-library modal. It uses hard borders,
@@ -11,14 +22,18 @@ export const ConfirmationShell = memo(function ConfirmationShell({ state }: { st
   const open = !!auth;
 
   const handleConfirm = useCallback(() => {
-    // Confirmation outcome is backend-driven; frontend only sends the
-    // decision through the allowlisted command path.
-    console.info("confirmation accept requested");
+    void invoke("app_confirm_authorization").catch(() => undefined);
   }, []);
 
   const handleDeny = useCallback(() => {
-    console.info("confirmation denied");
+    void invoke("app_deny_authorization").catch(() => undefined);
   }, []);
+
+  // Human handoff is now part of the authoritative IPC surface.
+  const handleHandoff = useCallback(() => {
+    if (!auth?.taskId) return;
+    void beginHumanHandoff({ task_id: auth.taskId }).catch(() => undefined);
+  }, [auth]);
 
   if (!open) return null;
 
@@ -88,10 +103,25 @@ export const ConfirmationShell = memo(function ConfirmationShell({ state }: { st
               max-radius-2
             "
           >
-            CONFIRM ACTION
+            APPROVE AUTHORIZATION
           </button>
         </div>
+
+        {state.humanTakeover ? (
+          <div className="mt-5 border-t-1px line pt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-muted text-[11px] uppercase tracking-wider-safe">HUMAN HANDOFF</span>
+              <span className="text-primary text-[11px] data-mono uppercase">
+                {HANDOFF_MODE_LABEL[state.humanTakeover.mode] ?? state.humanTakeover.mode}
+              </span>
+            </div>
+            {state.humanTakeover.reason ? (
+              <p className="text-muted text-[11px]">{state.humanTakeover.reason}</p>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
 });
+

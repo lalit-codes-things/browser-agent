@@ -57,14 +57,14 @@
 //         change re-wraps keys without breaking HMAC chain verification.
 
 pub mod classes;
-pub mod tiers;
+pub mod confirmation;
+pub mod declassify;
+pub mod engine;
+pub mod locale_amount;
+pub mod provenance;
+pub mod rate_limit;
+pub mod reconcile;
+pub mod recovery_mode;
 pub mod scopes;
 pub mod taint;
-pub mod provenance;
-pub mod declassify;
-pub mod reconcile;
-pub mod locale_amount;
-pub mod recovery_mode;
-pub mod rate_limit;
-pub mod confirmation;
-pub mod engine;
+pub mod tiers;

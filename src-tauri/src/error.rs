@@ -1,6 +1,12 @@
 use serde::Serialize;
 use thiserror::Error;
 
+#[derive(Debug, Serialize)]
+pub struct PublicError {
+    pub code: &'static str,
+    pub message_key: &'static str,
+}
+
 /// Application-level error enumeration.
 ///
 /// We prefer explicit typed errors over stringly-typed panic paths
@@ -37,7 +43,41 @@ impl Serialize for Error {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(self.to_string().trim().as_ref())
+        let public = match self {
+            Self::NotImplemented(_) => PublicError {
+                code: "NOT_IMPLEMENTED",
+                message_key: "error.not_implemented",
+            },
+            Self::Aborted(_) => PublicError {
+                code: "ABORTED",
+                message_key: "error.aborted",
+            },
+            Self::Unsupported(_) => PublicError {
+                code: "UNSUPPORTED",
+                message_key: "error.unsupported",
+            },
+            Self::PolicyBlocked(_) => PublicError {
+                code: "POLICY_BLOCKED",
+                message_key: "error.policy_blocked",
+            },
+            Self::VerificationUnknown(_) => PublicError {
+                code: "VERIFICATION_UNKNOWN",
+                message_key: "error.verification_unknown",
+            },
+            Self::StateMismatch(_) => PublicError {
+                code: "STATE_MISMATCH",
+                message_key: "error.state_mismatch",
+            },
+            Self::InvalidParameter(_) => PublicError {
+                code: "INVALID_PARAMETER",
+                message_key: "error.invalid_parameter",
+            },
+            Self::Internal(_) => PublicError {
+                code: "INTERNAL",
+                message_key: "error.internal",
+            },
+        };
+        public.serialize(serializer)
     }
 }
 

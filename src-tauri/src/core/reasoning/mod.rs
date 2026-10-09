@@ -18,11 +18,11 @@
 // C-22: model knows only REQUEST_CONFIRMATION; does not know or control
 //        the biometric mechanism.
 
-pub mod session;
-pub mod schema;
-pub mod grammar;
-pub mod triggers;
-pub mod timeout;
 pub mod abort;
 pub mod canary;
+pub mod grammar;
+pub mod schema;
+pub mod session;
+pub mod timeout;
+pub mod triggers;
 pub mod uncertainty;

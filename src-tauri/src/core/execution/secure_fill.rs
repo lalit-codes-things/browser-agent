@@ -29,6 +29,8 @@ pub struct SecureFillEngine;
 
 impl SecureFillEngine {
     pub fn fill(_binding: SecureFillBinding) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("SecureFillEngine::fill is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "SecureFillEngine::fill is scheduled".into(),
+        ))
     }
 }

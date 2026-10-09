@@ -32,7 +32,9 @@ pub enum AggregationError {
     MissingMainFrame,
 }
 
-pub fn aggregate_frames(frames: &[FrameObservation]) -> Result<SemanticStateGraph, AggregationError> {
+pub fn aggregate_frames(
+    frames: &[FrameObservation],
+) -> Result<SemanticStateGraph, AggregationError> {
     if frames.is_empty() {
         return Err(AggregationError::MissingMainFrame);
     }
@@ -44,7 +46,10 @@ pub fn aggregate_frames(frames: &[FrameObservation]) -> Result<SemanticStateGrap
         }
     }
 
-    let main = frames.iter().find(|f| f.is_main_frame).ok_or(AggregationError::MissingMainFrame)?;
+    let main = frames
+        .iter()
+        .find(|f| f.is_main_frame)
+        .ok_or(AggregationError::MissingMainFrame)?;
 
     let mut nodes = Vec::new();
     for f in frames {
@@ -87,7 +92,12 @@ mod tests {
             rendered_text: None,
             accessible_name: None,
             actionable: true,
-            bounds: Some(GeometryBounds { x: 0, y: 0, width: 4, height: 4 }),
+            bounds: Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 4,
+                height: 4,
+            }),
         }
     }
 
@@ -114,17 +124,26 @@ mod tests {
     #[test]
     fn duplicate_frame_is_rejected() {
         let frames = vec![frame("M", true, false), frame("M", true, false)];
-        assert!(matches!(aggregate_frames(&frames), Err(AggregationError::DuplicateFrame)));
+        assert!(matches!(
+            aggregate_frames(&frames),
+            Err(AggregationError::DuplicateFrame)
+        ));
     }
 
     #[test]
     fn missing_main_frame_is_rejected() {
         let frames = vec![frame("IF1", false, true)];
-        assert!(matches!(aggregate_frames(&frames), Err(AggregationError::MissingMainFrame)));
+        assert!(matches!(
+            aggregate_frames(&frames),
+            Err(AggregationError::MissingMainFrame)
+        ));
     }
 
     #[test]
     fn empty_observation_is_rejected() {
-        assert!(matches!(aggregate_frames(&[]), Err(AggregationError::MissingMainFrame)));
+        assert!(matches!(
+            aggregate_frames(&[]),
+            Err(AggregationError::MissingMainFrame)
+        ));
     }
 }

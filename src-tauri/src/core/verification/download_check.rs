@@ -15,7 +15,12 @@ pub struct DownloadVerification {
 pub struct DownloadChecker;
 
 impl DownloadChecker {
-    pub fn check(size: u64, max_bytes: Option<u64>, content_type: Option<&str>, allowed_types: &[&str]) -> DownloadVerification {
+    pub fn check(
+        size: u64,
+        max_bytes: Option<u64>,
+        content_type: Option<&str>,
+        allowed_types: &[&str],
+    ) -> DownloadVerification {
         let verified_size = match max_bytes {
             Some(max) => size <= max,
             None => false,

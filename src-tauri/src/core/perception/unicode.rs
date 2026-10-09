@@ -20,12 +20,8 @@ pub fn normalize(text: &str) -> String {
 }
 
 pub fn contains_zero_width(text: &str) -> bool {
-    text.chars().any(|c| {
-        matches!(
-            c,
-            '\u{200B}'..='\u{200D}' | '\u{FEFF}' | '\u{2060}'
-        )
-    })
+    text.chars()
+        .any(|c| matches!(c, '\u{200B}'..='\u{200D}' | '\u{FEFF}' | '\u{2060}'))
 }
 
 pub fn contains_bidi_controls(text: &str) -> bool {
@@ -62,7 +58,9 @@ pub fn looks_mixed_script(text: &str) -> bool {
         }
     }
 
-    scripts.len() > 1 || (unclassifiable && !scripts.is_empty()) || (unclassifiable && !text.is_ascii())
+    scripts.len() > 1
+        || (unclassifiable && !scripts.is_empty())
+        || (unclassifiable && !text.is_ascii())
 }
 
 /// Unicode script classification for the ranges perception actually
@@ -144,7 +142,7 @@ mod tests {
         assert!(!looks_mixed_script("Download malware"));
         assert!(!looks_mixed_script("Item 42 (x2)"));
         assert!(!looks_mixed_script("总 42 件")); // Han + digits/space only
-        // Han + Latin letters is a genuine mix and must be flagged.
+                                                  // Han + Latin letters is a genuine mix and must be flagged.
         assert!(looks_mixed_script("总 42 items"));
     }
 

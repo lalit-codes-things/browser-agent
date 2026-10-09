@@ -7,6 +7,8 @@ pub struct Revocation;
 
 impl Revocation {
     pub fn revoke(_skill_id: &str, _reason: &str) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("Revocation::revoke is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "Revocation::revoke is scheduled".into(),
+        ))
     }
 }

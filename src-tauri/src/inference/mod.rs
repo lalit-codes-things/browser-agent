@@ -16,7 +16,7 @@
 // C-147: model-residency policy handles external memory pressure: pressure-keyed
 //        unload, task parking, budgeted reload, jetsam avoidance.
 
-pub mod llama;
-pub mod pin;
-pub mod memory;
 pub mod install;
+pub mod llama;
+pub mod memory;
+pub mod pin;

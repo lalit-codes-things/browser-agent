@@ -14,6 +14,8 @@ pub struct LoaderIndex;
 
 impl LoaderIndex {
     pub fn loader_for_frame(_frame_id: &str) -> Result<Option<LoaderDescription>, crate::Error> {
-        Err(crate::Error::NotImplemented("LoaderIndex::loader_for_frame is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "LoaderIndex::loader_for_frame is scheduled".into(),
+        ))
     }
 }

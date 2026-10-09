@@ -15,7 +15,11 @@ pub struct PerceptionEpoch {
 
 impl PerceptionEpoch {
     pub fn new(value: u64, frame_id: String, loader_id: String) -> Self {
-        Self { value, frame_id, loader_id }
+        Self {
+            value,
+            frame_id,
+            loader_id,
+        }
     }
 
     pub fn matches_loader(&self, loader_id: &str) -> bool {

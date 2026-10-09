@@ -2919,8 +2919,120 @@ constraints:
   supersedes: []
   amends: []
   depends_on: []
+- id: C-159
+  constraint: Product v1 supports macOS and Windows desktop deployments; Linux is CI/build-validation scope only and is not a supported desktop product platform.
+  owner_phase:
+  - Phase 0
+  - Phase 10
+  test_id: TEST-C-159
+  verification_evidence: Platform support matrix, release metadata audit, and macOS/Windows CI evidence.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - ADR-001-platform-scope
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-157
+- id: C-160
+  constraint: The product design merges DESIGN-2's browser shell with DESIGN.md's trusted inspector, interlock, ledger, and evidence drawer; DESIGN.md is binding after the merge.
+  owner_phase:
+  - Phase 0
+  test_id: TEST-C-160
+  verification_evidence: Design reconciliation review and UI conformance audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - ADR-002-unified-design
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-02
+  - C-157
+- id: C-161
+  constraint: Managed Chromium runs as a separate headful window beside the Tauri console; manual takeover is an explicit parked/intervention authority transition and cannot be satisfied by a screenshot readout.
+  owner_phase:
+  - Phase 1
+  - Phase 8
+  test_id: TEST-C-161
+  verification_evidence: Window architecture, takeover authority, screencast/input, and stale-action invalidation tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - ADR-003-browser-takeover
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-04
+  - C-90
+  - C-153
+- id: C-162
+  constraint: Automated card, UPI, QR, and payment submission are frozen out of v1; payment tasks stop before submission and hand control to the user through the intervention surface.
+  owner_phase:
+  - Phase 4
+  - Phase 8
+  test_id: TEST-C-162
+  verification_evidence: Negative payment-command tests, capability audit, and intervention handoff tests.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - ADR-004-payments-v1
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-139
+  - C-143
+  - C-153
+- id: C-163
+  constraint: Models are signed install/build-time release assets with pinned digest, signature, source revision, and license/NOTICE records; models are never fetched at runtime or committed to Git/LFS.
+  owner_phase:
+  - Phase 6
+  - Phase 10
+  test_id: TEST-C-163
+  verification_evidence: Asset signature/digest verification, runtime-egress negative test, and license/NOTICE audit.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - ADR-005-model-distribution
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-41
+  - C-129
+  - C-136
+- id: C-164
+  constraint: Chromium is pinned by version and SHA-256 and uses remote-debugging-pipe with no TCP debugging endpoint; pipe compatibility and inherited-handle behavior are verified on macOS and Windows before release, otherwise a transport-amending ADR is required.
+  owner_phase:
+  - Phase 0
+  - Phase 2
+  - Phase 10
+  test_id: TEST-C-164
+  verification_evidence: Chromium pin manifest, pipe transport integration tests, negative TCP endpoint test, and macOS/Windows regression evidence.
+  spec_status: LOCKED
+  verification_status: SCHEDULED
+  value_defined: true
+  provenance:
+  - ADR-006-chromium-transport
+  named_constraints: []
+  supersedes: []
+  amends: []
+  depends_on:
+  - C-03
+  - C-04
+  - C-05
+  - C-126
 ci_lint_rules:
-- IDs must be unique and sequential C-01..C-158 unless a future catalog revision explicitly adds stable IDs.
+- IDs must be unique and sequential C-01..C-164 unless a future catalog revision explicitly adds stable IDs.
 - spec_status and verification_status must use the declared vocabularies.
 - Every LOCKED entry must have a named test_id and at least one owner phase.
 - No PROPOSED entry may be referenced as release-blocking by any Phase 0–7 gate.

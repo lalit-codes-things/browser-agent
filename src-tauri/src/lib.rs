@@ -19,40 +19,51 @@
 // gated stubs and NOT_IMPLEMENTED_YET markers rather than fake success
 // paths (per IDE prompt rule 8).
 
-pub mod error;
-pub mod config;
-pub mod ipc;
 pub mod app;
+pub mod config;
+pub mod error;
+pub mod ipc;
 
-#[cfg(any(test, feature = "runtime-core"))]
-pub mod core;
-#[cfg(any(test, feature = "runtime-core"))]
-pub mod cdp;
-#[cfg(any(test, feature = "runtime-core"))]
-pub mod browser;
-#[cfg(any(test, feature = "runtime-core"))]
-pub mod net;
-#[cfg(any(test, feature = "runtime-core"))]
-pub mod inference;
-#[cfg(any(test, feature = "runtime-core"))]
 pub mod audit;
-#[cfg(any(test, feature = "runtime-core"))]
-pub mod storage;
-#[cfg(any(test, feature = "runtime-core"))]
+pub mod browser;
+pub mod cdp;
+pub mod core;
+pub mod inference;
+pub mod net;
 pub mod security;
+pub mod storage;
 
+pub use app::diagnostics::*;
 pub use app::lifecycle::*;
 pub use app::settings::*;
-pub use app::diagnostics::*;
 pub use config::RuntimeConfig;
 pub use error::Error;
 
-/// Runtime initialization entry point.
-///
-/// Real Tauri bootstrap (window creation, command registration, event
-/// emission) is wired in the Phase 1 vertical slice. This function exists
-/// so the binary has an explicit, testable init boundary rather than a
-/// fake success path.
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static NEXT_TASK_ID: AtomicU64 = AtomicU64::new(1);
+
+fn next_task_id() -> u64 {
+    NEXT_TASK_ID.fetch_add(1, Ordering::Relaxed)
+}
+
+pub fn run() -> tauri::Result<()> {
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![
+            ipc::commands::app_submit_task,
+            ipc::commands::app_abort_task,
+            ipc::commands::app_begin_human_handoff,
+            ipc::commands::app_confirm_authorization,
+            ipc::commands::app_deny_authorization,
+        ])
+        .setup(|app| {
+            #[cfg(any(debug_assertions, feature = "runtime-core"))]
+            let _ = app;
+            Ok(())
+        })
+        .run(tauri::generate_context!())
+}
+
 pub fn init() {
     tracing::debug!("browser-agent runtime core initialized");
 }

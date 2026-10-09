@@ -1,29 +1,41 @@
-import { StrictMode } from "react";
+import { listen } from "@tauri-apps/api/event";
+import { useEffect, useReducer } from "react";
 import { createRoot } from "react-dom/client";
 import { StatusSpine } from "./components/status/StatusSpine";
 import { ConsoleShell } from "./screens/task-monitor/ConsoleShell";
 import { ConfirmationShell } from "./components/confirm/ConfirmationShell";
-import { AppState, reduceEvent } from "./state/app";
+import { initialState, reduceEvent, type AppEvent, type AppState } from "./state/app";
 import "./styles/tailwind.css";
 
-// Browser Agent frontend is a projection of typed IPC events.
-// It does not invent security truth (C-17, C-18).
-// Security strings render verbatim from the backend (DESIGN.md #20).
+function App() {
+  const [state, dispatch] = useReducer(reduceEvent, initialState);
 
-export function render(container: HTMLElement, initial: AppState) {
-  const root = createRoot(container);
+  useEffect(() => {
+    let active = true;
+    let unlisten: (() => void) | undefined;
+    void listen<AppEvent>("app-event", (event) => {
+      if (active) dispatch(event.payload);
+    }).then((cleanup) => {
+      if (active) unlisten = cleanup;
+      else cleanup();
+    });
+    return () => {
+      active = false;
+      unlisten?.();
+    };
+  }, []);
 
-  function app() {
-    return (
-      <StrictMode>
-        <StatusSpine state={initial} />
-        <ConsoleShell state={initial} />
-        <ConfirmationShell state={initial} />
-      </StrictMode>
-    );
-  }
+  return (
+    <div className="flex min-h-screen flex-col bg-bg-0 text-ink-0">
+      <StatusSpine state={state} />
+      <ConsoleShell state={state} />
+      <ConfirmationShell state={state} />
+    </div>
+  );
+}
 
-  root.render(app());
+export function render(container: HTMLElement, _initial: AppState = initialState) {
+  createRoot(container).render(<App />);
 }
 
 export { reduceEvent };

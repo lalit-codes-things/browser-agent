@@ -39,7 +39,12 @@ pub fn to_graph_node(ax: &AxAbsractNode) -> Option<GraphNode> {
         accessible_name: ax.name.clone(),
         actionable: matches!(
             ax.role.as_deref(),
-            Some("button") | Some("link") | Some("textbox") | Some("searchbox") | Some("combobox") | Some("listbox")
+            Some("button")
+                | Some("link")
+                | Some("textbox")
+                | Some("searchbox")
+                | Some("combobox")
+                | Some("listbox")
         ),
         bounds: ax.bounds.clone(),
     })
@@ -65,7 +70,12 @@ mod tests {
             role: Some("button".into()),
             name: Some("Pay".into()),
             value: None,
-            bounds: Some(GeometryBounds { x: 0, y: 0, width: 4, height: 4 }),
+            bounds: Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 4,
+                height: 4,
+            }),
             ignored: true,
             frame_id: "F1".into(),
         };

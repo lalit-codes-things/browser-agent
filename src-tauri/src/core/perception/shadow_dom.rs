@@ -32,7 +32,9 @@ pub struct ShadowHostObservation {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ShadowExtraction {
-    Extracted { children: Vec<ShadowHostObservation> },
+    Extracted {
+        children: Vec<ShadowHostObservation>,
+    },
     /// Closed shadow roots are reported, not guessed.
     NotExtractable { reason: ClosedReason },
 }
@@ -88,7 +90,9 @@ mod tests {
     fn closed_root_is_reported_not_guessed() {
         let hosts = vec![host(ShadowDomMode::Open, 3), host(ShadowDomMode::Closed, 0)];
         match aggregate(&hosts) {
-            ShadowExtraction::NotExtractable { reason } => assert_eq!(reason, ClosedReason::ClosedRoot),
+            ShadowExtraction::NotExtractable { reason } => {
+                assert_eq!(reason, ClosedReason::ClosedRoot)
+            }
             other => panic!("expected NotExtractable, got {:?}", other),
         }
     }
@@ -97,7 +101,9 @@ mod tests {
     fn detached_root_is_reported() {
         let hosts = vec![host(ShadowDomMode::Detached, 0)];
         match aggregate(&hosts) {
-            ShadowExtraction::NotExtractable { reason } => assert_eq!(reason, ClosedReason::DetachedRoot),
+            ShadowExtraction::NotExtractable { reason } => {
+                assert_eq!(reason, ClosedReason::DetachedRoot)
+            }
             other => panic!("expected NotExtractable, got {:?}", other),
         }
     }

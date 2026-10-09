@@ -17,7 +17,13 @@ pub struct FrameDescription {
 pub struct FrameIndex;
 
 impl FrameIndex {
-    pub fn frame_for_point(_frame_id: &str, _x: f64, _y: f64) -> Result<Option<FrameDescription>, crate::Error> {
-        Err(crate::Error::NotImplemented("FrameIndex::frame_for_point is scheduled".into()))
+    pub fn frame_for_point(
+        _frame_id: &str,
+        _x: f64,
+        _y: f64,
+    ) -> Result<Option<FrameDescription>, crate::Error> {
+        Err(crate::Error::NotImplemented(
+            "FrameIndex::frame_for_point is scheduled".into(),
+        ))
     }
 }

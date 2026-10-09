@@ -12,19 +12,21 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2",
+    "animejs": "^4.5.0",
+    "gsap": "^3.15.0",
     "react": "19.x",
-    "react-dom": "19.x",
-    "@tauri-apps/api": "^2"
+    "react-dom": "19.x"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "@types/react": "19.x",
     "@types/react-dom": "19.x",
     "@vitejs/plugin-react": "latest",
-    "typescript": "latest",
-    "vite": "latest",
-    "tailwindcss": "^3.4.0",
     "autoprefixer": "latest",
-    "postcss": "latest"
+    "postcss": "latest",
+    "tailwindcss": "^3.4.0",
+    "typescript": "latest",
+    "vite": "latest"
   }
 }

@@ -11,7 +11,9 @@
 
 use crate::core::perception::compress::{compress, CompressOutcome};
 use crate::core::perception::epoch::PerceptionEpoch;
-use crate::core::perception::frames::{aggregate_frames, epoch_for, AggregationError, FrameObservation};
+use crate::core::perception::frames::{
+    aggregate_frames, epoch_for, AggregationError, FrameObservation,
+};
 use crate::core::perception::graph::{GraphBounds, SemanticStateGraph};
 
 #[derive(Debug, Clone)]
@@ -52,7 +54,9 @@ pub fn build(
     let main = frames
         .iter()
         .find(|f| f.is_main_frame)
-        .ok_or(PipelineError::Aggregation(AggregationError::MissingMainFrame))?;
+        .ok_or(PipelineError::Aggregation(
+            AggregationError::MissingMainFrame,
+        ))?;
     let epoch = epoch_for(main, epoch_value);
 
     match compress(&graph.nodes, caps) {
@@ -77,7 +81,14 @@ pub fn build(
 }
 
 /// Live CDP capture boundary: wired with the browser runtime (Phase 2/3).
-pub fn capture(_frame_id: &str) -> Result<Vec<FrameObservation>, PipelineError> {
+///
+/// This is the contract between the browser runtime controller and the
+/// perception pipeline. When the runtime is attached and the CDP transport is
+/// ready, this path becomes the real capture entry point.
+pub fn capture(runtime: &crate::browser::controller::BrowserRuntimeSnapshot) -> Result<Vec<FrameObservation>, PipelineError> {
+    if !runtime.available() {
+        return Err(PipelineError::NotImplemented);
+    }
     Err(PipelineError::NotImplemented)
 }
 
@@ -93,7 +104,12 @@ mod tests {
             rendered_text: None,
             accessible_name: None,
             actionable: true,
-            bounds: Some(GeometryBounds { x: 0, y: 0, width: 4, height: 4 }),
+            bounds: Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 4,
+                height: 4,
+            }),
         }
     }
 
@@ -136,7 +152,11 @@ mod tests {
 
     #[test]
     fn bound_exceedance_is_surfaced() {
-        let tight = GraphBounds { max_nodes: Some(1), max_context_bytes: None, max_attributes_per_node: None };
+        let tight = GraphBounds {
+            max_nodes: Some(1),
+            max_context_bytes: None,
+            max_attributes_per_node: None,
+        };
         let out = build(&frames(), 1, "S1".into(), &tight).unwrap();
         assert!(out.bounded_exceeded);
         assert_eq!(out.actionable_count, 0);

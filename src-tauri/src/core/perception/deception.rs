@@ -57,13 +57,21 @@ mod tests {
             rendered_text: rendered.map(|s| s.into()),
             accessible_name: ax.map(|s| s.into()),
             actionable: true,
-            bounds: Some(GeometryBounds { x: 0, y: 0, width: 10, height: 10 }),
+            bounds: Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 10,
+                height: 10,
+            }),
         }
     }
 
     #[test]
     fn consistent_names() {
-        assert_eq!(assess(&node(Some("Pay"), Some("Pay"))), DeceptionVerdict::Consistent);
+        assert_eq!(
+            assess(&node(Some("Pay"), Some("Pay"))),
+            DeceptionVerdict::Consistent
+        );
     }
 
     #[test]

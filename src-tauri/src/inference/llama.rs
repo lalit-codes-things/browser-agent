@@ -6,8 +6,8 @@
 // C-146: per-call wall-clock timeout with abort callbacks; task abort cancels
 //        in-flight generation.
 
-use crate::core::reasoning::schema::ModelAction;
 use crate::core::reasoning::abort::AbortSignal;
+use crate::core::reasoning::schema::ModelAction;
 use crate::core::reasoning::timeout::InferenceTimeout;
 
 pub struct LlamaSession {
@@ -18,8 +18,13 @@ pub struct LlamaSession {
 pub struct InferenceEngine;
 
 impl InferenceEngine {
-    pub fn load_from_installed_models_dir(_path: &str, _expected_sha256: &str) -> Result<LlamaSession, crate::Error> {
-        Err(crate::Error::NotImplemented("InferenceEngine::load_from_installed_models_dir is scheduled".into()))
+    pub fn load_from_installed_models_dir(
+        _path: &str,
+        _expected_sha256: &str,
+    ) -> Result<LlamaSession, crate::Error> {
+        Err(crate::Error::NotImplemented(
+            "InferenceEngine::load_from_installed_models_dir is scheduled".into(),
+        ))
     }
 
     pub fn generate(
@@ -29,6 +34,8 @@ impl InferenceEngine {
         _timeout: &InferenceTimeout,
         _prompt: &str,
     ) -> Result<ModelAction, crate::Error> {
-        Err(crate::Error::NotImplemented("InferenceEngine::generate is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "InferenceEngine::generate is scheduled".into(),
+        ))
     }
 }

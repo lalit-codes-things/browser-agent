@@ -14,9 +14,9 @@
 //        explicitly permitted per measured Chromium behavior; unexpected network
 //        traffic is a first-class tracked metric and adversarial injector.
 
-pub mod proxy;
 pub mod canonical;
-pub mod intercept;
 pub mod classify;
-pub mod tls;
+pub mod intercept;
 pub mod pf;
+pub mod proxy;
+pub mod tls;

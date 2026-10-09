@@ -8,17 +8,17 @@
 // C-149: budgets; exceeding any triggers C-63 stop semantics.
 // C-60: no unwrap in policy-critical paths.
 
-pub mod task_normalizer;
-pub mod permission_check;
-pub mod task_authority;
-pub mod progress;
-pub mod state_machine;
-pub mod resume;
-pub mod human_checkpoint;
 pub mod budgets;
+pub mod human_checkpoint;
 pub mod intervention_epoch;
+pub mod permission_check;
+pub mod progress;
+pub mod resume;
+pub mod state_machine;
+pub mod task_authority;
+pub mod task_normalizer;
 
-pub use task_normalizer::TaskNormalizer;
 pub use permission_check::{PermissionCheck, PermissionOutcome};
-pub use progress::{TaskProgress, TaskState, ProgressMode};
+pub use progress::{ProgressMode, TaskProgress, TaskState};
 pub use state_machine::{StateMachine, TransitionError};
+pub use task_normalizer::TaskNormalizer;

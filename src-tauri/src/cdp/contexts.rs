@@ -13,6 +13,8 @@ pub struct ContextIndex;
 
 impl ContextIndex {
     pub fn context_for_frame(_frame_id: &str) -> Result<Option<ExecutionContext>, crate::Error> {
-        Err(crate::Error::NotImplemented("ContextIndex::context_for_frame is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ContextIndex::context_for_frame is scheduled".into(),
+        ))
     }
 }

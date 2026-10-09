@@ -12,10 +12,10 @@
 // C-158: verification is independent of the model; model self-report of
 //         success is never verification evidence.
 
-pub mod outcomes;
-pub mod evidence;
-pub mod tiers;
-pub mod postconditions;
-pub mod network_evidence;
 pub mod download_check;
+pub mod evidence;
+pub mod network_evidence;
+pub mod outcomes;
+pub mod postconditions;
 pub mod redaction;
+pub mod tiers;

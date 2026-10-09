@@ -11,7 +11,10 @@ pub enum DriftSeverity {
 pub struct DriftDetector;
 
 impl DriftDetector {
-    pub fn evaluate(_commitment: &crate::core::skills::commitment::SkillCommitment, _observed: &[String]) -> Option<DriftSeverity> {
+    pub fn evaluate(
+        _commitment: &crate::core::skills::commitment::SkillCommitment,
+        _observed: &[String],
+    ) -> Option<DriftSeverity> {
         None
     }
 }

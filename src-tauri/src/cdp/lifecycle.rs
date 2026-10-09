@@ -17,6 +17,8 @@ pub struct LifecycleWatcher;
 
 impl LifecycleWatcher {
     pub fn subscribe() -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("LifecycleWatcher::subscribe is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "LifecycleWatcher::subscribe is scheduled".into(),
+        ))
     }
 }

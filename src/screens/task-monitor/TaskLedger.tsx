@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { AppState, TaskStatus } from "../../state/app";
+import { AppState, TaskStatus, AppEvent } from "../../state/app";
 
 const STATUS_COLOR: Record<TaskStatus, string> = {
   PENDING: "text-muted",
@@ -10,6 +10,11 @@ const STATUS_COLOR: Record<TaskStatus, string> = {
   FAILED: "sem-violation",
   ABORTED: "sem-violation",
   PARKED: "sem-caution",
+};
+
+const EXEC_OUTCOME_LABEL: Record<string, string> = {
+  true: "OK",
+  false: "FAIL",
 };
 
 function statusClass(status: TaskStatus): string {
@@ -45,24 +50,32 @@ export const TaskLedger = memo(function TaskLedger({ state }: { state: AppState 
               const policy = event.type === "POLICY_DECISION" ? event.payload : null;
               const verification =
                 event.type === "VERIFICATION_OUTCOME" ? event.payload : null;
+              const execution =
+                event.type === "EXECUTION_RESULT" ? event.payload : null;
               const task = state.task;
+
+              const eventLabel = (event.type)
+                .replace("_", " ")
+                .toUpperCase();
 
               return (
                 <tr key={i} className="border-b-1px line">
                   <td className="px-3 py-2 text-muted">{i + 1}</td>
                   <td className="px-3 py-2">{task?.stepLabel ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted">{policy?.actionClass ?? "—"}</td>
+                  <td className="px-3 py-2 text-muted">{policy?.action_class ?? execution?.action ?? "—"}</td>
                   <td className="px-3 py-2 text-primary data-mono uppercase">
-                    {event.type.replace("_", " ")}
+                    {eventLabel}
                   </td>
-                  <td className="px-3 py-2 text-muted">{policy?.actionClass ?? "—"}</td>
+                  <td className="px-3 py-2 text-muted">{policy?.action_class ?? execution?.action ?? "—"}</td>
                   <td className={`px-3 py-2 ${policy ? "text-primary data-mono" : "text-muted"}`}>
                     {policy?.tier ?? "—"}
                   </td>
                   <td className={`px-3 py-2 ${policy ? "text-primary" : "text-muted"}`}>
                     {policy?.verdict ?? "—"}
                   </td>
-                  <td className="px-3 py-2 text-muted">PENDING</td>
+                  <td className={`px-3 py-2 ${execution ? "text-primary" : "text-muted"}`}>
+                    {execution ? EXEC_OUTCOME_LABEL[execution.success ? "true" : "false"] ?? "—" : "—"}
+                  </td>
                   <td className={`px-3 py-2 ${verification ? "text-primary" : "text-muted"}`}>
                     {verification?.outcome ?? "—"}
                   </td>

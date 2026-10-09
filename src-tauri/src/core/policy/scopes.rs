@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub enum CredentialScope {
     ExactOrigin { origin: String },
     MultiSubdomain { domain: String },
-    PaymentToken,
+    SensitiveToken,
 }
 
 impl CredentialScope {
@@ -18,7 +18,7 @@ impl CredentialScope {
         match self {
             CredentialScope::ExactOrigin { origin } => origin.clone(),
             CredentialScope::MultiSubdomain { domain } => format!("*.{}", domain),
-            CredentialScope::PaymentToken => "payment-token".into(),
+            CredentialScope::SensitiveToken => "sensitive-token".into(),
         }
     }
 }

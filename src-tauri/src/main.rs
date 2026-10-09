@@ -5,8 +5,6 @@
 // (C-02, C-156)
 
 fn main() {
-    // Initialize logging/tracing in release builds when enabled.
-    // For Phase 1 we keep this minimal and explicit.
     let _ = tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -14,9 +12,8 @@ fn main() {
         )
         .try_init();
 
-    browser_agent_lib::init();
-
-    // Real Tauri bootstrap happens here once tauri.conf.json is wired.
-    // We do not start the app behind a fake success path.
-    tracing::info!("browser-agent runtime placeholder initialized");
+    if let Err(error) = browser_agent_lib::run() {
+        eprintln!("Browser Agent failed to start: {error}");
+        std::process::exit(1);
+    }
 }

@@ -20,7 +20,7 @@ Thumbs.db
 **/target/
 
 # Frontend build
-**/dist/
+        "src/**/*.js"
 **/build/
 
 # Local runtime data paths (Phase 10 layout); never commit these

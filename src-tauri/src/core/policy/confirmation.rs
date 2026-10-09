@@ -22,12 +22,28 @@ pub struct ConfirmationRequirement {
 pub struct ConfirmationPolicy;
 
 impl ConfirmationPolicy {
-    pub fn requirement(_tier: AuthorizationTier, _action_class: crate::core::policy::classes::SideEffectClass) -> ConfirmationRequirement {
-        // Placeholder: real confirmation policy is Policy-owned and audited.
+    pub fn requirement(
+        tier: AuthorizationTier,
+        action_class: crate::core::policy::classes::SideEffectClass,
+    ) -> ConfirmationRequirement {
+        let required = !matches!(
+            (tier, action_class.effective_class()),
+            (
+                AuthorizationTier::None,
+                crate::core::policy::classes::SideEffectClass::Read
+            ) | (
+                AuthorizationTier::PolicyOnly,
+                crate::core::policy::classes::SideEffectClass::Read
+            )
+        );
         ConfirmationRequirement {
-            required: false,
-            tier: _tier,
-            reason: Some("Confirmation policy is scheduled".into()),
+            required,
+            tier,
+            reason: Some(if required {
+                "Trusted confirmation is required".into()
+            } else {
+                "Read-only policy action".into()
+            }),
         }
     }
 }

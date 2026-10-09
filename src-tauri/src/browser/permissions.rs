@@ -26,13 +26,34 @@ pub struct PermissionManager;
 impl PermissionManager {
     pub fn default_deny_all() -> Vec<PermissionGrant> {
         vec![
-            PermissionGrant { kind: PermissionKind::Geolocation, granted: false },
-            PermissionGrant { kind: PermissionKind::Notifications, granted: false },
-            PermissionGrant { kind: PermissionKind::ClipboardRead, granted: false },
-            PermissionGrant { kind: PermissionKind::ClipboardWrite, granted: true },
-            PermissionGrant { kind: PermissionKind::Camera, granted: false },
-            PermissionGrant { kind: PermissionKind::Microphone, granted: false },
-            PermissionGrant { kind: PermissionKind::PaymentHandler, granted: false },
+            PermissionGrant {
+                kind: PermissionKind::Geolocation,
+                granted: false,
+            },
+            PermissionGrant {
+                kind: PermissionKind::Notifications,
+                granted: false,
+            },
+            PermissionGrant {
+                kind: PermissionKind::ClipboardRead,
+                granted: false,
+            },
+            PermissionGrant {
+                kind: PermissionKind::ClipboardWrite,
+                granted: false,
+            },
+            PermissionGrant {
+                kind: PermissionKind::Camera,
+                granted: false,
+            },
+            PermissionGrant {
+                kind: PermissionKind::Microphone,
+                granted: false,
+            },
+            PermissionGrant {
+                kind: PermissionKind::PaymentHandler,
+                granted: false,
+            },
         ]
     }
 }

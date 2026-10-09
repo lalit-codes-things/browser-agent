@@ -27,7 +27,12 @@ pub enum SkillStatus {
 pub struct SkillStore;
 
 impl SkillStore {
-    pub fn record(_id: &str, _version: &str, _origin_scope: &str, _commitment_hash: &str) -> SkillRecord {
+    pub fn record(
+        _id: &str,
+        _version: &str,
+        _origin_scope: &str,
+        _commitment_hash: &str,
+    ) -> SkillRecord {
         SkillRecord {
             id: _id.into(),
             version: _version.into(),

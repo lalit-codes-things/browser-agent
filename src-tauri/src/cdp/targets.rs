@@ -24,6 +24,8 @@ pub struct TargetRegistry;
 
 impl TargetRegistry {
     pub fn register(_target: CdpTarget) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("TargetRegistry::register is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "TargetRegistry::register is scheduled".into(),
+        ))
     }
 }

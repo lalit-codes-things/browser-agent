@@ -11,13 +11,13 @@
 // in core/policy/ (declared in mod.rs); engine.rs re-exports them.
 
 pub use super::classes::SideEffectClass;
-pub use super::tiers::{AuthorizationTier, TierDerivation, TierDerivationInput};
+pub use super::confirmation::{ConfirmationPolicy, ConfirmationRequirement};
+pub use super::declassify::DeclassificationPolicy;
+pub use super::locale_amount::AmountDisplay;
+pub use super::provenance::{DataFlowClass, DataFlowSummary};
+pub use super::rate_limit::ConfirmationRateLimiter;
+pub use super::reconcile::{Reconciliation, ReconciliationResult};
+pub use super::recovery_mode::RecoveryBudgetPolicy;
 pub use super::scopes::CredentialScope;
 pub use super::taint::TaintFlag;
-pub use super::provenance::{DataFlowClass, DataFlowSummary};
-pub use super::declassify::DeclassificationPolicy;
-pub use super::reconcile::{Reconciliation, ReconciliationResult};
-pub use super::locale_amount::AmountDisplay;
-pub use super::recovery_mode::RecoveryBudgetPolicy;
-pub use super::rate_limit::ConfirmationRateLimiter;
-pub use super::confirmation::{ConfirmationPolicy, ConfirmationRequirement};
+pub use super::tiers::{AuthorizationTier, TierDerivation, TierDerivationInput};

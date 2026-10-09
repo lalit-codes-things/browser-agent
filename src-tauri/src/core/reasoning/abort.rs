@@ -1,11 +1,7 @@
-// Abort wiring.
-//
-// C-146: task abort cancels in-flight generation.
-//
-// This is a typed control surface. In Phase 1 we expose the abort signal;
-// the inference backend wires it to llama.cpp Metal callbacks.
-
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+};
 
 pub struct AbortSignal {
     flag: Arc<AtomicBool>,
@@ -13,7 +9,9 @@ pub struct AbortSignal {
 
 impl AbortSignal {
     pub fn new() -> Self {
-        Self { flag: Arc::new(AtomicBool::new(false)) }
+        Self {
+            flag: Arc::new(AtomicBool::new(false)),
+        }
     }
 
     pub fn check(&self) -> bool {
@@ -33,13 +31,21 @@ impl AbortSignal {
     }
 }
 
+impl Default for AbortSignal {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub struct AbortController {
     signal: AbortSignal,
 }
 
 impl AbortController {
     pub fn new() -> Self {
-        Self { signal: AbortSignal::new() }
+        Self {
+            signal: AbortSignal::new(),
+        }
     }
 
     pub fn signal(&self) -> &AbortSignal {
@@ -48,5 +54,11 @@ impl AbortController {
 
     pub fn abort(&self) {
         self.signal.request_abort();
+    }
+}
+
+impl Default for AbortController {
+    fn default() -> Self {
+        Self::new()
     }
 }

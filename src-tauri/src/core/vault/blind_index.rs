@@ -26,11 +26,18 @@ const BLIND_INDEX_INFO: &[u8] = b"browser-agent-vault-blind-index-v1";
 /// recalibration or re-key is explicit and auditable rather than silent.
 pub const BLIND_INDEX_DOMAIN_LABEL: &str = "BLIND_INDEX";
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct BlindIndexKey {
     raw: [u8; 32],
 }
 
+impl std::fmt::Debug for BlindIndexKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("BlindIndexKey")
+            .field("value", &"[redacted]")
+            .finish()
+    }
+}
 impl BlindIndexKey {
     /// Derive a blind-index key from the vault master key using a separate
     /// HKDF domain. The master key here is the raw KEK/master key material;
@@ -109,8 +116,7 @@ mod tests {
         let blind = BlindIndexKey::derive_from_vault_master_key(master);
         let mut other = [0u8; 32];
         let hk = Hkdf::<Sha256>::new(Some(master), b"encryption-v1");
-        hk.expand(b"encryption-v1", &mut other)
-            .expect("expand");
+        hk.expand(b"encryption-v1", &mut other).expect("expand");
         assert_ne!(blind.as_bytes(), &other);
     }
 
@@ -125,6 +131,9 @@ mod tests {
         assert_ne!(index, *key.as_bytes());
         // A naive inspection of the column must not reveal the plaintext
         // origin.
-        assert!(!index.as_ref().contains(&b"payee.example"[..]));
+        assert!(!index
+            .as_ref()
+            .windows(b"payee.example".len())
+            .any(|window| window == b"payee.example"));
     }
 }

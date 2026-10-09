@@ -18,10 +18,10 @@
 // payloads. That is enforced here and by the intended architecture; any
 // reachable QR-decode path is a defect to remove.
 
-pub mod payment_field;
 pub mod clipboard;
+pub mod payment_field;
 pub mod qr_region;
 
-pub use payment_field::*;
 pub use clipboard::*;
+pub use payment_field::*;
 pub use qr_region::*;

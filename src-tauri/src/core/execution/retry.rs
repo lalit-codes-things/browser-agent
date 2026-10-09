@@ -23,9 +23,7 @@ impl RetryPolicy {
                 // C-92: never auto-retry irreversible after LIKELY_SUCCESS or UNKNOWN.
                 RetryDecision::DoNotRetry
             }
-            SideEffectClass::Read | SideEffectClass::ReversibleWrite => {
-                RetryDecision::Retry
-            }
+            SideEffectClass::Read | SideEffectClass::ReversibleWrite => RetryDecision::Retry,
             SideEffectClass::Unknown => {
                 // C-09: unknown consequential actions treated as irreversible.
                 RetryDecision::DoNotRetry

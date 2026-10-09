@@ -11,6 +11,8 @@ impl PfHelper {
     }
 
     pub fn enforce_egress_rule(_rule: &str) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("PfHelper::enforce_egress_rule is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "PfHelper::enforce_egress_rule is scheduled".into(),
+        ))
     }
 }

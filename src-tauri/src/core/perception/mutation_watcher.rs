@@ -99,7 +99,10 @@ pub struct WatcherPacing {
 
 impl WatcherPacing {
     pub fn new(min_interval: Duration) -> Self {
-        Self { min_interval, last: None }
+        Self {
+            min_interval,
+            last: None,
+        }
     }
 
     pub fn ready(&mut self, now: Instant) -> bool {
@@ -177,7 +180,11 @@ mod tests {
         };
         let before = w.current_epoch();
         w.observe(&unclassified, t0);
-        assert_ne!(w.current_epoch(), before, "uncertain mutation must invalidate epoch");
+        assert_ne!(
+            w.current_epoch(),
+            before,
+            "uncertain mutation must invalidate epoch"
+        );
     }
 
     #[test]

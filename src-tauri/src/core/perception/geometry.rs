@@ -43,7 +43,8 @@ pub fn classify_visibility(node: &GeometryBounds, viewport: Viewport) -> Visibil
     }
     let right = node.x + node.width as i32;
     let bottom = node.y + node.height as i32;
-    if right > viewport.width as i32 || bottom > viewport.height as i32 || node.x < 0 || node.y < 0 {
+    if right > viewport.width as i32 || bottom > viewport.height as i32 || node.x < 0 || node.y < 0
+    {
         return Visibility::Clipped;
     }
     Visibility::Visible
@@ -53,15 +54,26 @@ pub fn classify_visibility(node: &GeometryBounds, viewport: Viewport) -> Visibil
 mod tests {
     use super::*;
 
-    const VP: Viewport = Viewport { width: 1200, height: 800 };
+    const VP: Viewport = Viewport {
+        width: 1200,
+        height: 800,
+    };
 
     fn bounds(x: i32, y: i32, w: u32, h: u32) -> GeometryBounds {
-        GeometryBounds { x, y, width: w, height: h }
+        GeometryBounds {
+            x,
+            y,
+            width: w,
+            height: h,
+        }
     }
 
     #[test]
     fn visible_node() {
-        assert_eq!(classify_visibility(&bounds(10, 10, 100, 40), VP), Visibility::Visible);
+        assert_eq!(
+            classify_visibility(&bounds(10, 10, 100, 40), VP),
+            Visibility::Visible
+        );
     }
 
     #[test]
@@ -73,17 +85,26 @@ mod tests {
 
     #[test]
     fn offscreen_right() {
-        assert_eq!(classify_visibility(&bounds(1300, 10, 100, 40), VP), Visibility::Offscreen);
+        assert_eq!(
+            classify_visibility(&bounds(1300, 10, 100, 40), VP),
+            Visibility::Offscreen
+        );
     }
 
     #[test]
     fn offscreen_above() {
-        assert_eq!(classify_visibility(&bounds(10, -100, 100, 40), VP), Visibility::Offscreen);
+        assert_eq!(
+            classify_visibility(&bounds(10, -100, 100, 40), VP),
+            Visibility::Offscreen
+        );
     }
 
     #[test]
     fn clipped_partially_visible() {
-        assert_eq!(classify_visibility(&bounds(1150, 10, 100, 40), VP), Visibility::Clipped);
+        assert_eq!(
+            classify_visibility(&bounds(1150, 10, 100, 40), VP),
+            Visibility::Clipped
+        );
         let v = classify_visibility(&bounds(1150, 10, 100, 40), VP);
         assert!(!v.is_actionable_candidate());
     }

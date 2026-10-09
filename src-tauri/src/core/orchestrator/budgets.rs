@@ -8,8 +8,8 @@
 //
 // Numeric values are undefined in Revision 2. Do not invent them here.
 
-use std::time::Instant;
 use crate::security::clocks::MonotonicClock;
+use std::time::Instant;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BudgetSnapshot {
@@ -43,7 +43,13 @@ impl BudgetPolicy {
         }
     }
 
-    pub fn snapshot(&self, steps: u32, llm_calls: u32, recovery_attempts: u32, confirmations: u32) -> BudgetSnapshot {
+    pub fn snapshot(
+        &self,
+        steps: u32,
+        llm_calls: u32,
+        recovery_attempts: u32,
+        confirmations: u32,
+    ) -> BudgetSnapshot {
         BudgetSnapshot {
             steps_used: steps,
             llm_calls_used: llm_calls,

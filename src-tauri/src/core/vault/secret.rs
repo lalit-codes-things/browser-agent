@@ -59,12 +59,16 @@ impl SecretBuffer {
         self.buf.to_vec()
     }
 
+    #[cfg(test)]
+    pub fn as_bytes_for_test(&self) -> &[u8] {
+        &self.buf
+    }
+
     /// Compare without leaking timing-safe content through equality.
     ///
     /// This is an explicit constant-time comparison for secret material.
-    pub fn eq(&self, other: &[u8]) -> bool {
-        self.buf.len() == other.len()
-            && self.buf.iter().zip(other.iter()).all(|(a, b)| a == b)
+    pub fn constant_time_eq(&self, other: &[u8]) -> bool {
+        self.buf.len() == other.len() && self.buf.iter().zip(other.iter()).all(|(a, b)| a == b)
     }
 }
 
@@ -91,7 +95,7 @@ impl std::fmt::Display for SecretBuffer {
 
 impl PartialEq for SecretBuffer {
     fn eq(&self, other: &Self) -> bool {
-        self.eq(&other.buf)
+        self.constant_time_eq(&other.buf)
     }
 }
 
@@ -106,12 +110,9 @@ impl std::hash::Hash for SecretBuffer {
 
 // Explicitly deny serde serialization of raw secret buffer content so
 // accidental serialization paths fail at compile time (not at runtime).
+#[allow(dead_code)]
 mod sealed_serde {
-    use crate::core::vault::secret::SecretBuffer;
-
-    // Not implementing Serialize here means any struct containing
-    // SecretBuffer will fail to derive Serialize unless the field is
-    // explicitly handled (e.g. by redaction). This is the intended guard.
+    // SecretBuffer intentionally has no serde implementation.
     pub struct Dummy;
 }
 
@@ -130,8 +131,12 @@ impl VaultPassword {
     }
 
     /// Compare without exposing content.
-    pub fn eq(&self, other: &[u8]) -> bool {
-        self.inner.eq(other)
+    pub fn constant_time_eq(&self, other: &[u8]) -> bool {
+        self.inner.constant_time_eq(other)
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
     }
 
     pub fn len(&self) -> usize {
@@ -146,11 +151,14 @@ impl VaultPassword {
         self.inner.clone_to_owned()
     }
 
-    /// Test-only accessor for the wrapped secret buffer. Only used in tests
-    /// that assert redaction behavior; never exposed to the UI or IPC layer.
     #[cfg(test)]
     pub fn inner_for_test(&self) -> &SecretBuffer {
         &self.inner
+    }
+
+    #[cfg(test)]
+    pub fn as_bytes_for_test(&self) -> &[u8] {
+        &self.inner.buf
     }
 }
 
@@ -195,24 +203,15 @@ impl ProcessHardening {
     pub fn disable_core_dumps() -> Result<(), crate::Error> {
         #[cfg(target_os = "macos")]
         {
-            use std::ffi::CString;
-            use std::ptr;
-
-            extern "C" {
-                fn setrlimit(resource: libc::c_int, rlim: *const libc::rlimit) -> libc::c_int;
-            }
-
             let rlim = libc::rlimit {
                 rlim_cur: 0,
                 rlim_max: 0,
             };
-            let res = unsafe { setrlimit(libc::RLIMIT_CORE, &rlim) };
+            let res = unsafe { libc::setrlimit(libc::RLIMIT_CORE, &rlim) };
             if res == 0 {
                 Ok(())
             } else {
-                Err(crate::Error::Internal(
-                    "failed to set RLIMIT_CORE=0".into()
-                ))
+                Err(crate::Error::Internal("failed to set RLIMIT_CORE=0".into()))
             }
         }
 
@@ -247,7 +246,7 @@ mod tests {
 
     #[test]
     fn secret_buffer_is_zeroized_after_drop() {
-        let mut buf = SecretBuffer::from_bytes(b"topsecret");
+        let buf = SecretBuffer::from_bytes(b"topsecret");
         assert_eq!(buf.len(), 9);
         // Clone before drop so we can observe the buffer contents of the
         // original without relying on Debug (which is redacted).
@@ -258,7 +257,7 @@ mod tests {
     #[test]
     fn vault_password_inner_is_accessible_to_tests_only_via_inner_for_test() {
         let pw = VaultPassword::new(b"hunter2");
-        assert!(pw.inner_for_test().eq(b"hunter2"));
+        assert!(pw.inner_for_test().constant_time_eq(b"hunter2"));
     }
 
     #[test]
@@ -280,9 +279,10 @@ mod tests {
         let a = SecretBuffer::from_bytes(b"abc");
         let b = SecretBuffer::from_bytes(b"abc");
         let c = SecretBuffer::from_bytes(b"xyz");
-        assert!(a.eq(b"abc"));
-        assert!(!a.eq(b"xyz"));            assert!(a.eq(&b.inner_for_test().buf[..]));
-            assert!(!a.eq(&c.inner_for_test().buf[..]));
+        assert!(a.constant_time_eq(b"abc"));
+        assert!(!a.constant_time_eq(b"xyz"));
+        assert!(a.constant_time_eq(b.as_bytes_for_test()));
+        assert!(!a.constant_time_eq(c.as_bytes_for_test()));
     }
 
     #[test]

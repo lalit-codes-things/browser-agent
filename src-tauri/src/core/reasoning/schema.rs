@@ -10,16 +10,35 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "UPPERCASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ModelAction {
-    Navigate { url: String },
-    Click { semantic_reference: String },
-    Type { semantic_reference: String, text: String },
-    Select { semantic_reference: String, value: String },
-    Scroll { direction: ScrollDirection, amount: Option<u32> },
-    Wait { reason: String },
-    PressKey { key: String },
-    SecureFill { field_reference: String },
+    Navigate {
+        url: String,
+    },
+    Click {
+        semantic_reference: String,
+    },
+    Type {
+        semantic_reference: String,
+        text: String,
+    },
+    Select {
+        semantic_reference: String,
+        value: String,
+    },
+    Scroll {
+        direction: ScrollDirection,
+        amount: Option<u32>,
+    },
+    Wait {
+        reason: String,
+    },
+    PressKey {
+        key: String,
+    },
+    SecureFill {
+        field_reference: String,
+    },
     RequestConfirmation,
 }
 
@@ -58,7 +77,10 @@ mod tests {
     #[test]
     fn navigate_is_read() {
         assert_eq!(
-            ModelAction::Navigate { url: "https://example.test".into() }.action_class(),
+            ModelAction::Navigate {
+                url: "https://example.test".into()
+            }
+            .action_class(),
             SideEffectClass::Read
         );
     }

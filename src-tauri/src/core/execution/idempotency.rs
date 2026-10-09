@@ -10,6 +10,9 @@ pub struct Idempotency;
 
 impl Idempotency {
     pub fn may_retry_without_verification(class: SideEffectClass) -> bool {
-        matches!(class, SideEffectClass::Read | SideEffectClass::ReversibleWrite)
+        matches!(
+            class,
+            SideEffectClass::Read | SideEffectClass::ReversibleWrite
+        )
     }
 }

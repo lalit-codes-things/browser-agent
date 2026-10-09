@@ -20,12 +20,12 @@
 // C-107: role-to-field residual risk measured by form-field-swap and invariant-
 //        failure rates and feeds root-cause taxonomy.
 
-pub mod store;
-pub mod versions;
 pub mod commitment;
+pub mod drift;
 pub mod pipeline;
-pub mod sanitize_allowlist;
-pub mod shadow;
 pub mod promotion;
 pub mod revocation;
-pub mod drift;
+pub mod sanitize_allowlist;
+pub mod shadow;
+pub mod store;
+pub mod versions;

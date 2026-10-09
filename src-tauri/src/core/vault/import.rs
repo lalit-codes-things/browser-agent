@@ -8,8 +8,8 @@
 // Import authorization is task-authority-driven and audit-logged.
 
 use crate::core::vault::items::{BlindIndexValue, VaultItemRef};
-use crate::core::vault::secret::VaultPassword;
 use crate::core::vault::keys::KeyHierarchy;
+use crate::core::vault::secret::VaultPassword;
 
 pub struct VaultImport;
 
@@ -23,10 +23,8 @@ impl VaultImport {
     /// hierarchy. The origin plaintext is not stored; only the blind-index
     /// value is.
     pub fn blind_index_for(authority: &KeyHierarchy, origin: &str) -> BlindIndexValue {
-        let idx = crate::core::vault::blind_index::blind_index_for(
-            &authority.blind_index_key,
-            origin,
-        );
+        let idx =
+            crate::core::vault::blind_index::blind_index_for(&authority.blind_index_key, origin);
         BlindIndexValue { value: idx }
     }
 
@@ -38,7 +36,9 @@ impl VaultImport {
     pub fn import_item(
         _hierarchy: &KeyHierarchy,
         _master_password: &VaultPassword,
-        _redacted_descriptor: Option<crate::core::verification::redaction::RedactedSecretDescriptor>,
+        _redacted_descriptor: Option<
+            crate::core::verification::redaction::RedactedSecretDescriptor,
+        >,
     ) -> Result<VaultItemRef, crate::Error> {
         Err(crate::Error::NotImplemented(
             "VaultImport::import_item persistence is scheduled".into(),
@@ -58,7 +58,6 @@ mod tests {
         let pw = VaultPassword::new(b"hunter2");
         let kh = KeyHierarchy::from_master_password(&pw, header).unwrap();
         let bi = VaultImport::blind_index_for(&kh, "https://payee.example");
-        let import = VaultImport;
         assert!(!format!("{:?}", bi).contains("payee.example"));
         assert!(!format!("{:?}", kh).contains("hunter2"));
     }

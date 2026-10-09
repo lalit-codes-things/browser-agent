@@ -7,6 +7,8 @@ pub struct TlsVerifier;
 
 impl TlsVerifier {
     pub fn verify_peer(_chain: &[String]) -> Result<bool, crate::Error> {
-        Err(crate::Error::NotImplemented("TlsVerifier::verify_peer is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "TlsVerifier::verify_peer is scheduled".into(),
+        ))
     }
 }

@@ -4,10 +4,10 @@
 //        NATIVE_CONFIRM / BIOMETRIC_CONFIRM.
 // C-08: tier derived by Policy using trusted runtime data.
 // C-14, C-15, C-22, C-39: biometric/native confirmation is bound to the
-//        canonical payment commitment, not to a reusable boolean.
+//        canonical action commitment, not to a reusable boolean.
 //
 // Values and thresholds are wired to the canonical commitment and to
-// state_epoch rather than to a mutable "payment_approved" flag.
+// state_epoch rather than to a mutable "approved" flag.
 
 use serde::{Deserialize, Serialize};
 
@@ -31,7 +31,7 @@ impl AuthorizationTier {
 
     // Fail upward: uncertainty in tier derivation must not downgrade.
     pub fn from_opt_tier(opt: Option<Self>) -> Self {
-        opt.unwrap_or(Self::NativeConfirm)
+        opt.unwrap_or(Self::BiometricConfirm)
     }
 
     /// Tightness of the approval mechanism. This is informational here; the
@@ -72,97 +72,122 @@ impl TierDerivation {
     }
 }
 
-// --- Biometric / native authorization capability binding ---
-
-use crate::core::payment::commitment::{
-    OperationType, PaymentAuthorizationCapability, PaymentCommitment,
-};
-
-/// Tie a fresh-biometric / native confirmation to the exact canonical
-/// payment commitment.
-///
-/// Returns an authorization capability only when the commitment is well-
-/// formed and unexpired relative to the passed monotonic time. This is the
-/// abstraction a platform Touch ID path would call before issuing the
-/// prompt.
-///
-/// The capability is created by the platform path under real Touch ID
-/// wiring. Here we model the shape and expose the verification used by the
-/// execution path.
-pub fn authorize_payment_commitment(
-    commitment: &PaymentCommitment,
-    operation_type: OperationType,
-) -> PaymentAuthorizationCapability {
-    let nonce: [u8; 32] = rand::random();
-    PaymentAuthorizationCapability::new(
-        commitment,
-        operation_type,
-        nonce,
-        crate::security::clocks::MonotonicClock::now_nanos(),
-        300_000,
-    )
-}
-
-/// Verify that an authorization capability is still valid for a given
-/// commitment, monotonic time, and nonce.
-///
-/// If amount/merchant/recipient/payment-method/order/mandate-scope/epoch
-/// changed since the commitment was created, the commitment fingerprint
-/// changes and this returns false.
-///
-/// This lives in tiers.rs so the Policy layer can expose it to the execution
-/// layer without duplicating the binding semantics.
-pub fn verify_authorization_capability(
-    capability: &PaymentAuthorizationCapability,
-    commitment: &PaymentCommitment,
-    nonce: &[u8; 32],
-    now_monotonic: u64,
-) -> bool {
-    capability.authorizes_commitment(commitment)
-        && capability.matches_nonce(nonce)
-        && !capability.is_expired(now_monotonic)
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::AuthorizationTier;
+    use crate::core::action::ActionAuthorizationCapability;
+    use crate::core::action::OperationType;
+    use crate::core::action::commitment::ActionCommitment;
+
+    #[allow(unused_imports, non_upper_case_globals)]
+    const _tier_test_imports: () = { let _ = (AuthorizationTier::None,); };
+
+    #[allow(dead_code)]
+    fn _tier_test_types() {
+        let _a: SideEffectClass = SideEffectClass::Read;
+        let _b: TaintFlag = TaintFlag::PageDerived;
+        let _c: DataFlowSummary = DataFlowSummary::default();
+        let _d: TaskAuthority = TaskAuthority::default();
+    }
+
+    #[allow(dead_code)]
+    type SideEffectClass = crate::core::policy::classes::SideEffectClass;
+    #[allow(dead_code)]
+    type TaintFlag = crate::core::policy::taint::TaintFlag;
+    #[allow(dead_code)]
+    type DataFlowSummary = crate::core::policy::provenance::DataFlowSummary;
+    #[allow(dead_code)]
+    type TaskAuthority = crate::core::orchestrator::task_authority::TaskAuthority;
+    #[allow(dead_code)]
+    type TaskConstraints = crate::core::orchestrator::task_authority::TaskConstraints;
+    #[allow(dead_code)]
+    type DataFlowClass = crate::core::policy::provenance::DataFlowClass;
+
+    impl Default for SideEffectClass {
+        fn default() -> Self { Self::Read }
+    }
+    impl Default for TaintFlag {
+        fn default() -> Self { Self::None }
+    }
+    impl Default for DataFlowSummary {
+        fn default() -> Self {
+            Self {
+                source: String::new(),
+                sink: String::new(),
+                flow_class: DataFlowClass::TrustedRuntime,
+                verdict: None,
+            }
+        }
+    }
+    impl Default for TaskAuthority {
+        fn default() -> Self {
+            Self {
+                task_id: String::new(),
+                bounded_origins: vec![],
+                allowed_actions: vec![],
+                constraints: TaskConstraints::default(),
+            }
+        }
+    }
+    impl Default for TaskConstraints {
+        fn default() -> Self {
+            Self {
+                max_steps: None,
+                max_llm_calls: None,
+                max_task_duration_ms: None,
+                max_confirmations: None,
+                allowed_network_destination_classes: vec![],
+                high_stakes_threshold_amount: None,
+            }
+        }
+    }
+    impl Default for DataFlowClass {
+        fn default() -> Self { Self::TrustedRuntime }
+    }
+
+    use crate::core::action::authz::{authorize_action_commitment, verify_action_authorization_capability};
+
 
     fn now_monotonic() -> u64 {
         1_000_000
     }
 
-    fn payable() -> crate::core::payment::payment::Payable {
-        crate::core::payment::payment::Payable {
-            origin_authority: "native:auth".into(),
-            recipient: "merchant@payee".into(),
-            amount_minor_units: 1000,
-            currency: crate::core::payment::payment::Currency::INR,
-            payment_method: crate::core::payment::payment::PaymentMethod::Upi,
-            order: None,
-            mandate_scope: None,
-        }
+    fn destination() -> String {
+        "merchant@payee".into()
     }
 
     #[test]
     fn authorization_is_bound_to_commitment() {
-        let commitment =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let cap = authorize_action_commitment(&commitment, OperationType::ConsequentialAction);
         assert!(cap.authorizes_commitment(&commitment));
     }
 
     #[test]
     fn authorization_does_not_authorize_different_commitment() {
-        let base =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let cap = authorize_payment_commitment(&base, OperationType::Payment);
-        let changed = PaymentCommitment::new(
+        let base = ActionCommitment::new(
             "task-1".into(),
             None,
-            crate::core::payment::payment::Payable {
-                recipient: "other@merchant".into(),
-                ..payable()
-            },
+            "native:auth".into(),
+            destination(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let cap = authorize_action_commitment(&base, OperationType::ConsequentialAction);
+        let changed = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "other@merchant".into(),
             7,
             300_000,
             now_monotonic(),
@@ -172,20 +197,41 @@ mod tests {
 
     #[test]
     fn authorization_invalidated_by_epoch_change() {
-        let commitment =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
-        let changed_epoch =
-            PaymentCommitment::new("task-1".into(), None, payable(), 8, 300_000, now_monotonic());
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let cap = authorize_action_commitment(&commitment, OperationType::ConsequentialAction);
+        let changed_epoch = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            8,
+            300_000,
+            now_monotonic(),
+        );
         assert!(!cap.authorizes_commitment(&changed_epoch));
     }
 
     #[test]
     fn verification_uses_capability_binding() {
-        let commitment =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
-        assert!(verify_authorization_capability(
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let cap = authorize_action_commitment(&commitment, OperationType::ConsequentialAction);
+        assert!(verify_action_authorization_capability(
             &cap,
             &commitment,
             &cap.authorization_nonce,
@@ -195,11 +241,18 @@ mod tests {
 
     #[test]
     fn wrong_nonce_fails_verification() {
-        let commitment =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
-        let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
+        let cap = authorize_action_commitment(&commitment, OperationType::ConsequentialAction);
         let wrong_nonce: [u8; 32] = rand::random();
-        assert!(!verify_authorization_capability(
+        assert!(!verify_action_authorization_capability(
             &cap,
             &commitment,
             &wrong_nonce,
@@ -209,11 +262,18 @@ mod tests {
 
     #[test]
     fn expiry_invalidates_verification() {
-        let commitment =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 100, now_monotonic());
-        let cap = authorize_payment_commitment(&commitment, OperationType::Payment);
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            7,
+            100,
+            now_monotonic(),
+        );
+        let cap = authorize_action_commitment(&commitment, OperationType::ConsequentialAction);
         let later = cap.expires_at_monotonic + 1;
-        assert!(!verify_authorization_capability(
+        assert!(!verify_action_authorization_capability(
             &cap,
             &commitment,
             &cap.authorization_nonce,
@@ -222,18 +282,25 @@ mod tests {
     }
 
     #[test]
-    fn verify_authorization_capability_is_reachable_from_policy_layer() {
-        let commitment =
-            PaymentCommitment::new("task-1".into(), None, payable(), 7, 300_000, now_monotonic());
+    fn verify_action_authorization_capability_is_reachable_from_policy_layer() {
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            destination(),
+            7,
+            300_000,
+            now_monotonic(),
+        );
         let nonce: [u8; 32] = rand::random();
-        let cap = PaymentAuthorizationCapability::new(
+        let cap = ActionAuthorizationCapability::new(
             &commitment,
-            OperationType::Payment,
+            OperationType::ConsequentialAction,
             nonce,
             now_monotonic(),
             300_000,
         );
-        assert!(verify_authorization_capability(
+        assert!(verify_action_authorization_capability(
             &cap,
             &commitment,
             &nonce,

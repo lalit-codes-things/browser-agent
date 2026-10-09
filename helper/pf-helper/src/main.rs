@@ -98,13 +98,19 @@ mod tests {
 
     #[test]
     fn stub_never_claims_enforcement() {
-        let response = handle(PfRequest { operation: PfOperation::Status, rules: None });
+        let response = handle(PfRequest {
+            operation: PfOperation::Status,
+            rules: None,
+        });
         assert_eq!(response.state, PfEnforcementState::Unknown);
     }
 
     #[test]
     fn request_roundtrips() {
-        let request = PfRequest { operation: PfOperation::ApplyRules, rules: Some("block drop proto udp to any port 443".into()) };
+        let request = PfRequest {
+            operation: PfOperation::ApplyRules,
+            rules: Some("block drop proto udp to any port 443".into()),
+        };
         let json = serde_json::to_string(&request).unwrap();
         let back: PfRequest = serde_json::from_str(&json).unwrap();
         assert_eq!(back, request);

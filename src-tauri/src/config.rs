@@ -12,11 +12,11 @@ pub struct RuntimeConfig {
     pub quarantine_dir: String,
     pub profiles_dir: String,
     pub egress_mode: EgressMode,
-    pub max_steps: Option<u32>, // undefined in catalog (C-149)
-    pub max_llm_calls: Option<u32>, // undefined in catalog (C-149)
+    pub max_steps: Option<u32>,             // undefined in catalog (C-149)
+    pub max_llm_calls: Option<u32>,         // undefined in catalog (C-149)
     pub max_recovery_attempts: Option<u32>, // undefined in catalog (C-149)
-    pub max_task_duration_ms: Option<u64>, // undefined in catalog (C-149)
-    pub max_confirmations: Option<u32>, // undefined in catalog (C-149)
+    pub max_task_duration_ms: Option<u64>,  // undefined in catalog (C-149)
+    pub max_confirmations: Option<u32>,     // undefined in catalog (C-149)
 }
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, PartialEq)]

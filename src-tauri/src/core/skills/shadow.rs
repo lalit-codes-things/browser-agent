@@ -6,7 +6,12 @@
 pub struct ShadowEvaluator;
 
 impl ShadowEvaluator {
-    pub fn evaluate_replay(_commitment: &crate::core::skills::commitment::SkillCommitment, _trace: &[String]) -> Result<bool, crate::Error> {
-        Err(crate::Error::NotImplemented("ShadowEvaluator::evaluate_replay is scheduled".into()))
+    pub fn evaluate_replay(
+        _commitment: &crate::core::skills::commitment::SkillCommitment,
+        _trace: &[String],
+    ) -> Result<bool, crate::Error> {
+        Err(crate::Error::NotImplemented(
+            "ShadowEvaluator::evaluate_replay is scheduled".into(),
+        ))
     }
 }

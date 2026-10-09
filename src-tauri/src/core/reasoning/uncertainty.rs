@@ -9,7 +9,7 @@
 // This module makes the decision gate explicit rather than pretending the
 // full trigger evaluation exists yet.
 
-use crate::core::reasoning::triggers::{UncertaintyTrigger, UncertaintyEvaluator};
+use crate::core::reasoning::triggers::{UncertaintyEvaluator, UncertaintyTrigger};
 
 pub struct UncertaintyDecision {
     pub reason: Option<UncertaintyTrigger>,

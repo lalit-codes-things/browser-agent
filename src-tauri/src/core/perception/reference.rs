@@ -21,7 +21,12 @@ pub struct SemanticReference {
 
 impl SemanticReference {
     pub fn new(token: String, epoch: u64, frame_id: String, loader_id: String) -> Self {
-        Self { token, epoch, frame_id, loader_id }
+        Self {
+            token,
+            epoch,
+            frame_id,
+            loader_id,
+        }
     }
 
     /// A reference is only valid against the epoch it was derived from.

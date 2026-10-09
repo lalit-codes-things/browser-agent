@@ -15,8 +15,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::core::policy::scopes::CredentialScope;
 use crate::core::verification::redaction::RedactedSecretDescriptor;
-use crate::core::verification::redaction::RedactedFieldKind;
-
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
@@ -45,13 +43,13 @@ pub struct VaultItemRef {
     pub https_check_state: HttpsCheckState,
     pub idn_homograph_check_state: IdnHomographCheckState,
     pub last_used_task: Option<String>,
-    /// If this item is a payment credential, the redacted secret descriptor
+    /// If this item is a sensitive-token credential, the redacted secret descriptor
     /// is provided here instead of the raw secret.
     pub redacted_secret: Option<RedactedSecretDescriptor>,
 }
 
 impl VaultItemRef {
-    pub fn payment_item_ref(
+    pub fn sensitive_token_item_ref(
         id: String,
         origin: String,
         account_label: String,
@@ -63,7 +61,7 @@ impl VaultItemRef {
             id,
             origin,
             account_label,
-            scope: CredentialScope::PaymentToken,
+            scope: CredentialScope::SensitiveToken,
             https_check_state,
             idn_homograph_check_state,
             last_used_task: None,
@@ -84,18 +82,19 @@ pub struct BlindIndexValue {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::verification::redaction::{RedactedFieldKind, RedactedSecretDescriptor};
 
     #[test]
     fn vault_item_ref_does_not_expose_raw_secret() {
-        let ref_ = VaultItemRef::payment_item_ref(
+        let ref_ = VaultItemRef::sensitive_token_item_ref(
             "v-1".into(),
-            "https://payee.example".into(),
-            "Payee".into(),
+            "https://token.example".into(),
+            "Token service".into(),
             HttpsCheckState::Pass,
             IdnHomographCheckState::Pass,
             RedactedSecretDescriptor::payment_field("card number", RedactedFieldKind::CardNumber),
         );
-        assert!(format!("{:?}", ref_).contains("Payee"));
+        assert!(format!("{:?}", ref_).contains("Token service"));
         assert!(format!("{:?}", ref_).contains("[redacted]"));
     }
 }

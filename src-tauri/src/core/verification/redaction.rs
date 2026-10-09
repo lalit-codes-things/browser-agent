@@ -12,7 +12,7 @@
 //   - safe semantic labels.
 //
 // It must NOT receive raw payment secrets (PAN, CVV, password, OTP, TOTP,
-// UPI PIN, token values, payment credentials). This module is the structural
+// token/UPI PIN, payment credentials). This module is the structural
 // redaction boundary that produces frontend-safe representations out of
 // runtime payment field state.
 
@@ -25,7 +25,7 @@ use crate::security::clocks::MonotonicClock;
 
 /// A redacted secret descriptor for a payment field, as visible to the UI
 /// layer. Raw secret content is never carried here.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RedactedSecretDescriptor {
     pub field_id: String,
     pub classification: RedactedFieldKind,
@@ -46,23 +46,27 @@ pub enum RedactedFieldKind {
     Unknown,
 }
 
+impl std::fmt::Debug for RedactedSecretDescriptor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("RedactedSecretDescriptor")
+            .field("field_id", &self.field_id)
+            .field("classification", &self.classification)
+            .field("safe_label", &self.safe_label)
+            .field("obscured_length", &self.obscured_length)
+            .field("value", &"[redacted]")
+            .finish()
+    }
+}
+
 impl RedactedSecretDescriptor {
-    /// Build a descriptor for a payment field from a runtime classification.
-    ///
-    /// The input is a runtime classification; the secret value is never
-    /// read or reconstructed.
-    pub fn payment_field(
-        field_id: impl Into<String>,
-        kind: RedactedFieldKind,
-    ) -> Self {
+    pub fn payment_field(field_id: impl Into<String>, kind: RedactedFieldKind) -> Self {
         let classification = kind.clone();
         let safe_label = match &kind {
             RedactedFieldKind::CardNumber => Some("Card number".into()),
             RedactedFieldKind::Cvv => Some("CVV".into()),
             RedactedFieldKind::Expiry => Some("Expiry".into()),
             RedactedFieldKind::Password => Some("Password".into()),
-            RedactedFieldKind::Otp => Some("One-time code".into()),
-            RedactedFieldKind::Totp => Some("One-time code".into()),
+            RedactedFieldKind::Otp | RedactedFieldKind::Totp => Some("One-time code".into()),
             RedactedFieldKind::PaymentPin => Some("Payment PIN".into()),
             RedactedFieldKind::Unknown => None,
         };
@@ -70,7 +74,7 @@ impl RedactedSecretDescriptor {
             field_id: field_id.into(),
             classification,
             safe_label,
-            obscured_length: match &kind {
+            obscured_length: match kind {
                 RedactedFieldKind::CardNumber => Some(19),
                 RedactedFieldKind::Cvv => Some(4),
                 RedactedFieldKind::Expiry => Some(5),
@@ -79,9 +83,6 @@ impl RedactedSecretDescriptor {
         }
     }
 
-    /// Convert to a RedactedFieldDescriptor the UI layer consumes.
-    ///
-    /// The UI layer must not receive the secret value.
     pub fn as_ui_descriptor(
         &self,
         frame_id: Option<String>,
@@ -89,13 +90,14 @@ impl RedactedSecretDescriptor {
         bounds: Option<crate::core::perception::graph::GeometryBounds>,
     ) -> RedactedFieldDescriptor {
         let classification = match self.classification {
-            RedactedFieldKind::CardNumber => SecureFieldClassification::PaymentSecretInput,
-            RedactedFieldKind::Cvv => SecureFieldClassification::PaymentSecretInput,
-            RedactedFieldKind::Expiry => SecureFieldClassification::PaymentSecretInput,
+            RedactedFieldKind::CardNumber
+            | RedactedFieldKind::Cvv
+            | RedactedFieldKind::Expiry
+            | RedactedFieldKind::PaymentPin => SecureFieldClassification::SensitiveTokenInput,
             RedactedFieldKind::Password => SecureFieldClassification::PasswordInput,
-            RedactedFieldKind::Otp => SecureFieldClassification::TokenInput,
-            RedactedFieldKind::Totp => SecureFieldClassification::TokenInput,
-            RedactedFieldKind::PaymentPin => SecureFieldClassification::PaymentSecretInput,
+            RedactedFieldKind::Otp | RedactedFieldKind::Totp => {
+                SecureFieldClassification::TokenInput
+            }
             RedactedFieldKind::Unknown => SecureFieldClassification::Unknown,
         };
         RedactedFieldDescriptor {
@@ -118,22 +120,28 @@ impl RedactedSecretDescriptor {
 /// secret values.
 ///
 pub fn redacted_frame_representation(
-        frame_id: Option<String>,
-        loader_id: Option<String>,
-        fields: &[RedactedSecretDescriptor],
-    ) -> RedactedFrameRepresentation {
-        let frame_id = frame_id.as_deref().unwrap_or_default();
-        let loader_id = loader_id.as_deref().unwrap_or_default();
-        RedactedFrameRepresentation {
-            frame_id: frame_id.to_string(),
-            loader_id: loader_id.to_string(),
-            fields: fields
-                .iter()
-                .map(|f| f.as_ui_descriptor(Some(frame_id.to_string()), Some(loader_id.to_string()), None))
-                .collect(),
-            redacted_at_monotonic: MonotonicClock::now_nanos(),
-        }
+    frame_id: Option<String>,
+    loader_id: Option<String>,
+    fields: &[RedactedSecretDescriptor],
+) -> RedactedFrameRepresentation {
+    let frame_id = frame_id.as_deref().unwrap_or_default();
+    let loader_id = loader_id.as_deref().unwrap_or_default();
+    RedactedFrameRepresentation {
+        frame_id: frame_id.to_string(),
+        loader_id: loader_id.to_string(),
+        fields: fields
+            .iter()
+            .map(|f| {
+                f.as_ui_descriptor(
+                    Some(frame_id.to_string()),
+                    Some(loader_id.to_string()),
+                    None,
+                )
+            })
+            .collect(),
+        redacted_at_monotonic: MonotonicClock::now_nanos(),
     }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RedactedFrameRepresentation {
@@ -151,7 +159,7 @@ mod tests {
     #[test]
     fn redacted_secret_descriptor_is_redacted() {
         let d = RedactedSecretDescriptor::payment_field("F-CVV-1", RedactedFieldKind::Cvv);
-        assert!(format!("{:?}", d).contains("[redacted]") || true);
+        assert!(format!("{:?}", d).contains("[redacted]"));
         assert_eq!(d.safe_label, Some("CVV".into()));
         assert_eq!(d.obscured_length, Some(4));
     }
@@ -162,15 +170,26 @@ mod tests {
         let desc = d.as_ui_descriptor(
             Some("F1".into()),
             Some("L1".into()),
-            Some(GeometryBounds { x: 0, y: 0, width: 10, height: 10 }),
+            Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 10,
+                height: 10,
+            }),
         );
         assert!(!format!("{:?}", desc).contains("cvv value"));
-        assert_eq!(desc.classification, SecureFieldClassification::PaymentSecretInput);
+        assert_eq!(
+            desc.classification,
+            SecureFieldClassification::SensitiveTokenInput
+        );
     }
 
     #[test]
     fn redacted_frame_representation_does_not_contain_secret() {
-        let fields = vec![RedactedSecretDescriptor::payment_field("F-CVV-1", RedactedFieldKind::Cvv)];
+        let fields = vec![RedactedSecretDescriptor::payment_field(
+            "F-CVV-1",
+            RedactedFieldKind::Cvv,
+        )];
         let rep = redacted_frame_representation(Some("F1".into()), Some("L1".into()), &fields);
         assert_eq!(rep.frame_id, "F1");
         assert!(!format!("{:?}", rep).contains("cvv value"));

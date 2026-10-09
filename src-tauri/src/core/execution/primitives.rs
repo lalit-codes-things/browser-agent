@@ -1,10 +1,3 @@
-// Execution primitives.
-//
-// C-142: the execution engine exposes only the typed operations below.
-//        arbitrary model-controlled JavaScript is prohibited in all phases.
-//
-// This module is the API surface between reasoning and the browser runtime.
-
 use crate::core::reasoning::schema::ModelAction;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -28,8 +21,27 @@ pub struct ExecutionResult {
 pub struct ExecutionEngine;
 
 impl ExecutionEngine {
-    pub fn execute(_input: ExecutionInput) -> Result<ExecutionResult, crate::Error> {
-        // Placeholder: real execution is wired to the browser runtime.
-        Err(crate::Error::NotImplemented("ExecutionEngine::execute is scheduled".into()))
+    pub fn execute(input: ExecutionInput) -> Result<ExecutionResult, crate::Error> {
+        if input.target_frame_id.trim().is_empty() || input.target_loader_id.trim().is_empty() {
+            return Err(crate::Error::StateMismatch(
+                "target frame/loader binding is missing".into(),
+            ));
+        }
+        if input.action.action_class().effective_class()
+            != crate::core::policy::classes::SideEffectClass::Read
+            && input.policy_tier == crate::core::policy::tiers::AuthorizationTier::None
+        {
+            return Err(crate::Error::PolicyBlocked(
+                "side-effectful action lacks authorization".into(),
+            ));
+        }
+        if matches!(input.action, ModelAction::RequestConfirmation) {
+            return Err(crate::Error::PolicyBlocked(
+                "confirmation is not a browser execution primitive".into(),
+            ));
+        }
+        Err(crate::Error::NotImplemented(
+            "browser transport is unavailable for execution".into(),
+        ))
     }
 }

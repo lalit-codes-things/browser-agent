@@ -43,8 +43,20 @@ pub struct QrRegion {
 }
 
 impl QrRegion {
-    pub fn new(region_id: String, frame_id: String, loader_id: String, epoch_value: u64, bounds: Option<crate::core::perception::graph::GeometryBounds>) -> Self {
-        Self { region_id, frame_id, loader_id, epoch_value, bounds }
+    pub fn new(
+        region_id: String,
+        frame_id: String,
+        loader_id: String,
+        epoch_value: u64,
+        bounds: Option<crate::core::perception::graph::GeometryBounds>,
+    ) -> Self {
+        Self {
+            region_id,
+            frame_id,
+            loader_id,
+            epoch_value,
+            bounds,
+        }
     }
 
     /// Whether this region matches a given frame/loader/epoch identity.
@@ -149,8 +161,15 @@ pub fn is_handoff_valid_for(
     region: &QrRegion,
     region_hash: &QrRegionHash,
 ) -> bool {
-    ctx.region.as_ref().map(|r| r.matches_epoch(&region.frame_id, &region.loader_id, region.epoch_value)) == Some(true)
-        && ctx.region_hash_at_handoff.as_ref().map(|h| h.hash == region_hash.hash) == Some(true)
+    ctx.region
+        .as_ref()
+        .map(|r| r.matches_epoch(&region.frame_id, &region.loader_id, region.epoch_value))
+        == Some(true)
+        && ctx
+            .region_hash_at_handoff
+            .as_ref()
+            .map(|h| h.hash == region_hash.hash)
+            == Some(true)
 }
 
 /// The application does NOT decode QR images or parse QR payloads.
@@ -161,20 +180,23 @@ pub fn is_handoff_valid_for(
 /// is a defect.
 pub fn attempt_qr_decode_pixels(_pixels: &[u8]) -> Result<(), crate::Error> {
     Err(crate::Error::Unsupported(
-        "QR decoding is disabled in the production agent".into()
+        "QR decoding is disabled in the production agent".into(),
     ))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::perception::graph::GeometryBounds;
 
     #[test]
     fn handoff_is_invalidated_on_epoch_change() {
         let region = QrRegion::new("qr-1".into(), "F1".into(), "L1".into(), 7, None);
         let hash = [1u8; 32];
-        let ctx = QrHandoffContext::begin(region.clone(), QrRegionHash::new(&region, hash), "task authority".into());
+        let ctx = QrHandoffContext::begin(
+            region.clone(),
+            QrRegionHash::new(&region, hash),
+            "task authority".into(),
+        );
         let changed = QrRegion::new("qr-1".into(), "F1".into(), "L1".into(), 8, None);
         let changed_hash = QrRegionHash::new(&changed, hash);
         assert_eq!(
@@ -188,7 +210,11 @@ mod tests {
         let region = QrRegion::new("qr-1".into(), "F1".into(), "L1".into(), 7, None);
         let hash_a = [1u8; 32];
         let hash_b = [2u8; 32];
-        let ctx = QrHandoffContext::begin(region.clone(), QrRegionHash::new(&region, hash_a), "task authority".into());
+        let ctx = QrHandoffContext::begin(
+            region.clone(),
+            QrRegionHash::new(&region, hash_a),
+            "task authority".into(),
+        );
         let changed_hash = QrRegionHash::new(&region, hash_b);
         assert_eq!(
             invalidate_if_changed(&ctx, Some(&region), Some(changed_hash)),
@@ -200,8 +226,16 @@ mod tests {
     fn handoff_remains_valid_when_nothing_changed() {
         let region = QrRegion::new("qr-1".into(), "F1".into(), "L1".into(), 7, None);
         let hash = [1u8; 32];
-        let ctx = QrHandoffContext::begin(region.clone(), QrRegionHash::new(&region, hash), "task authority".into());
-        assert!(is_handoff_valid_for(&ctx, &region, &QrRegionHash::new(&region, hash)));
+        let ctx = QrHandoffContext::begin(
+            region.clone(),
+            QrRegionHash::new(&region, hash),
+            "task authority".into(),
+        );
+        assert!(is_handoff_valid_for(
+            &ctx,
+            &region,
+            &QrRegionHash::new(&region, hash)
+        ));
     }
 
     #[test]
@@ -213,7 +247,14 @@ mod tests {
     fn task_authority_prompt_is_task_authority_only() {
         let region = QrRegion::new("qr-1".into(), "F1".into(), "L1".into(), 7, None);
         let hash = [1u8; 32];
-        let ctx = QrHandoffContext::begin(region.clone(), QrRegionHash::new(&region, hash), "Pay merchant@payee ₹1,250.00".into());
-        assert_eq!(ctx.task_authority_prompt(), Some("Pay merchant@payee ₹1,250.00".into()));
+        let ctx = QrHandoffContext::begin(
+            region.clone(),
+            QrRegionHash::new(&region, hash),
+            "Pay merchant@payee ₹1,250.00".into(),
+        );
+        assert_eq!(
+            ctx.task_authority_prompt(),
+            Some("Pay merchant@payee ₹1,250.00".into())
+        );
     }
 }

@@ -7,7 +7,7 @@
 // C-148: password change re-wraps keys without breaking HMAC chain verification
 //        across rotated segments.
 
+pub mod access;
 pub mod chain;
 pub mod encrypt;
-pub mod access;
 pub mod redact;

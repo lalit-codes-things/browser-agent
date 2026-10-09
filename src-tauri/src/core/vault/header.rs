@@ -10,6 +10,7 @@
 // parameters in the vault header, and never silently weakens an existing
 // vault.
 
+use rand::RngCore;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -65,7 +66,6 @@ impl Argon2Parameters {
     }
 
     pub fn serialized_minimal_repr(&self) -> Vec<u8> {
-        use std::io::Write;
         let mut v = Vec::new();
         v.extend_from_slice(b"argon2id\0");
         v.extend_from_slice(&self.version.to_be_bytes());
@@ -89,7 +89,9 @@ pub struct VaultHeader {
     pub algorithm: String,
     pub parameters: Argon2Parameters,
     pub created_at_monotonic: u64,
-    pub last_recalibration_at_monotonic: Option<u64>,
+    pub salt: [u8; 16],
+    pub wrapped_master_key: Vec<u8>,
+    pub header_tag: [u8; 32],
 }
 
 impl VaultHeader {
@@ -104,13 +106,22 @@ impl VaultHeader {
             algorithm: "argon2id".into(),
             parameters,
             created_at_monotonic: now_monotonic,
-            last_recalibration_at_monotonic: None,
+            salt: {
+                let mut salt = [0u8; 16];
+                rand::thread_rng().fill_bytes(&mut salt);
+                salt
+            },
+            wrapped_master_key: Vec::new(),
+            header_tag: [0u8; 32],
         })
     }
 
-    pub fn recalibration_performed(&self, new_parameters: &Argon2Parameters, now_monotonic: u64) -> bool {
-        new_parameters.meets_or_above(&self.parameters)
-            && new_parameters.meets_floor()
+    pub fn recalibration_performed(
+        &self,
+        new_parameters: &Argon2Parameters,
+        _now_monotonic: u64,
+    ) -> bool {
+        new_parameters.meets_or_above(&self.parameters) && new_parameters.meets_floor()
     }
 }
 

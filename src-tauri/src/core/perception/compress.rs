@@ -64,13 +64,22 @@ mod tests {
             rendered_text: None,
             accessible_name: None,
             actionable,
-            bounds: Some(GeometryBounds { x: 0, y: 0, width: 10, height: 10 }),
+            bounds: Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 10,
+                height: 10,
+            }),
         }
     }
 
     #[test]
     fn keeps_only_actionable() {
-        let nodes = vec![node("button", true), node("banner", false), node("link", true)];
+        let nodes = vec![
+            node("button", true),
+            node("banner", false),
+            node("link", true),
+        ];
         let caps = GraphBounds::new();
         match compress(&nodes, &caps) {
             CompressOutcome::Compressed(s) => {
@@ -84,8 +93,14 @@ mod tests {
 
     #[test]
     fn cap_exceeded_is_explicit_not_silent() {
-        let nodes: Vec<GraphNode> = (0..10).map(|i| node(&format!("button{}", i), true)).collect();
-        let caps = GraphBounds { max_nodes: Some(4), max_context_bytes: None, max_attributes_per_node: None };
+        let nodes: Vec<GraphNode> = (0..10)
+            .map(|i| node(&format!("button{}", i), true))
+            .collect();
+        let caps = GraphBounds {
+            max_nodes: Some(4),
+            max_context_bytes: None,
+            max_attributes_per_node: None,
+        };
         match compress(&nodes, &caps) {
             CompressOutcome::BoundedExceeded { nodes_dropped } => assert_eq!(nodes_dropped, 6),
             other => panic!("expected BoundedExceeded, got {:?}", other),

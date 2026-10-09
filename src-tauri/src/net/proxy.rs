@@ -8,11 +8,15 @@ pub struct ProxyControl;
 
 impl ProxyControl {
     pub fn start(_listen_addr: &str) -> Result<ProxyHandle, crate::Error> {
-        Err(crate::Error::NotImplemented("ProxyControl::start is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ProxyControl::start is scheduled".into(),
+        ))
     }
 
     pub fn stop(_handle: &ProxyHandle) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("ProxyControl::stop is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ProxyControl::stop is scheduled".into(),
+        ))
     }
 }
 

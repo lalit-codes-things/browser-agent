@@ -7,13 +7,14 @@
 // Module boundaries are intentional. Each subsystem keeps its own
 // types, tests, and C-ID references.
 
+pub mod action;
+pub mod execution;
 pub mod orchestrator;
 pub mod perception;
-pub mod reasoning;
 pub mod policy;
-pub mod execution;
-pub mod verification;
-pub mod skills;
-pub mod vault;
-pub mod payment;
+pub mod reasoning;
 pub mod secure_field;
+pub mod skills;
+pub mod slice;
+pub mod vault;
+pub mod verification;

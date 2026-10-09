@@ -25,11 +25,19 @@ pub enum DownloadVerificationState {
 pub struct DownloadManager;
 
 impl DownloadManager {
-    pub fn quarantine(_path: &str, _size: u64, _declared_type: Option<String>) -> Result<QuarantinedDownload, crate::Error> {
-        Err(crate::Error::NotImplemented("DownloadManager::quarantine is scheduled".into()))
+    pub fn quarantine(
+        _path: &str,
+        _size: u64,
+        _declared_type: Option<String>,
+    ) -> Result<QuarantinedDownload, crate::Error> {
+        Err(crate::Error::NotImplemented(
+            "DownloadManager::quarantine is scheduled".into(),
+        ))
     }
 
     pub fn verify_and_reveal(_id: &str) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("DownloadManager::verify_and_reveal is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "DownloadManager::verify_and_reveal is scheduled".into(),
+        ))
     }
 }

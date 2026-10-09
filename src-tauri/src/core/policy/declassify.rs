@@ -10,11 +10,7 @@ use crate::core::policy::taint::TaintFlag;
 pub struct DeclassificationPolicy;
 
 impl DeclassificationPolicy {
-    pub fn may_declassify(
-        _from: TaintFlag,
-        _to: TaintFlag,
-        _justification: &str,
-    ) -> bool {
+    pub fn may_declassify(_from: TaintFlag, _to: TaintFlag, _justification: &str) -> bool {
         // Placeholder: real declassification is policy-gated and audited.
         false
     }

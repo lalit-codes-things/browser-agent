@@ -12,6 +12,9 @@ pub struct RecoveryBudgetPolicy {
 
 impl RecoveryBudgetPolicy {
     pub fn new(base: BudgetPolicy) -> Self {
-        Self { base, tightened: true }
+        Self {
+            base,
+            tightened: true,
+        }
     }
 }

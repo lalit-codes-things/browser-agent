@@ -30,12 +30,18 @@ mod tests {
 
     #[test]
     fn unknown_effective_is_irreversible() {
-        assert_eq!(SideEffectClass::Unknown.effective_class(), SideEffectClass::Irreversible);
+        assert_eq!(
+            SideEffectClass::Unknown.effective_class(),
+            SideEffectClass::Irreversible
+        );
     }
 
     #[test]
     fn read_effective_is_read() {
-        assert_eq!(SideEffectClass::Read.effective_class(), SideEffectClass::Read);
+        assert_eq!(
+            SideEffectClass::Read.effective_class(),
+            SideEffectClass::Read
+        );
     }
 
     #[test]

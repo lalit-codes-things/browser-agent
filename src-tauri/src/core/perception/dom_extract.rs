@@ -32,7 +32,12 @@ pub fn to_graph_node(dom: &DomRawNode) -> Option<GraphNode> {
         accessible_name: None, // DOM rung has no AX name; absence is explicit.
         actionable: matches!(
             dom.aria_role.as_deref(),
-            Some("button") | Some("link") | Some("textbox") | Some("searchbox") | Some("combobox") | Some("listbox")
+            Some("button")
+                | Some("link")
+                | Some("textbox")
+                | Some("searchbox")
+                | Some("combobox")
+                | Some("listbox")
         ),
         bounds: dom.bounds.clone(),
     })
@@ -57,7 +62,12 @@ mod tests {
             tag: Some("button".into()),
             aria_role: Some("button".into()),
             text: Some("Submit".into()),
-            bounds: Some(GeometryBounds { x: 0, y: 0, width: 4, height: 4 }),
+            bounds: Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 4,
+                height: 4,
+            }),
             frame_id: "F1".into(),
         };
         let n = to_graph_node(&dom).unwrap();
@@ -92,6 +102,9 @@ mod tests {
             frame_id: "F1".into(),
         };
         let n = to_graph_node(&dom).unwrap();
-        assert!(n.accessible_name.is_none(), "DOM rung must not invent AX names");
+        assert!(
+            n.accessible_name.is_none(),
+            "DOM rung must not invent AX names"
+        );
     }
 }

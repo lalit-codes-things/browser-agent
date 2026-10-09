@@ -51,14 +51,18 @@ pub struct FallbackState {
 
 impl FallbackState {
     pub fn initial() -> Self {
-        Self { active_rung: PerceptionRung::A11y, reason: None }
+        Self {
+            active_rung: PerceptionRung::A11y,
+            reason: None,
+        }
     }
 
     pub fn descend(&mut self, reason: String) -> Result<PerceptionRung, crate::Error> {
-        let next = self
-            .active_rung
-            .next()
-            .ok_or_else(|| crate::Error::StateMismatch("fallback ladder exhausted; manual takeover required".into()))?;
+        let next = self.active_rung.next().ok_or_else(|| {
+            crate::Error::StateMismatch(
+                "fallback ladder exhausted; manual takeover required".into(),
+            )
+        })?;
         self.active_rung = next;
         self.reason = Some(reason);
         Ok(next)

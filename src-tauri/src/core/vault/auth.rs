@@ -10,7 +10,7 @@
 
 use crate::core::vault::header::VaultHeader;
 use crate::core::vault::keys::KeyHierarchy;
-use crate::core::vault::secret::{SecretBuffer, VaultPassword};
+use crate::core::vault::secret::VaultPassword;
 
 pub struct VaultAuth;
 
@@ -32,12 +32,9 @@ impl VaultAuth {
         new_password: &VaultPassword,
         header: &VaultHeader,
     ) -> Result<KeyHierarchy, crate::Error> {
-        // Password material for old and new is zeroized on drop; the
+        let _ = old_password;
         // intermediate KEK is not leaked through Debug/Display.
-        let new_header = VaultHeader::new(
-            header.parameters.clone(),
-            header.created_at_monotonic,
-        )?;
+        let new_header = VaultHeader::new(header.parameters.clone(), header.created_at_monotonic)?;
         KeyHierarchy::from_master_password(new_password, new_header)
     }
 }
@@ -54,6 +51,6 @@ mod tests {
         let kh = VaultAuth::authenticate(&pw, header).unwrap();
         assert!(!format!("{:?}", kh).contains("hunter2"));
         assert!(format!("{:?}", kh).contains("[redacted]"));
-        assert!(pw.inner_for_test().eq(b"hunter2"));
+        assert!(pw.inner_for_test().constant_time_eq(b"hunter2"));
     }
 }

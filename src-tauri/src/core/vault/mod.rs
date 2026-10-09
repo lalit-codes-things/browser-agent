@@ -5,10 +5,10 @@
 //        password change re-wraps keys without breaking HMAC chain
 //        verification across rotated segments.
 
-pub mod keys;
-pub mod items;
-pub mod import;
 pub mod auth;
-pub mod header;
-pub mod secret;
 pub mod blind_index;
+pub mod header;
+pub mod import;
+pub mod items;
+pub mod keys;
+pub mod secret;

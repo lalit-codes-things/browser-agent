@@ -7,6 +7,8 @@ pub struct HighRiskQueue;
 
 impl HighRiskQueue {
     pub fn enqueue(_task_id: &str) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("HighRiskQueue::enqueue is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "HighRiskQueue::enqueue is scheduled".into(),
+        ))
     }
 }

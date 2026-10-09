@@ -10,7 +10,11 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "UPPERCASE")]
 pub enum ProfileKind {
     Ephemeral,
-    Persistent { origin: String, expires_at: Option<String>, storage_cap_bytes: Option<u64> },
+    Persistent {
+        origin: String,
+        expires_at: Option<String>,
+        storage_cap_bytes: Option<u64>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -24,14 +28,24 @@ pub struct ProfileManager;
 
 impl ProfileManager {
     pub fn create_ephemeral() -> Result<BrowserProfile, crate::Error> {
-        Err(crate::Error::NotImplemented("ProfileManager::create_ephemeral is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ProfileManager::create_ephemeral is scheduled".into(),
+        ))
     }
 
-    pub fn create_persistent(_origin: &str, _expires_at: Option<String>, _storage_cap_bytes: Option<u64>) -> Result<BrowserProfile, crate::Error> {
-        Err(crate::Error::NotImplemented("ProfileManager::create_persistent is scheduled".into()))
+    pub fn create_persistent(
+        _origin: &str,
+        _expires_at: Option<String>,
+        _storage_cap_bytes: Option<u64>,
+    ) -> Result<BrowserProfile, crate::Error> {
+        Err(crate::Error::NotImplemented(
+            "ProfileManager::create_persistent is scheduled".into(),
+        ))
     }
 
     pub fn purge(_id: &str) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("ProfileManager::purge is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ProfileManager::purge is scheduled".into(),
+        ))
     }
 }

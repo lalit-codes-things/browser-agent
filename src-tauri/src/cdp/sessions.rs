@@ -12,6 +12,8 @@ pub struct SessionManager;
 
 impl SessionManager {
     pub fn attach(_target_id: &str) -> Result<CdpSession, crate::Error> {
-        Err(crate::Error::NotImplemented("SessionManager::attach is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "SessionManager::attach is scheduled".into(),
+        ))
     }
 }

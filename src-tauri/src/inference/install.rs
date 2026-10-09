@@ -12,15 +12,21 @@ pub struct ModelInstall;
 impl ModelInstall {
     pub fn installed_models_dir() -> Result<String, crate::Error> {
         // Placeholder for app-data models directory path.
-        Err(crate::Error::NotImplemented("ModelInstall::installed_models_dir is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ModelInstall::installed_models_dir is scheduled".into(),
+        ))
     }
 
     pub fn copy_from_bundle_to_installed(_bundle_path: &str) -> Result<String, crate::Error> {
-        Err(crate::Error::NotImplemented("ModelInstall::copy_from_bundle_to_installed is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ModelInstall::copy_from_bundle_to_installed is scheduled".into(),
+        ))
     }
 
     pub fn load_path_must_be_installed_models_dir(_path: &str) -> Result<(), crate::Error> {
         // Runtime load path must not be the git checkout.
-        Err(crate::Error::NotImplemented("ModelInstall::load_path_must_be_installed_models_dir is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "ModelInstall::load_path_must_be_installed_models_dir is scheduled".into(),
+        ))
     }
 }

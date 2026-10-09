@@ -17,6 +17,8 @@ pub struct TypingEngine;
 
 impl TypingEngine {
     pub fn type_text(_instruction: TypingInstruction) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented("TypingEngine::type_text is scheduled".into()))
+        Err(crate::Error::NotImplemented(
+            "TypingEngine::type_text is scheduled".into(),
+        ))
     }
 }

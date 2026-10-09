@@ -26,7 +26,7 @@ pub enum EvidenceSource {
     TrustedRuntimeState,
     OutOfBandEvidence,
     DownloadVerification,
-    PageBanner, // not independent
+    PageBanner,      // not independent
     ModelSelfReport, // not independent
 }
 

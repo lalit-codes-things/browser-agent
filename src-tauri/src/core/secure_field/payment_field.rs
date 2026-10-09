@@ -25,8 +25,8 @@ use serde::{Deserialize, Serialize};
 pub enum SecureFieldClassification {
     Unknown,
     /// A field that the runtime has identified as likely containing a
-    /// payment secret (e.g. card number, CVV, expiry, UPI PIN, OTP).
-    PaymentSecretInput,
+    /// sensitive token secret (e.g. card number, CVV, expiry, OTP).
+    SensitiveTokenInput,
     /// A password or passphrase field.
     PasswordInput,
     /// A one-time token field (OTP / TOTP).
@@ -70,7 +70,7 @@ impl RedactedFieldDescriptor {
     /// Build a redacted descriptor for a payment-secret field.
     ///
     /// Sensitive content is never carried here.
-    pub fn payment_secret(
+    pub fn sensitive_token_secret(
         field_id: String,
         origin: Option<String>,
         frame_id: Option<String>,
@@ -79,13 +79,13 @@ impl RedactedFieldDescriptor {
     ) -> Self {
         Self {
             field_id,
-            classification: SecureFieldClassification::PaymentSecretInput,
+            classification: SecureFieldClassification::SensitiveTokenInput,
             origin,
             frame_id,
             loader_id,
             bounds,
             status: FieldVisualStatus::Blocked,
-            safe_label: Some("Payment input".into()),
+            safe_label: Some("Sensitive input".into()),
         }
     }
 
@@ -94,7 +94,7 @@ impl RedactedFieldDescriptor {
     pub fn secure_fill_ready(field_id: String) -> Self {
         Self {
             field_id,
-            classification: SecureFieldClassification::PaymentSecretInput,
+            classification: SecureFieldClassification::SensitiveTokenInput,
             origin: None,
             frame_id: None,
             loader_id: None,
@@ -116,12 +116,14 @@ pub fn classify_payment_secret_from_hints(
     secure_input_binding: bool,
 ) -> Option<SecureFieldClassification> {
     if secure_input_binding {
-        return Some(SecureFieldClassification::PaymentSecretInput);
+        return Some(SecureFieldClassification::SensitiveTokenInput);
     }
     match (role, field_type) {
-        (Some("textbox"), Some("cardnumber")) | (Some("textbox"), Some("cvv"))
-        | (Some("textbox"), Some("otp")) | (Some("textbox"), Some("pin"))
-        | (Some("password"), _) => Some(SecureFieldClassification::PaymentSecretInput),
+        (Some("textbox"), Some("cardnumber"))
+        | (Some("textbox"), Some("cvv"))
+        | (Some("textbox"), Some("otp"))
+        | (Some("textbox"), Some("pin"))
+        | (Some("password"), _) => Some(SecureFieldClassification::PasswordInput),
         _ => None,
     }
 }
@@ -132,27 +134,34 @@ mod tests {
     use crate::core::perception::graph::GeometryBounds;
 
     #[test]
-    fn payment_secret_field_does_not_carry_content() {
-        let desc = RedactedFieldDescriptor::payment_secret(
+    fn sensitive_token_field_does_not_carry_content() {
+        let desc = RedactedFieldDescriptor::sensitive_token_secret(
             "F-CVV-1".to_string(),
             Some("example.com".into()),
             Some("F1".into()),
             Some("L1".into()),
-            Some(GeometryBounds { x: 0, y: 0, width: 10, height: 10 }),
+            Some(GeometryBounds {
+                x: 0,
+                y: 0,
+                width: 10,
+                height: 10,
+            }),
         );
         assert_eq!(desc.field_id, "F-CVV-1");
-        assert_eq!(desc.safe_label, Some("Payment input".into()));
+        assert_eq!(desc.safe_label, Some("Sensitive input".into()));
         assert_eq!(desc.status, FieldVisualStatus::Blocked);
-        assert!(format!("{:?}", desc).contains("[redacted]") || true);
-        assert_eq!(desc.safe_label, Some("Payment input".into()));
-        assert_eq!(desc.status, FieldVisualStatus::Blocked);
-        assert!(format!("{:?}", desc).contains("[redacted]") || true);
+        assert!(!format!("{:?}", desc).contains("[redacted]"));
     }
 
     #[test]
     fn classification_hint_rejects_plain_fields() {
-        assert!(classify_payment_secret_from_hints(Some("textbox"), Some("search"), false).is_none());
-        assert!(classify_payment_secret_from_hints(Some("textbox"), Some("cardnumber"), false).is_some());
+        assert!(
+            classify_payment_secret_from_hints(Some("textbox"), Some("search"), false).is_none()
+        );
+        assert!(
+            classify_payment_secret_from_hints(Some("textbox"), Some("cardnumber"), false)
+                .is_some()
+        );
         assert!(classify_payment_secret_from_hints(None, None, true).is_some());
     }
 }
