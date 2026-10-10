@@ -18,10 +18,11 @@
 // runtime handle via the browser runtime controller. The frontend projects the
 // attached state through the typed event union.
 
-pub mod controller;
 pub mod action;
+pub mod controller;
 pub mod downloads;
 pub mod highrisk_queue;
+pub mod navigation;
 pub mod permissions;
 pub mod process;
 pub mod profiles;

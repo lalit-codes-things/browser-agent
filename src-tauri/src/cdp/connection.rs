@@ -2,7 +2,11 @@ use serde_json::Value;
 use std::io::{Read, Write};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum CdpTransportState { Connected, Disconnected, Unavailable }
+pub enum CdpTransportState {
+    Connected,
+    Disconnected,
+    Unavailable,
+}
 
 pub struct CdpConnection<T> {
     pub state: CdpTransportState,
@@ -13,20 +17,51 @@ pub struct CdpConnection<T> {
 }
 
 impl<T: Read + Write> CdpConnection<T> {
-    pub fn from_transport(transport: T) -> Self { Self { state: CdpTransportState::Connected, transport } }
+    pub fn from_transport(transport: T) -> Self {
+        Self {
+            state: CdpTransportState::Connected,
+            transport,
+        }
+    }
 
-    pub fn send_command(&mut self, id: u64, method: &str, params: Value) -> Result<Value, crate::Error> {
-        if method.trim().is_empty() { return Err(crate::Error::InvalidParameter("CDP method is required".into())); }
+    pub fn send_command(
+        &mut self,
+        id: u64,
+        method: &str,
+        params: Value,
+    ) -> Result<Value, crate::Error> {
+        if method.trim().is_empty() {
+            return Err(crate::Error::InvalidParameter(
+                "CDP method is required".into(),
+            ));
+        }
         let request = serde_json::json!({ "id": id, "method": method, "params": params });
-        let payload = serde_json::to_vec(&request).map_err(|e| crate::Error::Internal(e.to_string()))?;
-        let length = u32::try_from(payload.len()).map_err(|_| crate::Error::InvalidParameter("CDP command too large".into()))?;
-        self.transport.write_all(&length.to_le_bytes()).map_err(|e| crate::Error::Internal(e.to_string()))?;
-        self.transport.write_all(&payload).map_err(|e| crate::Error::Internal(e.to_string()))?;
-        self.transport.flush().map_err(|e| crate::Error::Internal(e.to_string()))?;
+        let payload =
+            serde_json::to_vec(&request).map_err(|e| crate::Error::Internal(e.to_string()))?;
+        let length = u32::try_from(payload.len())
+            .map_err(|_| crate::Error::InvalidParameter("CDP command too large".into()))?;
+        self.transport
+            .write_all(&length.to_le_bytes())
+            .map_err(|e| crate::Error::Internal(e.to_string()))?;
+        self.transport
+            .write_all(&payload)
+            .map_err(|e| crate::Error::Internal(e.to_string()))?;
+        self.transport
+            .flush()
+            .map_err(|e| crate::Error::Internal(e.to_string()))?;
         let response = read_frame(&mut self.transport)?;
-        let value: Value = serde_json::from_slice(&response).map_err(|e| crate::Error::Internal(format!("invalid CDP response: {e}")))?;
-        if value.get("id").and_then(Value::as_u64) != Some(id) { return Err(crate::Error::StateMismatch("CDP response id mismatch".into())); }
-        if let Some(error) = value.get("error") { return Err(crate::Error::Internal(format!("CDP command failed: {error}"))); }
+        let value: Value = serde_json::from_slice(&response)
+            .map_err(|e| crate::Error::Internal(format!("invalid CDP response: {e}")))?;
+        if value.get("id").and_then(Value::as_u64) != Some(id) {
+            return Err(crate::Error::StateMismatch(
+                "CDP response id mismatch".into(),
+            ));
+        }
+        if let Some(error) = value.get("error") {
+            return Err(crate::Error::Internal(format!(
+                "CDP command failed: {error}"
+            )));
+        }
         Ok(value.get("result").cloned().unwrap_or(Value::Null))
     }
 
@@ -40,14 +75,20 @@ impl<T: Read + Write> CdpConnection<T> {
         let mut out = Vec::new();
         let mut buf = [0u8; 1024];
         loop {
-            let n = self.transport.read(&mut buf).map_err(|e| crate::Error::Internal(format!("CDP handshake read: {e}")))?;
-            if n == 0 { break; }
+            let n = self
+                .transport
+                .read(&mut buf)
+                .map_err(|e| crate::Error::Internal(format!("CDP handshake read: {e}")))?;
+            if n == 0 {
+                break;
+            }
             out.extend_from_slice(&buf[..n]);
-            if out.ends_with(b"\r\n") { break; }
+            if out.ends_with(b"\r\n") {
+                break;
+            }
         }
         Ok(out)
     }
-
 
     #[cfg(test)]
     pub fn transport_written_bytes_for_test(&mut self) -> Vec<u8> {
@@ -59,17 +100,26 @@ impl<T: Read + Write> CdpConnection<T> {
         Vec::new()
     }
 
-    pub fn into_inner(self) -> T { self.transport }
+    pub fn into_inner(self) -> T {
+        self.transport
+    }
 }
-
 
 fn read_frame<R: Read>(reader: &mut R) -> Result<Vec<u8>, crate::Error> {
     let mut header = [0u8; 4];
-    reader.read_exact(&mut header).map_err(|e| crate::Error::Internal(format!("CDP frame header: {e}")))?;
+    reader
+        .read_exact(&mut header)
+        .map_err(|e| crate::Error::Internal(format!("CDP frame header: {e}")))?;
     let length = u32::from_le_bytes(header) as usize;
-    if length > 16 * 1024 * 1024 { return Err(crate::Error::PolicyBlocked("CDP response exceeds 16 MiB".into())); }
+    if length > 16 * 1024 * 1024 {
+        return Err(crate::Error::PolicyBlocked(
+            "CDP response exceeds 16 MiB".into(),
+        ));
+    }
     let mut payload = vec![0u8; length];
-    reader.read_exact(&mut payload).map_err(|e| crate::Error::Internal(format!("CDP frame payload: {e}")))?;
+    reader
+        .read_exact(&mut payload)
+        .map_err(|e| crate::Error::Internal(format!("CDP frame payload: {e}")))?;
     Ok(payload)
 }
 
@@ -84,7 +134,8 @@ mod tests {
     /// prefix framing used by the real CDP transport.
     #[test]
     fn sends_length_prefixed_command_and_reads_result() {
-        let response_payload = serde_json::to_vec(&serde_json::json!({"id": 7, "result": {"ok": true}})).unwrap();
+        let response_payload =
+            serde_json::to_vec(&serde_json::json!({"id": 7, "result": {"ok": true}})).unwrap();
         let framed = {
             let len = response_payload.len() as u32;
             let mut out = len.to_le_bytes().to_vec();
@@ -94,15 +145,20 @@ mod tests {
         let transport = InMemoryTransport::new();
         transport.set_response(framed);
         let mut connection = CdpConnection::from_transport(transport);
-        let result = connection.send_command(7, "Browser.getVersion", Value::Null).unwrap();
+        let result = connection
+            .send_command(7, "Browser.getVersion", Value::Null)
+            .unwrap();
         assert_eq!(result["ok"], true);
         let written = connection.into_inner().written_bytes();
-        assert!(written.windows(b"Browser.getVersion".len()).any(|w| w == b"Browser.getVersion"));
+        assert!(written
+            .windows(b"Browser.getVersion".len())
+            .any(|w| w == b"Browser.getVersion"));
     }
 
     #[test]
     fn rejects_response_id_mismatch() {
-        let response_payload = serde_json::to_vec(&serde_json::json!({"id": 8, "result": {}})).unwrap();
+        let response_payload =
+            serde_json::to_vec(&serde_json::json!({"id": 8, "result": {}})).unwrap();
         let framed = {
             let len = response_payload.len() as u32;
             let mut out = len.to_le_bytes().to_vec();
@@ -165,6 +221,8 @@ mod tests {
             written.extend_from_slice(buf);
             Ok(buf.len())
         }
-        fn flush(&mut self) -> std::io::Result<()> { Ok(()) }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
     }
 }

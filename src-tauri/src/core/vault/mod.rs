@@ -12,3 +12,4 @@ pub mod import;
 pub mod items;
 pub mod keys;
 pub mod secret;
+pub mod service;

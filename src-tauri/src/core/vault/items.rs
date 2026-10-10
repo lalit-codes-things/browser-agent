@@ -92,7 +92,10 @@ mod tests {
             "Token service".into(),
             HttpsCheckState::Pass,
             IdnHomographCheckState::Pass,
-            RedactedSecretDescriptor::payment_field("card number", RedactedFieldKind::CardNumber),
+            RedactedSecretDescriptor::sensitive_field(
+                "card number",
+                RedactedFieldKind::CardLikeNumber,
+            ),
         );
         assert!(format!("{:?}", ref_).contains("Token service"));
         assert!(format!("{:?}", ref_).contains("[redacted]"));

@@ -57,3 +57,36 @@ pub struct AuditSettings {
 pub struct KeyboardSettings {
     pub reduced_motion: bool,
 }
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            runtime: RuntimeSettings {
+                announce_latency: true,
+            },
+            browser: BrowserSettings {
+                headless_allowed: true,
+            },
+            model: ModelSettings {
+                use_provisional_model: true,
+            },
+            network: NetworkSettings {
+                egress_mode: crate::config::EgressMode::Enforced,
+                quic_blocked: true,
+                doh_disabled: true,
+            },
+            vault: VaultSettings {
+                master_key_storage: "keychain".into(),
+            },
+            security: SecuritySettings {
+                high_stakes_threshold_amount: None,
+            },
+            audit: AuditSettings {
+                retention_policy: "strict_tamper_evident".into(),
+            },
+            keyboard: KeyboardSettings {
+                reduced_motion: false,
+            },
+        }
+    }
+}

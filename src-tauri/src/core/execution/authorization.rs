@@ -9,9 +9,9 @@
 // The model knows only the typed request surface and never gains direct
 // access to secrets, QR payloads, or biometric primitives.
 
-use crate::core::action::durable::{DurableActionRecord, DurableActionState};
-use crate::core::action::commitment::ActionCommitment;
 use crate::core::action::authz::verify_action_authorization_capability;
+use crate::core::action::commitment::ActionCommitment;
+use crate::core::action::durable::{DurableActionRecord, DurableActionState};
 use crate::core::action::ActionAuthorizationCapability;
 use crate::security::clocks::MonotonicClock;
 
@@ -62,12 +62,7 @@ pub fn verify_before_execution(
         return AuthorizationVerificationResult::UnresolvedRequiresHumanCheckpoint;
     }
 
-    if !verify_action_authorization_capability(
-        capability,
-        commitment,
-        nonce,
-        now_monotonic,
-    ) {
+    if !verify_action_authorization_capability(capability, commitment, nonce, now_monotonic) {
         if capability.is_expired(now_monotonic) {
             return AuthorizationVerificationResult::Expired;
         }
@@ -134,7 +129,10 @@ mod tests {
         commitment: &ActionCommitment,
         nonce: [u8; 32],
     ) -> ActionAuthorizationCapability {
-        let mut cap = crate::core::action::authz::authorize_action_commitment(commitment, crate::core::action::OperationType::ConsequentialAction);
+        let mut cap = crate::core::action::authz::authorize_action_commitment(
+            commitment,
+            crate::core::action::OperationType::ConsequentialAction,
+        );
         cap.authorization_nonce = nonce;
         cap
     }
@@ -266,11 +264,13 @@ mod tests {
         );
         let nonce: [u8; 32] = rand::random();
         let cap = capability_for(&commitment, nonce);
-        assert!(crate::core::action::authz::verify_action_authorization_capability(
-            &cap,
-            &commitment,
-            &nonce,
-            now_monotonic()
-        ));
+        assert!(
+            crate::core::action::authz::verify_action_authorization_capability(
+                &cap,
+                &commitment,
+                &nonce,
+                now_monotonic()
+            )
+        );
     }
 }

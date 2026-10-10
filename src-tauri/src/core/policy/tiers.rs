@@ -75,12 +75,14 @@ impl TierDerivation {
 #[cfg(test)]
 mod tests {
     use super::AuthorizationTier;
+    use crate::core::action::commitment::ActionCommitment;
     use crate::core::action::ActionAuthorizationCapability;
     use crate::core::action::OperationType;
-    use crate::core::action::commitment::ActionCommitment;
 
     #[allow(unused_imports, non_upper_case_globals)]
-    const _tier_test_imports: () = { let _ = (AuthorizationTier::None,); };
+    const _tier_test_imports: () = {
+        let _ = (AuthorizationTier::None,);
+    };
 
     #[allow(dead_code)]
     fn _tier_test_types() {
@@ -103,50 +105,9 @@ mod tests {
     #[allow(dead_code)]
     type DataFlowClass = crate::core::policy::provenance::DataFlowClass;
 
-    impl Default for SideEffectClass {
-        fn default() -> Self { Self::Read }
-    }
-    impl Default for TaintFlag {
-        fn default() -> Self { Self::None }
-    }
-    impl Default for DataFlowSummary {
-        fn default() -> Self {
-            Self {
-                source: String::new(),
-                sink: String::new(),
-                flow_class: DataFlowClass::TrustedRuntime,
-                verdict: None,
-            }
-        }
-    }
-    impl Default for TaskAuthority {
-        fn default() -> Self {
-            Self {
-                task_id: String::new(),
-                bounded_origins: vec![],
-                allowed_actions: vec![],
-                constraints: TaskConstraints::default(),
-            }
-        }
-    }
-    impl Default for TaskConstraints {
-        fn default() -> Self {
-            Self {
-                max_steps: None,
-                max_llm_calls: None,
-                max_task_duration_ms: None,
-                max_confirmations: None,
-                allowed_network_destination_classes: vec![],
-                high_stakes_threshold_amount: None,
-            }
-        }
-    }
-    impl Default for DataFlowClass {
-        fn default() -> Self { Self::TrustedRuntime }
-    }
-
-    use crate::core::action::authz::{authorize_action_commitment, verify_action_authorization_capability};
-
+    use crate::core::action::authz::{
+        authorize_action_commitment, verify_action_authorization_capability,
+    };
 
     fn now_monotonic() -> u64 {
         1_000_000

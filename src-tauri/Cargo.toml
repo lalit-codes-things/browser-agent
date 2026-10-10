@@ -34,9 +34,14 @@ hkdf = "0.12"
 zeroize = "1"
 rand = "0.8"
 chacha20poly1305 = { version = "0.10", features = ["std"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 libc = "0.2"
+
+[dev-dependencies]
+# Used by startup-asset regression tests to decode embedded-icon inputs.
+png = "0.17"
 
 
 [profile.release]

@@ -18,7 +18,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::core::secure_field::payment_field::{
+use crate::core::secure_field::sensitive_field::{
     FieldVisualStatus, RedactedFieldDescriptor, SecureFieldClassification,
 };
 use crate::security::clocks::MonotonicClock;
@@ -36,13 +36,13 @@ pub struct RedactedSecretDescriptor {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RedactedFieldKind {
-    CardNumber,
-    Cvv,
+    CardLikeNumber,
+    SecurityCode,
     Expiry,
     Password,
     Otp,
     Totp,
-    PaymentPin,
+    SensitivePin,
     Unknown,
 }
 
@@ -59,15 +59,15 @@ impl std::fmt::Debug for RedactedSecretDescriptor {
 }
 
 impl RedactedSecretDescriptor {
-    pub fn payment_field(field_id: impl Into<String>, kind: RedactedFieldKind) -> Self {
+    pub fn sensitive_field(field_id: impl Into<String>, kind: RedactedFieldKind) -> Self {
         let classification = kind.clone();
         let safe_label = match &kind {
-            RedactedFieldKind::CardNumber => Some("Card number".into()),
-            RedactedFieldKind::Cvv => Some("CVV".into()),
+            RedactedFieldKind::CardLikeNumber => Some("Card number".into()),
+            RedactedFieldKind::SecurityCode => Some("CVV".into()),
             RedactedFieldKind::Expiry => Some("Expiry".into()),
             RedactedFieldKind::Password => Some("Password".into()),
             RedactedFieldKind::Otp | RedactedFieldKind::Totp => Some("One-time code".into()),
-            RedactedFieldKind::PaymentPin => Some("Payment PIN".into()),
+            RedactedFieldKind::SensitivePin => Some("Payment PIN".into()),
             RedactedFieldKind::Unknown => None,
         };
         Self {
@@ -75,8 +75,8 @@ impl RedactedSecretDescriptor {
             classification,
             safe_label,
             obscured_length: match kind {
-                RedactedFieldKind::CardNumber => Some(19),
-                RedactedFieldKind::Cvv => Some(4),
+                RedactedFieldKind::CardLikeNumber => Some(19),
+                RedactedFieldKind::SecurityCode => Some(4),
                 RedactedFieldKind::Expiry => Some(5),
                 _ => None,
             },
@@ -90,10 +90,10 @@ impl RedactedSecretDescriptor {
         bounds: Option<crate::core::perception::graph::GeometryBounds>,
     ) -> RedactedFieldDescriptor {
         let classification = match self.classification {
-            RedactedFieldKind::CardNumber
-            | RedactedFieldKind::Cvv
+            RedactedFieldKind::CardLikeNumber
+            | RedactedFieldKind::SecurityCode
             | RedactedFieldKind::Expiry
-            | RedactedFieldKind::PaymentPin => SecureFieldClassification::SensitiveTokenInput,
+            | RedactedFieldKind::SensitivePin => SecureFieldClassification::SensitiveTokenInput,
             RedactedFieldKind::Password => SecureFieldClassification::PasswordInput,
             RedactedFieldKind::Otp | RedactedFieldKind::Totp => {
                 SecureFieldClassification::TokenInput
@@ -158,7 +158,8 @@ mod tests {
 
     #[test]
     fn redacted_secret_descriptor_is_redacted() {
-        let d = RedactedSecretDescriptor::payment_field("F-CVV-1", RedactedFieldKind::Cvv);
+        let d =
+            RedactedSecretDescriptor::sensitive_field("F-CVV-1", RedactedFieldKind::SecurityCode);
         assert!(format!("{:?}", d).contains("[redacted]"));
         assert_eq!(d.safe_label, Some("CVV".into()));
         assert_eq!(d.obscured_length, Some(4));
@@ -166,7 +167,8 @@ mod tests {
 
     #[test]
     fn ui_descriptor_does_not_contain_secret() {
-        let d = RedactedSecretDescriptor::payment_field("F-CVV-1", RedactedFieldKind::Cvv);
+        let d =
+            RedactedSecretDescriptor::sensitive_field("F-CVV-1", RedactedFieldKind::SecurityCode);
         let desc = d.as_ui_descriptor(
             Some("F1".into()),
             Some("L1".into()),
@@ -186,9 +188,9 @@ mod tests {
 
     #[test]
     fn redacted_frame_representation_does_not_contain_secret() {
-        let fields = vec![RedactedSecretDescriptor::payment_field(
+        let fields = vec![RedactedSecretDescriptor::sensitive_field(
             "F-CVV-1",
-            RedactedFieldKind::Cvv,
+            RedactedFieldKind::SecurityCode,
         )];
         let rep = redacted_frame_representation(Some("F1".into()), Some("L1".into()), &fields);
         assert_eq!(rep.frame_id, "F1");

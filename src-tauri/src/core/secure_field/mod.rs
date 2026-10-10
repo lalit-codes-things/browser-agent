@@ -19,9 +19,9 @@
 // reachable QR-decode path is a defect to remove.
 
 pub mod clipboard;
-pub mod payment_field;
 pub mod qr_region;
+pub mod sensitive_field;
 
 pub use clipboard::*;
-pub use payment_field::*;
 pub use qr_region::*;
+pub use sensitive_field::*;

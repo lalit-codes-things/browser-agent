@@ -14,11 +14,13 @@ pub mod intervention_epoch;
 pub mod permission_check;
 pub mod progress;
 pub mod resume;
+pub mod runtime;
 pub mod state_machine;
 pub mod task_authority;
 pub mod task_normalizer;
 
 pub use permission_check::{PermissionCheck, PermissionOutcome};
 pub use progress::{ProgressMode, TaskProgress, TaskState};
+pub use runtime::{TaskRegistry, TaskRuntime, TaskSlot};
 pub use state_machine::{StateMachine, TransitionError};
 pub use task_normalizer::TaskNormalizer;

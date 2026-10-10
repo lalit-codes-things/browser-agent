@@ -1,90 +1,137 @@
 import { memo } from "react";
-import { AppState, TaskStatus, AppEvent } from "../../state/app";
+import { AppState, TaskSnapshot, AppEvent } from "../../state/app";
+import { useLedgerRowMotion } from "../../motion";
 
-const STATUS_COLOR: Record<TaskStatus, string> = {
-  PENDING: "text-muted",
-  RUNNING: "text-primary",
-  VERIFIED: "sem-verified",
-  LIKELY_SUCCESS: "text-secondary",
-  UNKNOWN: "text-muted",
-  FAILED: "sem-violation",
-  ABORTED: "sem-violation",
-  PARKED: "sem-caution",
-};
+// Action Ledger (DESIGN.md §14.1): dense monospaced event log.
+// Columns: TIME · EVENT · STEP · ACTION · TIER · POLICY · VERIFY
+// Every rendered value is a literal backend payload field; the frontend
+// never derives a classification it was not emitted.
 
-const EXEC_OUTCOME_LABEL: Record<string, string> = {
-  true: "OK",
-  false: "FAIL",
-};
-
-function statusClass(status: TaskStatus): string {
-  return STATUS_COLOR[status] ?? "text-muted";
+// Verification outcomes render exactly as the backend emits them, with a
+// restrained status tint. UNKNOWN stays neutral — it is not a hue.
+function verifyCell(outcome: string): { text: string; cls: string } {
+  switch (outcome) {
+    case "VERIFIED_SUCCESS":
+      return { text: outcome, cls: "sem-verified" };
+    case "VERIFIED_FAILURE":
+    case "LIKELY_FAILURE":
+      return { text: outcome, cls: "sem-violation" };
+    case "LIKELY_SUCCESS":
+      return { text: outcome, cls: "text-primary" };
+    default:
+      return { text: outcome, cls: "text-secondary" };
+  }
 }
+
+const TH =
+  "px-3 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider-safe text-muted whitespace-nowrap";
+
+const LedgerRow = memo(function LedgerRow({
+  event,
+  index,
+  task,
+}: {
+  event: AppEvent;
+  index: number;
+  task: TaskSnapshot | null;
+}) {
+  const rowRef = useLedgerRowMotion<HTMLTableRowElement>();
+
+  const policy = event.type === "POLICY_DECISION" ? event.payload : null;
+  const verification =
+    event.type === "VERIFICATION_OUTCOME" ? event.payload : null;
+  const execution =
+    event.type === "EXECUTION_RESULT" ? event.payload : null;
+  const action = event.type === "ACTION_PROPOSAL" ? event.payload : null;
+
+  // Backend event types are already canonical vocabulary.
+  const eventLabel = event.type.replace(/_/g, " ");
+
+  return (
+    <tr ref={rowRef} className="border-b-1px line hover:bg-bg-1">
+      <td className="px-3 py-1.5 text-muted whitespace-nowrap">
+        {(index + 1).toString().padStart(3, "0")}
+      </td>
+      <td className="px-3 py-1.5 text-primary whitespace-nowrap">
+        {eventLabel}
+      </td>
+      <td className="px-3 py-1.5 text-secondary whitespace-nowrap">
+        {task ? `STEP ${task.stepLabel}` : "—"}
+      </td>
+      <td className="px-3 py-1.5 text-secondary data-mono whitespace-nowrap">
+        {action?.action ?? execution?.action ?? policy?.action_class ?? "—"}
+      </td>
+      <td
+        className={`px-3 py-1.5 whitespace-nowrap ${
+          policy ? "text-primary" : "text-muted"
+        }`}
+      >
+        {policy?.tier ?? "—"}
+      </td>
+      <td
+        className={`px-3 py-1.5 whitespace-nowrap ${
+          policy ? "text-primary" : "text-muted"
+        }`}
+      >
+        {policy?.verdict ?? "—"}
+      </td>
+      <td className="px-3 py-1.5 whitespace-nowrap">
+        {verification ? (
+          <span className={verifyCell(verification.outcome).cls}>
+            {verifyCell(verification.outcome).text}
+          </span>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
+      </td>
+    </tr>
+  );
+});
 
 export const TaskLedger = memo(function TaskLedger({ state }: { state: AppState }) {
   const rows = state.eventLog;
+  const task = state.task;
 
   return (
-    <div className="overflow-auto rounded-none border-1px line bg-surface-1">
-      <table className="w-full text-[12px] data-mono">
-        <thead className="sticky top-0 z-10 border-b-1px line-strong bg-surface-2">
-          <tr>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">TIME</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">EPOCH</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">TARGET</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">ACTION</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">CLASS</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">TIER</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">POLICY</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">EXEC</th>
-            <th className="px-3 py-2 text-left text-muted uppercase tracking-wider-safe text-[11px] font-semibold">VERIFY</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td className="px-3 py-6 text-center text-muted text-[12px]">No events yet.</td>
-            </tr>
-          ) : (
-            rows.map((event, i) => {
-              const policy = event.type === "POLICY_DECISION" ? event.payload : null;
-              const verification =
-                event.type === "VERIFICATION_OUTCOME" ? event.payload : null;
-              const execution =
-                event.type === "EXECUTION_RESULT" ? event.payload : null;
-              const task = state.task;
+    <div className="min-w-0 rounded-none border-1px line bg-surface-1">
+      <div className="flex items-center justify-between border-b-1px line px-3 py-2">
+        <span className="label-uppercase text-secondary">EVENT LOG</span>
+        <span className="micro-annotation text-muted data-mono">
+          {rows.length.toString().padStart(3, "0")} EVENTS · REPLAYABLE
+        </span>
+      </div>
 
-              const eventLabel = (event.type)
-                .replace("_", " ")
-                .toUpperCase();
-
-              return (
-                <tr key={i} className="border-b-1px line">
-                  <td className="px-3 py-2 text-muted">{i + 1}</td>
-                  <td className="px-3 py-2">{task?.stepLabel ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted">{policy?.action_class ?? execution?.action ?? "—"}</td>
-                  <td className="px-3 py-2 text-primary data-mono uppercase">
-                    {eventLabel}
-                  </td>
-                  <td className="px-3 py-2 text-muted">{policy?.action_class ?? execution?.action ?? "—"}</td>
-                  <td className={`px-3 py-2 ${policy ? "text-primary data-mono" : "text-muted"}`}>
-                    {policy?.tier ?? "—"}
-                  </td>
-                  <td className={`px-3 py-2 ${policy ? "text-primary" : "text-muted"}`}>
-                    {policy?.verdict ?? "—"}
-                  </td>
-                  <td className={`px-3 py-2 ${execution ? "text-primary" : "text-muted"}`}>
-                    {execution ? EXEC_OUTCOME_LABEL[execution.success ? "true" : "false"] ?? "—" : "—"}
-                  </td>
-                  <td className={`px-3 py-2 ${verification ? "text-primary" : "text-muted"}`}>
-                    {verification?.outcome ?? "—"}
-                  </td>
-                </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
+      <div className="max-h-[480px] min-h-[120px] overflow-auto">
+        {rows.length === 0 ? (
+          <div className="border border-dashed border-line-strong m-3 px-4 py-8">
+            <p className="text-[12.5px] text-secondary">
+              No runtime events received.
+            </p>
+            <p className="micro-annotation mt-1 text-muted">
+              Submit a task to begin the runtime event stream.
+            </p>
+          </div>
+        ) : (
+          <table className="w-full text-left text-[12.5px] data-mono">
+            <thead className="sticky top-0 z-10 bg-surface-2">
+              <tr className="border-b-1px line-strong">
+                <th className={TH}>TIME</th>
+                <th className={TH}>EVENT</th>
+                <th className={TH}>STEP</th>
+                <th className={TH}>ACTION</th>
+                <th className={TH}>TIER</th>
+                <th className={TH}>POLICY</th>
+                <th className={TH}>VERIFY</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((event, i) => (
+                <LedgerRow key={i} event={event} index={i} task={task} />
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 });

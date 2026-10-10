@@ -14,6 +14,5 @@ pub mod commitment;
 pub mod durable;
 pub mod idempotency;
 
-pub use commitment::{ActionAuthorizationCapability, OperationType};
 pub use authz::{authorize_action_commitment, verify_action_authorization_capability};
-
+pub use commitment::{ActionAuthorizationCapability, OperationType};

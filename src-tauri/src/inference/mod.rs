@@ -20,3 +20,4 @@ pub mod install;
 pub mod llama;
 pub mod memory;
 pub mod pin;
+pub mod status;

@@ -11,6 +11,7 @@ export interface AppState {
   navigation: NavigationSnapshot | null;
   perception: PerceptionSnapshot | null;
   model: ModelSnapshot | null;
+  egress: EgressSnapshot | null;
   policy: PolicySnapshot | null;
   execution: ExecutionSnapshot | null;
   verification: VerificationSnapshot | null;
@@ -21,7 +22,22 @@ export interface AppState {
   ui: UIState;
 }
 
+export type ScreenName =
+  | "CONSOLE"
+  | "INTERVENTION"
+  | "POLICY"
+  | "SKILLS"
+  | "AUDIT"
+  | "VAULT"
+  | "MODEL"
+  | "NETWORK"
+  | "QUARANTINE"
+  | "PROFILES"
+  | "SETTINGS"
+  | "STOPPED";
+
 export interface UIState {
+  currentScreen: ScreenName;
   panels: Record<string, boolean>;
 }
 
@@ -75,11 +91,40 @@ export interface PerceptionSnapshot {
 
 export interface ModelSnapshot {
   modelId: string;
+  quantization: string;
   residency: ModelResidency;
-  verifiedAtLoad: boolean;
+  availability: ModelAvailability;
+  sha256: string;
+  reason?: string;
 }
 
 export type ModelResidency = "LOADED" | "PARKED" | "UNLOADED";
+
+export type ModelAvailability =
+  | "VERIFIED_LOADED"
+  | "PRESENT_UNVERIFIED"
+  | "UNAVAILABLE";
+
+export interface EgressSnapshot {
+  mode: "ENFORCED" | "DISABLED";
+  enforcementActive: boolean;
+  reason?: string;
+}
+
+export interface ModelStateEvent {
+  model_id: string;
+  quantization: string;
+  residency: ModelResidency;
+  availability: ModelAvailability;
+  sha256: string;
+  reason?: string;
+}
+
+export interface EgressStateEvent {
+  mode: "ENFORCED" | "DISABLED";
+  enforcement_active: boolean;
+  reason?: string;
+}
 
 export interface PolicySnapshot {
   taskId: string;
@@ -116,6 +161,7 @@ export interface AuthorizationSnapshot {
   taskId: string;
   tier: string;
   summary: string;
+  commitmentHash: string;
 }
 
 export interface AgentCursorSnapshot {
@@ -174,9 +220,14 @@ export type AppEvent =
   | { type: "EXECUTION_RESULT"; payload: ExecutionResultEvent }
   | { type: "VERIFICATION_OUTCOME"; payload: VerificationOutcomeEvent }
   | { type: "AUTHORIZATION_REQUIRED"; payload: AuthorizationRequiredEvent }
+  | { type: "AUTHORIZATION_RESOLVED"; payload: AuthorizationResolvedEvent }
   | { type: "AGENT_CURSOR_STATE"; payload: AgentCursorStateEvent }
   | { type: "HUMAN_TAKEOVER_STATE"; payload: HumanTakeoverStateEvent }
-  | { type: "ACTION_DURABLE_STATE"; payload: ActionDurableStateEvent };
+  | { type: "ACTION_DURABLE_STATE"; payload: ActionDurableStateEvent }
+  | { type: "MODEL_STATE"; payload: ModelStateEvent }
+  | { type: "EGRESS_STATE"; payload: EgressStateEvent }
+  | { type: "SET_SCREEN"; payload: ScreenName }
+  | { type: "SET_PANEL"; payload: { panel: string; open: boolean } };
 
 export interface TaskStateEvent {
   task_id: string;
@@ -244,6 +295,14 @@ export interface AuthorizationRequiredEvent {
   task_id: string;
   tier: string;
   summary: string;
+  commitment_hash: string;
+}
+
+export type AuthorizationDecision = "APPROVED" | "DENIED";
+
+export interface AuthorizationResolvedEvent {
+  task_id: string;
+  decision: AuthorizationDecision;
 }
 
 export interface AgentCursorStateEvent {
@@ -280,6 +339,12 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
 
   switch (event.type) {
     case "TASK_STATE": {
+      // Stale events from a different task are ignored, except PENDING,
+      // which marks acceptance of a new task and switches projection.
+      const adopting = Boolean(state.task && state.task.id !== event.payload.task_id);
+      if (adopting && event.payload.status !== "PENDING") {
+        return next;
+      }
       return {
         ...next,
         task: {
@@ -287,6 +352,21 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
           status: event.payload.status,
           stepLabel: event.payload.step_label,
         },
+        // Adopting a new task: drop the previous task's security-relevant
+        // snapshots so nothing stale can be rendered against it.
+        ...(adopting
+          ? {
+              navigation: null,
+              perception: null,
+              policy: null,
+              execution: null,
+              verification: null,
+              authorization: null,
+              agentCursor: null,
+              humanTakeover: null,
+              actionDurable: null,
+            }
+          : {}),
       };
     }
     case "BROWSER_RUNTIME_STATE": {
@@ -300,6 +380,9 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       };
     }
     case "NAVIGATION_STATE": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         navigation: {
@@ -313,6 +396,14 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       };
     }
     case "PERCEPTION_STATE": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
+      // Epochs are backend-issued and monotonic per task; a delayed event
+      // from an older epoch never regresses the projected state.
+      if (state.perception && event.payload.epoch < state.perception.epoch) {
+        return next;
+      }
       return {
         ...next,
         perception: {
@@ -329,6 +420,9 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       return next;
     }
     case "POLICY_DECISION": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         policy: {
@@ -341,6 +435,9 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       };
     }
     case "EXECUTION_RESULT": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         execution: {
@@ -354,6 +451,9 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       };
     }
     case "VERIFICATION_OUTCOME": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         verification: {
@@ -365,14 +465,28 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       };
     }
     case "AUTHORIZATION_REQUIRED": {
+      // Only backend-issued requests open the interlock. Stale requests
+      // from an older task never replace the current task's request.
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         authorization: {
           taskId: event.payload.task_id,
           tier: event.payload.tier,
           summary: event.payload.summary,
+          commitmentHash: event.payload.commitment_hash,
         },
       };
+    }
+    case "AUTHORIZATION_RESOLVED": {
+      // The backend resolved the request; the interlock closes only on
+      // the authoritative resolution event.
+      if (state.authorization && state.authorization.taskId !== event.payload.task_id) {
+        return next;
+      }
+      return { ...next, authorization: null };
     }
     case "AGENT_CURSOR_STATE": {
       return {
@@ -389,6 +503,9 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
       };
     }
     case "HUMAN_TAKEOVER_STATE": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         humanTakeover: {
@@ -398,7 +515,33 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
         },
       };
     }
+    case "MODEL_STATE": {
+      return {
+        ...next,
+        model: {
+          modelId: event.payload.model_id,
+          quantization: event.payload.quantization,
+          residency: event.payload.residency,
+          availability: event.payload.availability,
+          sha256: event.payload.sha256,
+          reason: event.payload.reason,
+        },
+      };
+    }
+    case "EGRESS_STATE": {
+      return {
+        ...next,
+        egress: {
+          mode: event.payload.mode,
+          enforcementActive: event.payload.enforcement_active,
+          reason: event.payload.reason,
+        },
+      };
+    }
     case "ACTION_DURABLE_STATE": {
+      if (state.task && state.task.id !== event.payload.task_id) {
+        return next;
+      }
       return {
         ...next,
         actionDurable: {
@@ -406,6 +549,27 @@ export function reduceEvent(state: AppState, event: AppEvent): AppState {
           durableId: event.payload.durable_id,
           durableState: event.payload.durable_state,
           actionCommitmentHash: event.payload.action_commitment_hash,
+        },
+      };
+    }
+    case "SET_SCREEN": {
+      return {
+        ...next,
+        ui: {
+          ...next.ui,
+          currentScreen: event.payload,
+        },
+      };
+    }
+    case "SET_PANEL": {
+      return {
+        ...next,
+        ui: {
+          ...next.ui,
+          panels: {
+            ...next.ui.panels,
+            [event.payload.panel]: event.payload.open,
+          },
         },
       };
     }
@@ -421,6 +585,7 @@ export const initialState: AppState = {
   navigation: null,
   perception: null,
   model: null,
+  egress: null,
   policy: null,
   execution: null,
   verification: null,
@@ -428,5 +593,5 @@ export const initialState: AppState = {
   agentCursor: null,
   humanTakeover: null,
   actionDurable: null,
-  ui: { panels: {} },
+  ui: { currentScreen: "CONSOLE", panels: {} },
 };

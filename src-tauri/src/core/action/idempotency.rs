@@ -43,12 +43,28 @@ mod tests {
 
     #[test]
     fn idempotency_key_is_tied_to_commitment() {
-        let c = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, 1_000_000);
+        let c = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            1_000_000,
+        );
         let k1 = idempotency_key_for(&c, "t-1", rand::random(), 1_100_000);
         assert!(k1.alive_at(1_050_000));
         assert!(!k1.alive_at(1_200_000));
 
-        let c2 = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "other@merchant".into(), 7, 300_000, 1_000_000);
+        let c2 = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "other@merchant".into(),
+            7,
+            300_000,
+            1_000_000,
+        );
         let k2 = idempotency_key_for(&c2, "t-1", rand::random(), 1_100_000);
         assert_ne!(k1.key, k2.key, "different commitments -> different keys");
     }

@@ -56,7 +56,7 @@ impl ActionCommitment {
         v.push(b'\0');
         v.extend_from_slice(self.destination.as_bytes());
         v.push(b'\0');
-        v.extend_from_slice(&self.operation_type.as_bytes());
+        v.extend_from_slice(self.operation_type.as_bytes());
         v.push(b'\0');
         v.extend_from_slice(self.task_id.as_bytes());
         v.push(b'\0');
@@ -156,7 +156,15 @@ mod tests {
 
     #[test]
     fn commitment_hash_is_deterministic() {
-        let c = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, now());
+        let c = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            now(),
+        );
         let a = action_commitment_hash(&c.canonical_for_hashing());
         let b = action_commitment_hash(&c.canonical_for_hashing());
         assert_eq!(a, b);
@@ -164,8 +172,24 @@ mod tests {
 
     #[test]
     fn different_destination_produces_different_commitment() {
-        let base = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, now());
-        let changed = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "other@merchant".into(), 7, 300_000, now());
+        let base = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            now(),
+        );
+        let changed = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "other@merchant".into(),
+            7,
+            300_000,
+            now(),
+        );
         assert_ne!(
             action_commitment_hash(&base.canonical_for_hashing()),
             action_commitment_hash(&changed.canonical_for_hashing())
@@ -174,40 +198,132 @@ mod tests {
 
     #[test]
     fn authorization_is_bound_to_commitment() {
-        let commitment = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, now());
-        let cap = ActionAuthorizationCapability::new(&commitment, OperationType::ConsequentialAction, rand::random(), now(), 300_000);
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            now(),
+        );
+        let cap = ActionAuthorizationCapability::new(
+            &commitment,
+            OperationType::ConsequentialAction,
+            rand::random(),
+            now(),
+            300_000,
+        );
         assert!(cap.authorizes_commitment(&commitment));
     }
 
     #[test]
     fn authorization_does_not_authorize_different_commitment() {
-        let base = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, now());
-        let cap = ActionAuthorizationCapability::new(&base, OperationType::ConsequentialAction, rand::random(), now(), 300_000);
-        let changed = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "other@merchant".into(), 7, 300_000, now());
+        let base = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            now(),
+        );
+        let cap = ActionAuthorizationCapability::new(
+            &base,
+            OperationType::ConsequentialAction,
+            rand::random(),
+            now(),
+            300_000,
+        );
+        let changed = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "other@merchant".into(),
+            7,
+            300_000,
+            now(),
+        );
         assert!(!cap.authorizes_commitment(&changed));
     }
 
     #[test]
     fn authorization_invalidated_by_epoch_change() {
-        let commitment = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, now());
-        let cap = ActionAuthorizationCapability::new(&commitment, OperationType::ConsequentialAction, rand::random(), now(), 300_000);
-        let changed_epoch = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 8, 300_000, now());
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            now(),
+        );
+        let cap = ActionAuthorizationCapability::new(
+            &commitment,
+            OperationType::ConsequentialAction,
+            rand::random(),
+            now(),
+            300_000,
+        );
+        let changed_epoch = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            8,
+            300_000,
+            now(),
+        );
         assert!(!cap.authorizes_commitment(&changed_epoch));
     }
 
     #[test]
     fn authorization_expired_after_monotonic_time() {
-        let commitment = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 100, now());
-        let cap = ActionAuthorizationCapability::new(&commitment, OperationType::ConsequentialAction, rand::random(), now(), 100);
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            100,
+            now(),
+        );
+        let cap = ActionAuthorizationCapability::new(
+            &commitment,
+            OperationType::ConsequentialAction,
+            rand::random(),
+            now(),
+            100,
+        );
         let later = now() + 200;
         assert!(cap.is_expired(later));
     }
 
     #[test]
     fn nonce_is_unique_per_authorization() {
-        let commitment = ActionCommitment::new("task-1".into(), None, "native:auth".into(), "merchant@payee".into(), 7, 300_000, now());
-        let cap_a = ActionAuthorizationCapability::new(&commitment, OperationType::ConsequentialAction, rand::random(), now(), 300_000);
-        let cap_b = ActionAuthorizationCapability::new(&commitment, OperationType::ConsequentialAction, rand::random(), now(), 300_000);
+        let commitment = ActionCommitment::new(
+            "task-1".into(),
+            None,
+            "native:auth".into(),
+            "merchant@payee".into(),
+            7,
+            300_000,
+            now(),
+        );
+        let cap_a = ActionAuthorizationCapability::new(
+            &commitment,
+            OperationType::ConsequentialAction,
+            rand::random(),
+            now(),
+            300_000,
+        );
+        let cap_b = ActionAuthorizationCapability::new(
+            &commitment,
+            OperationType::ConsequentialAction,
+            rand::random(),
+            now(),
+            300_000,
+        );
         assert_ne!(cap_a.authorization_nonce, cap_b.authorization_nonce);
     }
 }

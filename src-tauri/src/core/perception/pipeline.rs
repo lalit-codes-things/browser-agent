@@ -85,7 +85,9 @@ pub fn build(
 /// This is the contract between the browser runtime controller and the
 /// perception pipeline. When the runtime is attached and the CDP transport is
 /// ready, this path becomes the real capture entry point.
-pub fn capture(runtime: &crate::browser::controller::BrowserRuntimeSnapshot) -> Result<Vec<FrameObservation>, PipelineError> {
+pub fn capture(
+    runtime: &crate::browser::controller::BrowserRuntimeSnapshot,
+) -> Result<Vec<FrameObservation>, PipelineError> {
     if !runtime.available() {
         return Err(PipelineError::NotImplemented);
     }

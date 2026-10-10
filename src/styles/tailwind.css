@@ -41,7 +41,8 @@
     outline-offset: 1px;
   }
 
-  /* Design token mapping */
+  /* Design token mapping. Direct Tailwind palette classes must not be
+     used on surfaces; only these tokens carry the design contract. */
   .bg-surface-0 { background-color: var(--bg-0); }
   .bg-surface-1 { background-color: var(--bg-1); }
   .bg-surface-2 { background-color: var(--bg-2); }
@@ -57,6 +58,11 @@
   .sem-verified { color: var(--sem-verified); }
   .sem-caution { color: var(--sem-caution); }
   .sem-violation { color: var(--sem-violation); }
+
+  /* Semantic fills — used only by the interlock tier band. */
+  .sem-caution-bg { background-color: var(--sem-caution); }
+  .sem-violation-bg { background-color: var(--sem-violation); }
+  .sem-verified-bg { background-color: var(--sem-verified); }
 
   .data-mono {
     font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -92,6 +98,46 @@
 
   .no-radius { border-radius: 0; }
   .max-radius-2 { border-radius: 2px; }
+
+  /* UNKNOWN is deliberately not a hue: text-1 on bg-3 behind a dashed
+     line-strong border, with a literal UNKNOWN label (§6). */
+  .state-unknown {
+    color: var(--text-1);
+    background-color: var(--bg-3);
+    border: 1px dashed var(--line-strong);
+  }
+
+  /* Scrollbars are chrome — theme them from the palette (craft floor).
+     Hard-edged, no track padding, visible in both scroll orientations. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) var(--bg-0);
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg-0); }
+  ::-webkit-scrollbar-thumb { background: var(--line-strong); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-2); }
+  ::-webkit-scrollbar-corner { background: var(--bg-0); }
+
+  /* Selection is browser chrome — theme it (craft floor). */
+  ::selection {
+    background: var(--bg-3);
+    color: var(--text-0);
+  }
+
+  /* Tabular data columns align even when payload values are variable. */
+  table { border-collapse: collapse; }
+
+  /* Caret and underline offset in form controls follow the palette. */
+  input, textarea { caret-color: var(--text-0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @layer utilities {

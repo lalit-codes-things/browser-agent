@@ -5,9 +5,10 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum SideEffectClass {
+    #[default]
     Read,
     ReversibleWrite,
     Irreversible,

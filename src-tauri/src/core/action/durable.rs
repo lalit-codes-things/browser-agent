@@ -34,7 +34,10 @@ pub struct IdempotencyKey {
 
 impl IdempotencyKey {
     pub fn new(key: String, expires_at_monotonic: u64) -> Self {
-        Self { key, expires_at_monotonic }
+        Self {
+            key,
+            expires_at_monotonic,
+        }
     }
 
     pub fn alive_at(&self, now_monotonic: u64) -> bool {
@@ -106,7 +109,9 @@ impl DurableActionState {
             Self::Submitted | Self::WaitingForExternalAuth | Self::Processing | Self::Unknown => {
                 DurableActionRecoveryOutcome::UnknownRequiresHumanCheckpoint
             }
-            Self::VerifiedSuccess | Self::VerifiedFailure => DurableActionRecoveryOutcome::NotYetVerified,
+            Self::VerifiedSuccess | Self::VerifiedFailure => {
+                DurableActionRecoveryOutcome::NotYetVerified
+            }
         }
     }
 }

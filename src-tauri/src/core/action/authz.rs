@@ -8,9 +8,10 @@
 // wiring. Here we model the shape and expose the verification used by the
 // execution path.
 
-use crate::core::action::commitment::{ActionAuthorizationCapability, ActionCommitment, OperationType};
+use crate::core::action::commitment::{
+    ActionAuthorizationCapability, ActionCommitment, OperationType,
+};
 use crate::security::clocks::MonotonicClock;
-use core::hint::black_box;
 
 /// Authorize an action commitment.
 ///

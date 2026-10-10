@@ -3,8 +3,6 @@ dist
 .target
 .target-*
 **/*.rs.bk
-Cargo.lock
-pnpm-lock.yaml
 package-lock.json
 yarn.lock
 .env
@@ -37,3 +35,9 @@ Thumbs.db
 tmp/
 temp/
 models/provisional/qwen3-1.7b/*.gguf
+
+# Local-only Impeccable skill and assets
+.impeccable/
+.github/agents/impeccable*
+.github/hooks/impeccable.json
+.github/skills/impeccable/

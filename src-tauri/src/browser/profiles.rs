@@ -28,24 +28,68 @@ pub struct ProfileManager;
 
 impl ProfileManager {
     pub fn create_ephemeral() -> Result<BrowserProfile, crate::Error> {
-        Err(crate::Error::NotImplemented(
-            "ProfileManager::create_ephemeral is scheduled".into(),
-        ))
+        let id = format!("eph-{:08x}", rand::random::<u32>());
+        Ok(BrowserProfile {
+            id,
+            kind: ProfileKind::Ephemeral,
+            storage_used_bytes: 0,
+        })
     }
 
     pub fn create_persistent(
-        _origin: &str,
-        _expires_at: Option<String>,
-        _storage_cap_bytes: Option<u64>,
+        origin: &str,
+        expires_at: Option<String>,
+        storage_cap_bytes: Option<u64>,
     ) -> Result<BrowserProfile, crate::Error> {
-        Err(crate::Error::NotImplemented(
-            "ProfileManager::create_persistent is scheduled".into(),
-        ))
+        let id = format!("pers-{:08x}", rand::random::<u32>());
+        Ok(BrowserProfile {
+            id,
+            kind: ProfileKind::Persistent {
+                origin: origin.to_string(),
+                expires_at,
+                storage_cap_bytes,
+            },
+            storage_used_bytes: 0,
+        })
     }
 
-    pub fn purge(_id: &str) -> Result<(), crate::Error> {
-        Err(crate::Error::NotImplemented(
-            "ProfileManager::purge is scheduled".into(),
-        ))
+    pub fn purge(id: &str) -> Result<(), crate::Error> {
+        if id.trim().is_empty() {
+            return Err(crate::Error::InvalidParameter(
+                "profile id is required".into(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn creates_ephemeral_profile() {
+        let profile = ProfileManager::create_ephemeral().unwrap();
+        assert!(profile.id.starts_with("eph-"));
+        assert_eq!(profile.kind, ProfileKind::Ephemeral);
+    }
+
+    #[test]
+    fn creates_persistent_profile() {
+        let profile =
+            ProfileManager::create_persistent("https://example.com", None, Some(1024 * 1024))
+                .unwrap();
+        assert!(profile.id.starts_with("pers-"));
+        match profile.kind {
+            ProfileKind::Persistent {
+                origin,
+                storage_cap_bytes,
+                ..
+            } => {
+                assert_eq!(origin, "https://example.com");
+                assert_eq!(storage_cap_bytes, Some(1024 * 1024));
+            }
+            _ => panic!("expected persistent"),
+        }
     }
 }

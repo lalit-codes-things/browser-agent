@@ -8,7 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct TaskAuthority {
     pub task_id: String,
     pub bounded_origins: Vec<AuthorityOrigin>,
@@ -35,7 +35,7 @@ pub struct AllowedAction {
     pub reason: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct TaskConstraints {
     pub max_steps: Option<u32>,
     pub max_llm_calls: Option<u32>,
