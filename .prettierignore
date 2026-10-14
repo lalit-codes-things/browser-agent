@@ -1,0 +1,21 @@
+# Authoritative, locked specification and its machine-readable registry.
+# These are normative documents; Prettier must not rewrap them.
+DESIGN-FINAL-LOCKED.md
+requirements-registry.yaml
+
+# Generated and dependency trees
+node_modules
+dist
+build
+coverage
+*.tsbuildinfo
+
+# Local tool metadata
+.freebuff
+.impeccable
+.github/skills
+.github/agents
+.github/hooks
+
+# Lockfiles are managed by the package manager, not by Prettier
+package-lock.json

@@ -1,0 +1,19 @@
+# Text files normalize to LF
+* text=auto eol=lf
+
+# Model artifacts, secrets and sensitive runtime data must never be committed
+*.gguf binary
+*.pdf binary
+*.key binary
+*.pem binary
+*.secret binary
+
+# Generated/cached artifacts
+/target/** binary
+node_modules/** binary
+dist/** binary
+*.tsbuildinfo binary
+.cache/** binary
+
+# Package lock files are text but should stay LF
+package-lock.json text

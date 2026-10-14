@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+*.tsbuildinfo
+.next
+.cache
+
+# Local runtime data; never commit these
+**/Application Support/
+**/Library/
+
+# Model artifacts and native build output
+**/*.gguf
+*.wasm
+**/target/
+
+# IDE / editor
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local secrets
+.env
+.env.*
+*.pem
+*.key
+*.secret
+*.tmp
+
+# Local Impeccable skill and assets
+.impeccable/
+.github/agents/impeccable*
+.github/hooks/impeccable.json
+.github/skills/impeccable/
+
+# Root lockfile is tracked as source of truth for the npm workspace.
+# Written in with LF line endings per .gitattributes.
+!package-lock.json

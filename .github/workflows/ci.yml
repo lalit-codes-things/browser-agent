@@ -1,0 +1,43 @@
+name: CI
+
+# Merge gate for the current repository state.
+#
+# The npm workspace `ui/` is the only buildable application in this checkout.
+# Rust core / native CEF jobs are absent on purpose: the native stack was
+# removed and is being rewritten from DESIGN-FINAL-LOCKED.md. Re-add the
+# `rust` and `native-cef` jobs (plus the security/supply-chain reports required
+# by BA-CI-001 and BA-SUPPLY-001) in the same change that lands the new core.
+# Do not add jobs that require a Cargo workspace or a pnpm lockfile here while
+# neither exists.
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+jobs:
+  ui:
+    name: ui (lint, typecheck, test, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Check formatting
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build

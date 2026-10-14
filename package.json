@@ -1,0 +1,25 @@
+{
+  "name": "browser-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser-Agent — a local-first desktop browser with an autonomous control layer.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
+  "workspaces": [
+    "ui"
+  ],
+  "scripts": {
+    "format": "prettier . --write --ignore-unknown",
+    "format:check": "prettier . --check --ignore-unknown",
+    "lint": "eslint ui",
+    "typecheck": "npm --workspace @browser-agent/ui run typecheck",
+    "test": "npm --workspace @browser-agent/ui run test",
+    "test:ci": "npm --workspace @browser-agent/ui run test:ci",
+    "build": "npm --workspace @browser-agent/ui run build"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

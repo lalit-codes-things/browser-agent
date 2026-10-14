@@ -1,0 +1,1634 @@
+schema_version: 1
+specification: DESIGN-FINAL-LOCKED.md
+source_of_truth: requirements-registry.yaml
+status_semantics:
+  UNVERIFIED: Requirement has no accepted execution evidence yet.
+  IMPLEMENTED_UNTESTED: Code exists but relevant tests have not passed.
+  TESTED_FAILED: At least one required test failed.
+  PASS: The required proof ran on the recorded platform/commit and passed.
+  ACCEPTED_LIMITATION: A reviewed, time-bounded deviation exists; critical safety invariants may not be waived.
+requirements:
+- id: BA-DESIGN-001
+  source_section: '0.3'
+  summary: Design review checklist plus screenshots of all Section 21.1 states; run regardless of Impeccable availability
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-DESIGN-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-CEF-001
+  source_section: '11.1'
+  summary: CEF lifecycle/sandboxing, process shutdown/restart and production-debugging-disabled tests
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-CEF-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-POLICY-001
+  source_section: '13.1'
+  summary: Tests proving model/page content cannot authorize actions and executor requires Rust authorization
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-POLICY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-LOCAL-001
+  source_section: '14.1'
+  summary: Network tests proving no cloud inference requirement or secret/content relay
+  priority: critical
+  release_gate: Critical privacy gate
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-LOCAL-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-AUDIT-001
+  source_section: '15.1'
+  summary: Schema/canonicalization, key-access, rotation, continuity, persistence-failure and tamper tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-AUDIT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-RESOURCE-001
+  source_section: '15.2'
+  summary: Timeout/backpressure/hard-stop and no-policy-bypass under memory pressure tests
+  priority: required
+  release_gate: Required
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-RESOURCE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-SEC-001
+  source_section: '15.4'
+  summary: Frozen unsafe/safe corpora, invariant tests and confidence-interval report
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-SEC-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-RECOVERY-001
+  source_section: '15.6'
+  summary: Crash/ambiguous-write recovery tests proving no blind replay
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-RECOVERY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-MODEL-001
+  source_section: '16.3'
+  summary: Reproducible local inference memory/latency/success/thermal report
+  priority: required
+  release_gate: Required
+  owner_module: crates/model-runtime + native/model-runner
+  test_ids:
+  - T-BA-MODEL-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-A11Y-001
+  source_section: '18.1'
+  summary: Keyboard/screen reader/focus/target-size tests on supported platforms
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-A11Y-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-CI-001
+  source_section: '20.9'
+  summary: Required named status-check report for Rust, UI, native CEF, security and contract drift
+  priority: merge-blocking
+  release_gate: Merge gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-CI-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-SUPPLY-001
+  source_section: '20.10'
+  summary: Dependency, secrets, native binary, license, SBOM and workflow-security reports
+  priority: required
+  release_gate: Required
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-SUPPLY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-RELEASE-001
+  source_section: '20.11'
+  summary: Signed platform packages, provenance, SBOM, update/rollback validation
+  priority: release-blocking
+  release_gate: Release gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-RELEASE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-DONE-001
+  source_section: '21.5'
+  summary: Release checklist linking actual evidence for every release-critical ID
+  priority: release-blocking
+  release_gate: Release gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-DONE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-STOP-001
+  source_section: '22'
+  summary: Hard-stop test cases and release-gate behavior
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-STOP-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-ARCH-002
+  source_section: ADR-010
+  summary: CEF feasibility report, real-window test recording, macOS and Windows packaged smoke tests, decision
+    status
+  priority: required
+  release_gate: Block dependent implementation if not passed
+  owner_module: native/cef-host + ADR review
+  test_ids:
+  - T-BA-ARCH-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TRACE-001
+  source_section: '0.6'
+  summary: Stable ID parser/check plus registry/matrix consistency test
+  priority: required
+  release_gate: Required
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-TRACE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TRACE-002
+  source_section: '20.4'
+  summary: CI contract-drift report and evidence matrix
+  priority: required
+  release_gate: Required
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-TRACE-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-UNDO-001
+  source_section: '2.7'
+  summary: Unit/integration tests for supported undo, unsupported inverse, stale state, Agent pause and redo reauthorization
+  priority: required
+  release_gate: Required
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-UNDO-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-WIN-001
+  source_section: '2.14'
+  summary: Multi-window open/close/focus tests; global single-task concurrency test; owner-window closure recovery
+    test
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-WIN-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-WIN-002
+  source_section: '12.2'
+  summary: Cross-window runtime test proving exactly one active task process-wide and rejection of silent queue/concurrency
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-WIN-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-EXT-001
+  source_section: '2.15'
+  summary: Product/UI test proving no extension installation surface or arbitrary extension execution path ships
+  priority: required
+  release_gate: Required scope assertion
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-EXT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-PRIV-001
+  source_section: '2.16'
+  summary: Cross-context cookie/site-storage isolation plus disk-artifact inspection after private-window close
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-PRIV-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-I18N-001
+  source_section: '3.6'
+  summary: Pseudo-localization, RTL, CJK, Devanagari, Unicode/IME and font-coverage reports
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-I18N-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-LAYOUT-001
+  source_section: '3.4'
+  summary: Geometry assertion at 900×640 client area; screenshots/tests for 360 px browser + 200 px Agent minima
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-LAYOUT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-STATE-001
+  source_section: 2.9.1
+  summary: Table-driven state-to-copy tests over every task state and wait reason
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-STATE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-STATE-002
+  source_section: '12.2'
+  summary: Schema validation rejecting missing/unknown wait_reason values
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-STATE-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-BRIDGE-001
+  source_section: 9.1, 20.7
+  summary: Bundle/eager-load check and bridge allow-list/command-boundary tests
+  priority: required
+  release_gate: Required
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-BRIDGE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-BROWSER-001
+  source_section: '11.2'
+  summary: Native CEF view, input/focus/IME/resizing and multi-window smoke tests on both OS targets
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-BROWSER-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-REV-001
+  source_section: '13.2'
+  summary: Positive and negative reversibility fixtures; compensation precondition/postcondition and residual-effect
+    tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-REV-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-PASS-001
+  source_section: '13.6'
+  summary: Manual vault origin/frame tests, explicit-save flow tests and proof credentials never reach model/log/UI
+    state
+  priority: required
+  release_gate: Required
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-PASS-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TELE-001
+  source_section: '14.2'
+  summary: Network-capture tests proving no background analytics/crash upload; export preview/redaction tests
+  priority: release-blocking
+  release_gate: Required privacy gate
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-TELE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-LOOP-001
+  source_section: '15.3'
+  summary: Frozen 1,000-benign/300-adversarial livelock calibration and held-out reports
+  priority: required
+  release_gate: Required
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-LOOP-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-VERIFY-001
+  source_section: '15.5'
+  summary: Table-driven lifecycle/outcome cross-product tests including blocked-before-dispatch and crash ambiguity
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-VERIFY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-AMEND-001
+  source_section: '0.7'
+  summary: Reviewed amendment with rationale, impacted IDs, tests and ADR linkage
+  priority: required
+  release_gate: Governance gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-AMEND-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-REQ-LINT-001
+  source_section: '0.7'
+  summary: 'Registry generator/linter: unique IDs, source consistency and 100% critical coverage'
+  priority: merge-blocking
+  release_gate: CI gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-REQ-LINT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-THREAT-001
+  source_section: '0.7'
+  summary: Threat model mapped to mitigations and negative tests
+  priority: required
+  release_gate: Security gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-THREAT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-REVIEW-001
+  source_section: '0.7'
+  summary: Named release-owner design/security checklist and required screenshots
+  priority: release-blocking
+  release_gate: Release gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-REVIEW-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-URL-001
+  source_section: '2.5'
+  summary: HTTP/certificate/mixed-content/IDN/bidi/canonical display and spoofing test suite
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-URL-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TABSTATE-001
+  source_section: 2.4–2.5
+  summary: Real CEF loading/crash/audio/download status tests; no prohibited icons/animations
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-TABSTATE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-INPUT-001
+  source_section: '2.5'
+  summary: Packet capture proves suggestions/spellcheck disabled by default; opt-in/private-mode tests
+  priority: release-blocking
+  release_gate: Privacy gate
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-INPUT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-READY-001
+  source_section: 2.9.1
+  summary: Table-driven model readiness state/copy/action tests
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-READY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-COMPOSER-001
+  source_section: 2.9.2
+  summary: Unicode code-point cap/warn-no-truncate, local draft retention and private-mode tests
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-COMPOSER-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TRANSPARENCY-001
+  source_section: 2.9.2, 13.3
+  summary: Disclosure-content test plus blocked-state policy-manifest drill-in test
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-TRANSPARENCY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-BUDGET-001
+  source_section: 2.9.2
+  summary: Visible budget accounting, extension authorization and budget-exhaustion UI
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-BUDGET-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-APPROVAL-001
+  source_section: '2.12'
+  summary: Five-minute TTL, one-pending approval, expiry/invalidation and no stale approval execution
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-APPROVAL-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-INTERRUPT-001
+  source_section: '2.12'
+  summary: In-flight action stop boundary, sleep/wake, no-focus-steal and ambiguous-side-effect tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-INTERRUPT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-WIN-003
+  source_section: 2.14, 12.2
+  summary: Same-window second-task disabled; task-tab ownership/tear-off/popup boundary tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-WIN-003
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-PRIV-002
+  source_section: '2.16'
+  summary: Private new-tab, autocomplete/form-fill disabled and no-post-close-artifact tests
+  priority: release-blocking
+  release_gate: Privacy gate
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-PRIV-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TYPE-001
+  source_section: '3.1'
+  summary: Tabular numeral, URL confusable and typeface rendering tests
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-TYPE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-LAYOUT-002
+  source_section: '3.4'
+  summary: Stacked panel clamp formula and non-resizable geometry assertions
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-LAYOUT-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-LAYOUT-003
+  source_section: '3.4'
+  summary: Toolbar minimum-width and localization/pseudo-localization overflow tests
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-LAYOUT-003
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-THEME-001
+  source_section: 3.4, 6
+  summary: OS light/dark selection and full screenshot/contrast matrix in both themes
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-THEME-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-COPY-001
+  source_section: '4.4'
+  summary: UI string-resource lint with reviewed allowlist
+  priority: merge-blocking
+  release_gate: CI gate
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-COPY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-FIND-001
+  source_section: 2.8, 4.4
+  summary: Native find-in-page, keyboard shortcuts and screen-reader tests
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-FIND-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-SOUND-001
+  source_section: '4.4'
+  summary: UI review/asset scan proving no app-owned sounds
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-SOUND-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-BRIDGE-002
+  source_section: '17.1'
+  summary: Per-message origin validation, C ABI fuzz/sanitizer and bridge audit checklist
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-BRIDGE-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-NORMALIZE-001
+  source_section: '12.2'
+  summary: Two-round clarification limit and unsafe-ambiguity wait tests
+  priority: required
+  release_gate: Required
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-NORMALIZE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-STUCK-001
+  source_section: '12.2'
+  summary: Repeated no-progress action digest test; no third identical dispatch
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-STUCK-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TABSCOPE-001
+  source_section: 12.2, 2.14
+  summary: Task-owned tab set, cross-tab grant, cross-window denial and tear-off test
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-TABSCOPE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-OBSERVATION-001
+  source_section: '12.5'
+  summary: Node/depth/token/time budget tests; serialization order and no-raw-HTML checks
+  priority: required
+  release_gate: Required
+  owner_module: crates/perception + crates/executor
+  test_ids:
+  - T-BA-OBSERVATION-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-RETRY-001
+  source_section: '12.5'
+  summary: Action-specific retry matrix and ambiguous-write non-retry tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/perception + crates/executor
+  test_ids:
+  - T-BA-RETRY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-EGRESS-001
+  source_section: '13.3'
+  summary: Typed-data egress classification, vault-value detection and destination-change tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-EGRESS-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-ALLOWLIST-001
+  source_section: '13.3'
+  summary: Task-scoped origin allowlist enforcement and honest subresource limitation disclosure
+  priority: required
+  release_gate: Required
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-ALLOWLIST-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-CLIPBOARD-001
+  source_section: 13.3, 17.1
+  summary: No clipboard access without single-use approval
+  priority: release-blocking
+  release_gate: Privacy gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-CLIPBOARD-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-UNMASK-001
+  source_section: '13.3'
+  summary: Reveal action requires user gesture and records non-secret audit metadata
+  priority: required
+  release_gate: Required
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-UNMASK-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-GRANT-001
+  source_section: 13.3, 17.1
+  summary: Agent cannot grant permissions; hostname typed-confirmation and certificate bypass restrictions
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/policy + crates/app-core
+  test_ids:
+  - T-BA-GRANT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-POLICY-PERF-001
+  source_section: '13.4'
+  summary: Policy microbenchmarks and p95 evidence without cross-epoch verdict reuse
+  priority: required
+  release_gate: Required
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-POLICY-PERF-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-AUDIT-002
+  source_section: '15.1'
+  summary: UTC/monotonic clock tests, rotation, retained-range wording and fail-closed audit-write failure
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-AUDIT-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-TASK-BUDGET-001
+  source_section: '15.2'
+  summary: Action/nav/token/time ceiling tests; single bounded extension
+  priority: required
+  release_gate: Required
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-TASK-BUDGET-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-MEMORY-001
+  source_section: 15.2, 16.3
+  summary: OS memory-pressure and app-process ceilings; park/warm behavior by hardware class
+  priority: required
+  release_gate: Required
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-MEMORY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-STARTUP-001
+  source_section: '15.2'
+  summary: p95 window/address-field start SLO report, model off critical path
+  priority: required
+  release_gate: Required
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-STARTUP-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-MODEL-PROFILE-001
+  source_section: '16.2'
+  summary: Multiple installed models / one resident, profile compatibility and no mid-task swap tests
+  priority: required
+  release_gate: Required
+  owner_module: crates/model-runtime + native/model-runner
+  test_ids:
+  - T-BA-MODEL-PROFILE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-MODEL-REPORT-001
+  source_section: '16.2'
+  summary: Optional local calibration/integrity check; report provenance and replay-only safety tests
+  priority: required
+  release_gate: Required
+  owner_module: crates/model-runtime + native/model-runner
+  test_ids:
+  - T-BA-MODEL-REPORT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-SKILLS-001
+  source_section: '17'
+  summary: Skill inspect/save/disable/delete/revoke/provenance and immutable-version tests
+  priority: required
+  release_gate: Required
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-SKILLS-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-HISTORY-001
+  source_section: '17'
+  summary: 90-day local history, similar-task prefill, private exclusion and redacted report export
+  priority: release-blocking
+  release_gate: Privacy gate
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-HISTORY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-DOWNLOAD-001
+  source_section: '17.1'
+  summary: Per-file approval, path/size checks, quarantine, origin provenance and no-auto-open tests
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-DOWNLOAD-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-A11Y-002
+  source_section: '18.1'
+  summary: Cancel-default focus, coalesced live regions, target text, focus restoration and screen readers
+  priority: required
+  release_gate: Required
+  owner_module: ui/ + cross-layer contract tests
+  test_ids:
+  - T-BA-A11Y-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-ERROR-COPY-001
+  source_section: '19'
+  summary: Worked error states and copy contract tests
+  priority: required
+  release_gate: Required
+  owner_module: cross-layer; assign in CODEOWNERS during Phase 0
+  test_ids:
+  - T-BA-ERROR-COPY-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-FAULT-001
+  source_section: '20'
+  summary: Fault-injection matrix for audit disk-full, renderer/network/model failures
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-FAULT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-REQ-LINT-002
+  source_section: 20, Appendix D
+  summary: CI validates generated registry, copy lint and bridge API drift
+  priority: merge-blocking
+  release_gate: CI gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-REQ-LINT-002
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-UPDATE-001
+  source_section: '20.11'
+  summary: Signed metadata/hash verification, staged update/rollback and local-only crash-report policy
+  priority: release-blocking
+  release_gate: Release gate
+  owner_module: crates/audit + crates/app-core + packaging
+  test_ids:
+  - T-BA-UPDATE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-DATA-001
+  source_section: '14.3'
+  summary: Forget-site/clear-all category preview and deletion behavior
+  priority: release-blocking
+  release_gate: Privacy gate
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-DATA-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-VAULT-001
+  source_section: '14.3'
+  summary: OS secure storage, 5-minute auto-lock, lock-on-session/quit, no plaintext fallback
+  priority: critical
+  release_gate: Critical safety gate
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-VAULT-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-NOTES-001
+  source_section: '17'
+  summary: Local notes source URLs/epochs/excerpts, search/export/delete and private exclusion
+  priority: required
+  release_gate: Required
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-NOTES-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-DATA-MAP-001
+  source_section: Appendix E
+  summary: Artifact inventory, sensitivity, retention and deletion-path audit
+  priority: release-blocking
+  release_gate: Privacy gate
+  owner_module: crates/storage + crates/vault
+  test_ids:
+  - T-BA-DATA-MAP-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-FEATURE-001
+  source_section: Appendix F
+  summary: Supported/non-goal/deferred feature register and release/UI conformance tests
+  priority: release-blocking
+  release_gate: Scope gate
+  owner_module: docs/requirements + .github/workflows
+  test_ids:
+  - T-BA-FEATURE-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-SESSION-001
+  source_section: '2.4'
+  summary: Session restore opt-in; no private/task/action/secret restoration
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-SESSION-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-ZOOM-001
+  source_section: '2.4'
+  summary: Normal-profile per-origin zoom and private-context cleanup tests
+  priority: required
+  release_gate: Required
+  owner_module: native/cef-host + crates/browser-runtime
+  test_ids:
+  - T-BA-ZOOM-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
+- id: BA-MODEL-ISOLATION-001
+  source_section: '16.2'
+  summary: Fresh context/KV cache per task; no cross-task prompt-context leakage
+  priority: critical
+  release_gate: Critical privacy gate
+  owner_module: crates/model-runtime + native/model-runner
+  test_ids:
+  - T-BA-MODEL-ISOLATION-001
+  evidence_artifacts: []
+  status: UNVERIFIED
+  last_verified_commit: null
+  last_verified_at: null
+  platform:
+  - macOS Apple silicon
+  - Windows x64
+  approved_deviation_id: null
+  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
+    the requirement has passed.
