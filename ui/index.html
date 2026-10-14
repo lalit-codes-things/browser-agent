@@ -3,9 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Shipped policy for the first-party `browser-agent://ui/` origin.
+
+      `script-src 'self'` allows the bundled first-party UI to run and nothing
+      else: no inline script, no remote script and no `eval`. The development
+      server needs inline scripts for Vite's client and React refresh, so
+      vite.config.ts swaps this policy for a development-only one. The preceding
+      policy was `script-src 'none'`, which blocked the application's own bundle
+      and rendered an empty window.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none';"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none';"
     />
     <title>Browser-Agent</title>
   </head>

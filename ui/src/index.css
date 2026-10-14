@@ -81,8 +81,11 @@ body {
   overflow: hidden;
 }
 
+/* Side-by-side browser viewport and permanent Agent panel above 960 px.
+ * The Agent panel is app-sized and not user-resizable ([BA-LAYOUT-002]). */
 .ba-workspace {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 360px);
   grid-template-rows: 1fr;
   flex: 1;
   min-height: 0;
@@ -91,15 +94,28 @@ body {
 /* --- Tabs --- */
 .ba-tabstrip {
   display: flex;
+  align-items: stretch;
+  flex: 0 0 var(--ba-tab-strip-height);
+  height: var(--ba-tab-strip-height);
+  overflow-x: auto;
   background: var(--ba-raised);
   border-bottom: 1px solid var(--ba-overlay);
+}
+
+.ba-tabstrip-empty {
+  margin: 0;
+  padding: 0 var(--ba-space-12);
+  align-self: center;
+  font-size: 12px;
+  color: var(--ba-warm-peach);
+  opacity: 0.8;
 }
 
 .ba-tab {
   display: flex;
   align-items: center;
   gap: var(--ba-space-8);
-  padding: var(--ba-space-2) var(--ba-space-6);
+  padding: var(--ba-space-4) var(--ba-space-8);
   min-width: 0;
   border: none;
   background: transparent;
@@ -141,102 +157,161 @@ body {
   border-bottom: 1px solid var(--ba-overlay);
 }
 
-.ba-toolbar-item {
+/* Back (minimum 42 px) and Forward (minimum 58 px) are text-labelled
+ * controls, not icon aliases for Undo/Redo ([BA-LAYOUT-003], Section 2.7). */
+.ba-toolbar-text {
+  min-width: 42px;
+  padding: 6px 10px;
   border: none;
+  border-radius: var(--ba-radius-control);
   background: transparent;
   color: var(--ba-warm-peach);
-  padding: 6px 8px;
-  border-radius: var(--ba-radius-control);
-  cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  position: relative;
-  overflow: hidden;
+  cursor: pointer;
 }
 
-.ba-toolbar-item:hover {
+.ba-toolbar-text:nth-of-type(2) {
+  min-width: 58px;
+}
+
+.ba-toolbar-text:hover:enabled {
   background: var(--ba-overlay);
 }
 
-.ba-toolbar-item--interactive {
-  --ba-ripple-color: rgba(230, 105, 42, 0.45);
+.ba-toolbar-text:disabled,
+.ba-toolbar-icon-control:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
-.ba-toolbar-ripple {
+/* Only the six permitted icon controls may use this treatment (Section 2.6). */
+.ba-toolbar-icon-control {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ba-radius-control);
+  background: transparent;
+  color: var(--ba-warm-peach);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ba-toolbar-icon-control:hover:enabled {
+  background: var(--ba-overlay);
+}
+
+.ba-toolbar-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentColor;
+  border-radius: var(--ba-radius-small);
+}
+
+/* The three-dot control is a text glyph, not an icon family. */
+.ba-toolbar-icon-control--overflow .ba-toolbar-icon {
+  border: none;
+  width: auto;
+  height: auto;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ba-toolbar-icon-control--overflow .ba-toolbar-icon::before {
+  content: '\22EF';
+}
+
+.ba-overflow {
+  position: relative;
+}
+
+.ba-overflow-menu {
   position: absolute;
-  border-radius: 50%;
-  background: var(--ba-ripple-color, rgba(230, 105, 42, 0.45));
-  transform: translate(-50%, -50%) scale(0);
-  pointer-events: none;
-  animation: ba-toolbar-ripple 600ms ease-out forwards;
+  top: calc(100% + var(--ba-space-4));
+  right: 0;
+  z-index: 10;
+  margin: 0;
+  padding: var(--ba-space-4) 0;
+  list-style: none;
+  min-width: 200px;
+  background: var(--ba-light-raised);
+  border: 1px solid var(--ba-light-border);
+  border-radius: var(--ba-radius-surface);
 }
 
-/* Keyboard activation uses an intentionally instant animation so the
- * effect remains accessible without delaying focus feedback (BA-UI-028). */
-.ba-toolbar-item .ba-toolbar-ripple[data-keyboard='true'] {
+.ba-overflow-item {
+  display: block;
+  width: 100%;
+  padding: var(--ba-space-8) var(--ba-space-12);
+  border: none;
+  background: transparent;
+  color: var(--ba-ink);
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ba-overflow-item:hover,
+.ba-overflow-item:focus-visible {
+  background: var(--ba-overlay);
+}
+
+.ba-visually-hidden {
   position: absolute;
-  inset: 0;
-  border-radius: 0;
-  background: var(--ba-ripple-color, rgba(230, 105, 42, 0.18));
-  transform: none;
-  pointer-events: none;
-  animation: ba-toolbar-ripple-keyboard 40ms ease-out forwards;
-}
-
-@keyframes ba-toolbar-ripple {
-  to {
-    transform: translate(-50%, -50%) scale(2.5);
-    opacity: 0;
-  }
-}
-
-@keyframes ba-toolbar-ripple-keyboard {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ba-toolbar-ripple {
-    animation-duration: 40ms;
-  }
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .ba-toolbar-spacer {
   flex: 1;
 }
 
-.ba-omnibox {
+/* Address field: at least 180 px of editable width in side-by-side mode
+ * ([BA-LAYOUT-003]). The value it displays is the runtime-reported URL. */
+.ba-toolbar__address {
   display: flex;
   align-items: center;
+  flex: 1 1 auto;
+  min-width: 180px;
   background: var(--ba-light-raised);
   border: 1px solid var(--ba-light-border);
   border-radius: var(--ba-radius-control);
   padding: 0 var(--ba-space-8);
 }
 
-.ba-omnibox-input {
+.ba-toolbar-address-input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: transparent;
   color: var(--ba-ink);
   font-family: inherit;
   font-size: 14px;
+  padding: 6px 0;
   outline: none;
 }
 
-.ba-omnibox-go {
-  border: none;
-  background: var(--ba-golden-orange);
-  color: var(--ba-deep-navy);
-  font-family: inherit;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: var(--ba-radius-control);
-  cursor: pointer;
+.ba-toolbar-address-input:focus {
+  outline: 2px solid var(--ba-golden-orange);
+  outline-offset: 1px;
+}
+
+.ba-toolbar__items {
+  display: flex;
+  align-items: center;
+  gap: var(--ba-space-4);
+  margin-left: var(--ba-space-8);
 }
 
 /* --- Browser view --- */
@@ -275,11 +350,30 @@ body {
 .ba-agent-panel {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  min-height: 0;
   background: var(--ba-overlay);
   border-left: 1px solid var(--ba-overlay);
-  min-width: 200px;
-  max-width: 360px;
-  min-height: 200px;
+}
+
+.ba-readiness-detail {
+  margin: 0;
+  padding: var(--ba-space-8) var(--ba-space-12);
+  font-size: 12px;
+  color: var(--ba-warm-peach);
+  opacity: 0.85;
+}
+
+.ba-agent-notice {
+  margin: 0;
+  padding: var(--ba-space-8) var(--ba-space-12);
+  font-size: 13px;
+  background: var(--ba-raised);
+  border-left: 2px solid var(--ba-golden-orange);
+}
+
+.ba-wait--invalid {
+  border-color: var(--ba-crimson);
 }
 
 .ba-agent-panel__header {
@@ -388,8 +482,55 @@ body {
 }
 
 .ba-composer-counter {
+  margin: 0;
   font-size: 12px;
   color: var(--ba-warm-peach);
+}
+
+.ba-composer-counter--over {
+  color: var(--ba-crimson-hi);
+}
+
+/* --- Disclosure --- */
+.ba-disclosure {
+  margin: 0;
+  padding: var(--ba-space-12);
+  border-top: 1px solid var(--ba-overlay);
+  font-size: 12px;
+}
+
+.ba-disclosure-summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ba-golden-orange);
+}
+
+.ba-disclosure-body {
+  margin: var(--ba-space-8) 0 0 0;
+  color: var(--ba-warm-peach);
+  opacity: 0.9;
+}
+
+/* --- About / diagnostics --- */
+.ba-about {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: var(--ba-space-8) var(--ba-space-16);
+  font-size: 14px;
+}
+
+.ba-about dt {
+  font-weight: 600;
+}
+
+.ba-about dd {
+  margin: 0;
+}
+
+.ba-secondary-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* --- Task body --- */
@@ -532,7 +673,7 @@ body {
 .ba-activity-item {
   display: flex;
   gap: var(--ba-space-8);
-  padding: var(--ba-space-6);
+  padding: var(--ba-space-8);
   border-bottom: 1px solid var(--ba-overlay);
   font-size: 13px;
 }

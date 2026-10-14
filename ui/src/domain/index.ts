@@ -25,7 +25,29 @@ export type {
   TabsApi,
   BridgeApi,
   SecondaryView,
+  AgentReadinessStatus,
 } from './types';
+
+export { NATIVE_BRIDGE_ABSENT_HANDLE } from './types';
+
+/** Canonical Section 2.9.1 / 2.9.2 / 15.5 copy contract. Components render
+ * these strings instead of inventing their own status vocabulary. */
+export {
+  TASK_STATES,
+  WAIT_REASONS,
+  READINESS_STATES,
+  READINESS_COPY,
+  VERIFICATION_OUTCOMES,
+  VERIFICATION_COPY,
+  VERIFICATION_NOT_RUN_COPY,
+  INVALID_WAIT_STATE_COPY,
+  isTerminalTaskState,
+  isWaitReason,
+  hasValidWaitReason,
+  taskLifecycleLabel,
+  verificationCopy,
+  type VerificationCopy,
+} from './copy';
 
 /** Runtime state defaults (owned by the Rust orchestrator). */
 export {
@@ -37,7 +59,17 @@ export {
 } from './state';
 
 /** React hooks for the permanent Agent panel. */
-export { AgentProvider, useAgent } from './useAgent';
+export {
+  AgentProvider,
+  useAgent,
+  MAX_TASK_CODE_POINTS,
+  countCodePoints,
+  RUNTIME_NOT_CONNECTED_COPY,
+  RUNTIME_NOT_CONNECTED_DETAIL,
+  TASK_NOT_STARTED_COPY,
+  COMPOSER_OVER_LIMIT_COPY,
+  type AgentContextValue,
+} from './useAgent';
 
 /** React context for the managed browser. */
 export { BrowserProvider, useBrowser } from './useBrowser';
@@ -46,4 +78,8 @@ export { BrowserProvider, useBrowser } from './useBrowser';
 export { useTabs } from './useTabs';
 
 /** React context for optional secondary-screen overlays. */
-export { SecondaryViewProvider, useSecondaryView } from './useSecondaryView';
+export {
+  SecondaryViewProvider,
+  useSecondaryView,
+  type SecondaryViewName,
+} from './useSecondaryView';

@@ -1,11 +1,24 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { BrowserState, Tab, TabId, NativeBridge, BrowserApi } from './types';
+import {
+  BrowserState,
+  Tab,
+  TabId,
+  NativeBridge,
+  BrowserApi,
+  BridgeEvent,
+  NATIVE_BRIDGE_ABSENT_HANDLE,
+} from './types';
 
-function createBridgeApi(handle: number): NativeBridge {
-  // The CEF host populates this once at startup. Until then every call is a
-  // typed no-op so the UI can render and stay interactive (BA-BRIDGE-001).
+/**
+ * Placeholder command surface used while no CEF host is attached. Every method
+ * is a typed no-op so the app shell stays interactive ([BA-BRIDGE-001]), and
+ * the handle stays `NATIVE_BRIDGE_ABSENT_HANDLE` so no component can mistake
+ * this for a live runtime. Commands are never simulated locally: a no-op must
+ * not be reported as a state change.
+ */
+function createAbsentBridge(): NativeBridge {
   return {
-    bridgeHandle: handle,
+    bridgeHandle: NATIVE_BRIDGE_ABSENT_HANDLE,
     get approvalState() {
       return null;
     },
@@ -30,6 +43,8 @@ function createBridgeApi(handle: number): NativeBridge {
 
 interface BrowserContextValue extends NativeBridge, BrowserApi {
   state: BrowserState;
+  /** True only when a real native host has attached its bridge. */
+  bridgeAttached: boolean;
 }
 
 const BrowserContext = React.createContext<BrowserContextValue | null>(null);
@@ -42,11 +57,10 @@ interface BrowserProviderProps {
 
 export function BrowserProvider({ initial, onBridgeReady, children }: BrowserProviderProps) {
   const [state, setState] = useState<BrowserState>(initial);
-  const handleRef = useRef(0);
   const apiRef = useRef<NativeBridge | null>(null);
 
   useEffect(() => {
-    const api = createBridgeApi(handleRef.current++);
+    const api = createAbsentBridge();
     apiRef.current = api;
     onBridgeReady(api);
   }, [onBridgeReady]);
@@ -100,7 +114,8 @@ export function BrowserProvider({ initial, onBridgeReady, children }: BrowserPro
     };
 
     return {
-      bridgeHandle: handleRef.current,
+      bridgeAttached: state.bridgeHandle !== NATIVE_BRIDGE_ABSENT_HANDLE,
+      bridgeHandle: state.bridgeHandle,
       state,
       openTab,
       closeTab,
@@ -155,7 +170,8 @@ export function BrowserProvider({ initial, onBridgeReady, children }: BrowserPro
       get approvalState() {
         return apiRef.current?.approvalState ?? null;
       },
-      onEvent: () => () => undefined,
+      onEvent: (listener: (event: BridgeEvent) => void) =>
+        apiRef.current?.onEvent(listener) ?? (() => undefined),
     };
   }, [state]);
 

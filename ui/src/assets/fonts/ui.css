@@ -1,15 +1,17 @@
 /**
  * Browser-Agent serif-first typography.
  *
- * Bundled locally. No sans-serif family is used as the intended design, no CDN
- * fonts, no `system-ui` or `Inter`/`Roboto`/`Arial` fallbacks.
+ * The interface is serif-first: no sans-serif family is used for first-party
+ * UI. No CDN font is fetched at runtime, so the shipped bundle relies on
+ * families that are present on the target platforms until a screen-readable
+ * serif family is licensed, subsetted and bundled under this directory.
+ *
+ * Bundling a licensed family is tracked as release work; until then the stack
+ * below is what the application uses, and no build step may silently substitute
+ * a sans-serif or `system-ui` fallback.
  */
 :root {
   --ba-font-display:
     'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', 'Times New Roman', serif;
   --ba-font-body: 'Source Serif Pro', 'Iowan Old Style', Georgia, serif;
 }
-
-/* Source Serif Pro is a Google Fonts "free" family. For distribution we bundle
- * the OTL/TTF/CFF subsets under /assets/fonts. In this scaffold the stack below
- * is what the shipped app loads; type결제 SHALL be exercised on release. */

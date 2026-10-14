@@ -46,12 +46,25 @@ export interface ApprovalAction {
   action: 'click' | 'type' | 'navigate' | 'scroll' | 'screenshot' | 'read';
 }
 
-export interface AgentReadinessStatus {
-  status: 'NOT_INSTALLED' | 'INSTALLING' | 'READY' | 'ERROR';
-}
+/**
+ * Capability readiness vocabulary, transcribed from [BA-READY-001]. Readiness
+ * is an independent field from task lifecycle, task budget and verification
+ * outcome; the four must never be merged into one status.
+ */
+export type AgentReadinessStatus =
+  | 'NOT_INSTALLED'
+  | 'INSTALLING'
+  | 'INTEGRITY_FAILED'
+  | 'INCOMPATIBLE'
+  | 'LOADING'
+  | 'READY'
+  | 'PARKED'
+  | 'RUNNER_FAILED'
+  | 'RESOURCE_STOPPED';
 
 export interface AgentReadiness {
   status: AgentReadinessStatus;
+  /** Measured detail from the runtime; never a fabricated progress claim. */
   message: string;
 }
 
@@ -76,8 +89,18 @@ export interface BrowserState {
   canGoBack: boolean;
   canGoForward: boolean;
   agentReady: boolean;
+  /**
+   * Handle reported by the native CEF host. `NATIVE_BRIDGE_ABSENT_HANDLE`
+   * means no host has attached, so the UI must not claim runtime state.
+   */
   bridgeHandle: number;
 }
+
+/**
+ * A native bridge has not attached. The UI must render honest absence rather
+ * than substituting a stub for runtime behavior.
+ */
+export const NATIVE_BRIDGE_ABSENT_HANDLE = 0;
 
 export interface TaskAction {
   actionType: ActionClass;

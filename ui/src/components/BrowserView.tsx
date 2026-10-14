@@ -1,36 +1,50 @@
-import { BrowserState } from '../domain';
+import type { BrowserState } from '../domain/types';
 
 /**
- * The real managed Chromium page is rendered by CEF in the native composition.
- * This component reflects the authoritative runtime state so the app reads as a
- * browser at first glance (Specification Section 2.1). No screenshot, placeholder
- * or unrelated WebView substitutes the real managed CEF browser instance.
+ * The real managed Chromium page is rendered by the native host in the CEF
+ * native-view composition. This component only reflects runtime-reported state;
+ * no screenshot, placeholder page or unrelated WebView may substitute for the
+ * real managed browser instance (Section 2.1).
  */
-export function BrowserView({ state }: { state: BrowserState | null }) {
-  if (!state) {
+
+const SECURITY_COPY: Record<BrowserState['securityState']['state'], string> = {
+  https: 'Secure connection',
+  http: 'Not secure - HTTP',
+  'mixed-content': 'Connection warning',
+  unknown: 'Undetermined security state',
+};
+
+interface Props {
+  state: BrowserState;
+  /** True only when a real native host has attached its bridge. */
+  bridgeAttached: boolean;
+}
+
+export function BrowserView({ state, bridgeAttached }: Props) {
+  if (!bridgeAttached) {
     return (
       <div className="ba-browser-view ba-browser-view--offline">
-        <p className="ba-status">Managed Chromium not yet initialized.</p>
+        <div className="ba-browser-view__status">Native browser host not attached</div>
+        <div className="ba-browser-view__viewport">
+          <p className="ba-status">
+            No managed Chromium instance is present in this build, so no page can be displayed and
+            no navigation state is reported.
+          </p>
+          <p className="ba-status ba-status--muted">
+            The previous native host was removed and is being rewritten from the locked
+            specification. This screen reports absence instead of simulating a page.
+          </p>
+        </div>
       </div>
     );
   }
 
-  const securityCopy: Record<string, string> = {
-    https: 'Secure connection',
-    http: 'Not secure - HTTP',
-    'certificate-error': 'Certificate error',
-    'mixed-content': 'Connection warning',
-    unknown: 'Undetermined security state',
-  };
-
   return (
-    <div className="ba-browser-view" data-security={state.securityState}>
-      <div className="ba-browser-view__status">
-        {securityCopy[state.securityState.state] ?? state.securityState.state}
-      </div>
+    <div className="ba-browser-view" data-security={state.securityState.state}>
+      <div className="ba-browser-view__status">{SECURITY_COPY[state.securityState.state]}</div>
       <div className="ba-browser-view__viewport">
         {state.loading ? (
-          <p className="ba-status">Loading...</p>
+          <p className="ba-status">Loading</p>
         ) : (
           <p className="ba-status">Managed page content renders here.</p>
         )}

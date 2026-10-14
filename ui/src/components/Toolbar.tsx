@@ -1,253 +1,191 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BrowserApi } from '../domain/types';
+
+/**
+ * Browser chrome.
+ *
+ * Icon whitelist (Section 2.6): Undo, Redo, Reload/Stop, Bookmarks, Downloads and
+ * the three-dot overflow menu. Nothing else may ship as an app-owned icon, so
+ * Back and Forward are text-labelled controls ([BA-LAYOUT-003]) and every other
+ * command is a labelled menu item or panel control.
+ *
+ * A control ships only when its operation exists and can report a real result.
+ * Undo and Redo render disabled with an explanation because no app-owned
+ * operation currently has a recorded precondition plus a tested compensator
+ * (Section 2.7). Bookmarks and Downloads are omitted entirely: their runtime
+ * operations do not exist yet, and a control without real behavior may not ship.
+ *
+ * No ripple, glow, gradient or decorative animation is used anywhere here.
+ */
+
+export const OVERFLOW_COMMANDS = [{ id: 'about', label: 'About Browser-Agent' }] as const;
+
+export type OverflowCommandId = (typeof OVERFLOW_COMMANDS)[number]['id'];
 
 interface Props {
   browser: BrowserApi;
-  onNavigate: (url: string, appId?: string) => void;
+  onNavigate: (url: string) => void;
+  onCommand: (command: OverflowCommandId) => void;
 }
 
-function useToolbarRipple() {
-  const poolRef = useRef<HTMLSpanElement[]>([]);
+export function Toolbar({ browser, onNavigate, onCommand }: Props) {
+  const runtimeUrl = browser.state.currentUrl;
+  const [address, setAddress] = useState(runtimeUrl);
 
+  // The runtime owns the current URL; the field never keeps a URL the runtime
+  // did not report.
   useEffect(() => {
-    const rafPool = new Set<Element>();
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const removed of mutation.removedNodes) {
-          if (removed instanceof HTMLElement) {
-            rafPool.add(removed);
-            for (const child of removed.querySelectorAll?.('.ba-toolbar-ripple') ?? []) {
-              rafPool.add(child);
-            }
-          }
-        }
-      }
-      if (rafPool.size > 0) {
-        requestAnimationFrame(() => {
-          for (const node of rafPool) {
-            if (node instanceof HTMLElement) {
-              node.remove();
-            }
-          }
-          rafPool.clear();
-        });
-      }
-    });
+    setAddress(runtimeUrl);
+  }, [runtimeUrl]);
 
-    for (const ripple of poolRef.current) {
-      observer.observe(ripple, {
-        childList: true,
-        subtree: true,
-      });
+  const submitAddress = useCallback(() => {
+    const trimmed = address.trim();
+    if (trimmed.length === 0) {
+      setAddress(runtimeUrl);
+      return;
     }
-
-    return () => {
-      observer.disconnect();
-      for (const ripple of poolRef.current) {
-        ripple.remove();
-      }
-      poolRef.current = [];
-    };
-  }, []);
-
-  const start = useCallback(
-    (target: HTMLElement, clientX: number, clientY: number, keyboard = false) => {
-      const rect = target.getBoundingClientRect();
-      const ripple = poolRef.current.pop() ?? document.createElement('span');
-      ripple.className = 'ba-toolbar-ripple';
-      ripple.style.pointerEvents = 'none';
-      ripple.style.position = 'absolute';
-      if (keyboard) {
-        ripple.style.left = '0px';
-        ripple.style.top = '0px';
-        Object.assign(ripple.dataset, { keyboard: 'true' });
-      } else {
-        ripple.style.left = `${clientX - rect.left}px`;
-        ripple.style.top = `${clientY - rect.top}px`;
-      }
-      Object.assign(target.style, { position: 'relative' });
-      target.appendChild(ripple);
-      poolRef.current.push(ripple);
-    },
-    [],
-  );
-
-  return { start };
-}
-
-function ToolbarActionButton({
-  className = '',
-  'aria-label': ariaLabel,
-  title,
-  onClick,
-  children,
-  ripple,
-}: {
-  className?: string;
-  'aria-label': string;
-  title?: string;
-  onClick: () => void;
-  children: React.ReactNode;
-  ripple: ReturnType<typeof useToolbarRipple>['start'];
-}) {
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    const button = buttonRef.current;
-    if (button == null) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (event.button !== 0) return;
-      if (button.disabled || button.getAttribute('aria-disabled') === 'true') {
-        return;
-      }
-      ripple(button, event.clientX, event.clientY);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Enter' && event.key !== 'Space') return;
-      if (button.disabled || button.getAttribute('aria-disabled') === 'true') {
-        return;
-      }
-      ripple(button, 0, 0, true);
-      event.preventDefault();
-    };
-
-    button.addEventListener('pointerdown', handlePointerDown);
-    button.addEventListener('keydown', handleKeyDown);
-    return () => {
-      button.removeEventListener('pointerdown', handlePointerDown);
-      button.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [ripple]);
+    onNavigate(trimmed);
+  }, [address, onNavigate, runtimeUrl]);
 
   return (
+    <div className="ba-toolbar">
+      <button
+        type="button"
+        className="ba-toolbar-text"
+        onClick={() => void browser.back()}
+        disabled={!browser.state.canGoBack}
+      >
+        Back
+      </button>
+      <button
+        type="button"
+        className="ba-toolbar-text"
+        onClick={() => void browser.forward()}
+        disabled={!browser.state.canGoForward}
+      >
+        Forward
+      </button>
+
+      <label className="ba-toolbar__address">
+        <span className="ba-visually-hidden">Address</span>
+        <input
+          className="ba-toolbar-address-input"
+          value={address}
+          onChange={(event) => setAddress(event.target.value)}
+          onBlur={submitAddress}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              submitAddress();
+            }
+          }}
+          placeholder="Enter a URL"
+          spellCheck={false}
+        />
+      </label>
+
+      <div className="ba-toolbar__items">
+        <ToolbarIconControl
+          label="Undo"
+          modifier="undo"
+          disabled
+          explanation="No app-owned operation has a tested compensating action yet."
+        />
+        <ToolbarIconControl
+          label="Redo"
+          modifier="redo"
+          disabled
+          explanation="Nothing has been compensated, so there is nothing to redo."
+        />
+        <ToolbarIconControl
+          label="Reload"
+          modifier="reload"
+          onClick={() => void browser.reload()}
+        />
+        <OverflowMenu onCommand={onCommand} />
+      </div>
+    </div>
+  );
+}
+
+function ToolbarIconControl({
+  label,
+  modifier,
+  onClick,
+  disabled = false,
+  explanation,
+}: {
+  label: string;
+  modifier: 'undo' | 'redo' | 'reload';
+  onClick?: (() => void) | undefined;
+  disabled?: boolean;
+  explanation?: string | undefined;
+}) {
+  return (
     <button
-      ref={buttonRef}
-      className={'ba-toolbar-item ba-toolbar-item--interactive ' + className}
-      aria-label={ariaLabel}
-      title={title}
+      type="button"
+      className={`ba-toolbar-icon-control ba-toolbar-icon-control--${modifier}`}
+      aria-label={label}
+      title={explanation ?? label}
       onClick={onClick}
+      disabled={disabled}
     >
-      {children}
+      <span className="ba-toolbar-icon" aria-hidden="true" />
     </button>
   );
 }
 
-export function Toolbar({ browser, onNavigate }: Props) {
-  const [address, setAddress] = useState(browser.state.currentUrl ?? '');
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const { start: ripple } = useToolbarRipple();
+function OverflowMenu({ onCommand }: { onCommand: (command: OverflowCommandId) => void }) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-  const focusAddress = useCallback(() => {
-    inputRef.current?.focus();
-    void browser.focusAddress();
-  }, [browser]);
-
-  const submitFromAddress = useCallback(() => {
-    const trimmed = address.trim();
-    if (!trimmed) return;
-    if (trimmed.startsWith('browser-agent://')) {
-      onNavigate(trimmed);
-      return;
-    }
-    const lastSegment = trimmed.split('/').slice(-1)[0];
-    onNavigate(trimmed, lastSegment ?? trimmed);
-  }, [address, onNavigate]);
+  const close = useCallback((returnFocus: boolean) => {
+    setOpen(false);
+    if (returnFocus) triggerRef.current?.focus();
+  }, []);
 
   return (
-    <div className="ba-toolbar">
-      <div className="ba-toolbar__address">
-        <button
-          className="ba-toolbar-item ba-toolbar-item--icon"
-          aria-label="Focus address"
-          title="Focus address bar"
-          onClick={focusAddress}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--url" />
-        </button>
-        <input
-          ref={inputRef}
-          className="ba-toolbar-address-input"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          onBlur={submitFromAddress}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              submitFromAddress();
-            }
-          }}
-          placeholder="Enter URL or paste a task"
-          spellCheck={false}
-        />
-      </div>
+    <div
+      className="ba-overflow"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && open) {
+          event.preventDefault();
+          close(true);
+        }
+      }}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        className="ba-toolbar-icon-control ba-toolbar-icon-control--overflow"
+        aria-label="Menu"
+        title="Menu"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span className="ba-toolbar-icon" aria-hidden="true" />
+      </button>
 
-      <div className="ba-toolbar__items">
-        <ToolbarActionButton
-          className="ba-toolbar-item--back"
-          aria-label="Back"
-          onClick={() => void browser.back()}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--back" />
-        </ToolbarActionButton>
-        <ToolbarActionButton
-          className="ba-toolbar-item--forward"
-          aria-label="Forward"
-          onClick={() => void browser.forward()}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--forward" />
-        </ToolbarActionButton>
-        <ToolbarActionButton
-          className="ba-toolbar-item--icon"
-          aria-label="Reload"
-          title="Reload page"
-          onClick={() => {
-            void browser.reload();
-          }}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--reload" />
-        </ToolbarActionButton>
-        <ToolbarActionButton
-          className="ba-toolbar-item--icon"
-          aria-label="Undo"
-          title="Undo"
-          onClick={() => undefined}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--undo" />
-        </ToolbarActionButton>
-        <ToolbarActionButton
-          className="ba-toolbar-item--icon"
-          aria-label="Redo"
-          title="Redo"
-          onClick={() => undefined}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--redo" />
-        </ToolbarActionButton>
-        <ToolbarActionButton
-          className="ba-toolbar-item--icon"
-          aria-label="Bookmarks"
-          title="Bookmarks"
-          onClick={() => undefined}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--bookmark" />
-        </ToolbarActionButton>
-        <ToolbarActionButton
-          className="ba-toolbar-item--icon"
-          aria-label="Downloads"
-          title="Downloads"
-          onClick={() => undefined}
-          ripple={ripple}
-        >
-          <span className="ba-toolbar-icon ba-toolbar-icon--download" />
-        </ToolbarActionButton>
-      </div>
+      {open && (
+        <ul className="ba-overflow-menu" role="menu" aria-label="Browser commands">
+          {OVERFLOW_COMMANDS.map((command) => (
+            <li key={command.id} role="none">
+              <button
+                type="button"
+                role="menuitem"
+                className="ba-overflow-item"
+                onClick={() => {
+                  onCommand(command.id);
+                  close(true);
+                }}
+              >
+                {command.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

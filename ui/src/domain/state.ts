@@ -1,12 +1,11 @@
 import {
+  AgentPanelState,
   AgentReadiness,
   TaskState,
   WaitReason,
   TaskEvent,
   TaskSummary,
   BrowserState,
-  Tab,
-  TabId,
   VerificationOutcome,
 } from './types';
 
@@ -75,19 +74,16 @@ export function createBrowserState(): BrowserState {
   };
 }
 
+/**
+ * No model can be loaded until the managed browser host and the local runner
+ * exist. Absence is reported as the canonical `NOT_INSTALLED` readiness state
+ * with measured detail, never as a task failure ([BA-READY-001]).
+ */
 export function createAgentReadiness(): AgentReadiness {
   return {
-    status: { status: 'NOT_INSTALLED' },
+    status: 'NOT_INSTALLED',
     message: 'Model not installed',
   };
-}
-
-export interface AgentPanelState {
-  readiness: AgentReadiness;
-  task: TaskSummary | null;
-  composerLocked: boolean;
-  focusOnCancel: boolean;
-  approval: null;
 }
 
 export function createAgentPanelState(): AgentPanelState {
@@ -98,24 +94,4 @@ export function createAgentPanelState(): AgentPanelState {
     focusOnCancel: true,
     approval: null,
   };
-}
-
-/**
- * The eager local bridge methods exist so first interaction is not blocked
- * (BA-BRIDGE-001). Optional secondary screens may lazy-load.
- */
-export interface BrowserApi {
-  state: BrowserState;
-  openTab: (url: string, title: string) => Tab;
-  closeTab: (id: TabId) => void;
-  navigateTab: (id: TabId, url: string) => void;
-  selectTab: (id: TabId) => void;
-  activateTab: (id: TabId) => void;
-}
-
-export interface TabsApi {
-  create: (url: string, title: string) => Tab;
-  remove: (id: TabId) => void;
-  navigate: (id: TabId, url: string) => void;
-  activeTabId: Tab['id'] | null;
 }
