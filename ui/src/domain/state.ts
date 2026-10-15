@@ -1,97 +1,95 @@
-import {
-  AgentPanelState,
-  AgentReadiness,
-  TaskState,
-  WaitReason,
-  TaskEvent,
-  TaskSummary,
-  BrowserState,
-  VerificationOutcome,
-} from './types';
+import type { RuntimeSnapshot } from '../bridge/client';
+import type { ReadinessView, TaskStatusView } from '../bridge/protocol';
+import { READINESS_COPY, TASK_STATES, isTerminalTaskState } from './copy';
+import type { AgentPanelState, AgentReadiness, AgentReadinessStatus, TaskState } from './types';
 
 /**
- * Runtime state defaults owned by the Rust orchestrator.
- * No frontend timer or canned text may certify inference, navigation, download
- * or policy state. React renders the authoritative state emitted by the runtime.
+ * Projection from validated runtime events to what the Agent panel renders.
+ *
+ * Every value here is copied from a frame the runtime sent. React never
+ * advances a lifecycle, never estimates a budget, never invents a progress
+ * percentage and never reports verification success on its own (Section 12.2).
  */
 
-export function createTaskEvent(
-  taskId: string,
-  revision: number,
-  sequence: number,
-  state: TaskState,
-  waitReason: WaitReason | null,
-  timestamp: number,
-  actionLabel: string | null,
-  _detail: string,
-): TaskEvent {
-  return {
-    taskId,
-    revision,
-    sequence,
-    state,
-    waitReason,
-    timestamp,
-    actionLabel,
-    detail: actionLabel ?? '',
-  };
+/** Narrows an arbitrary runtime state code to a state the UI may render. */
+export function asTaskState(value: string): TaskState | null {
+  return (TASK_STATES as readonly string[]).includes(value) ? (value as TaskState) : null;
 }
 
-export function createTaskSummary(
-  taskId: string,
-  originalText: string,
-  state: TaskState,
-  waitReason: WaitReason | null,
-  currentAction: string | null,
-  elapsedMs: number,
-  events: readonly TaskEvent[],
-  verification: VerificationOutcome | null,
-): TaskSummary {
-  return {
-    taskId,
-    originalText,
-    state,
-    waitReason,
-    currentAction,
-    elapsedMs,
-    events,
-    verification,
-  };
+/** Narrows an arbitrary readiness code to one the UI may render. */
+export function asReadinessStatus(value: string): AgentReadinessStatus | null {
+  return Object.prototype.hasOwnProperty.call(READINESS_COPY, value)
+    ? (value as AgentReadinessStatus)
+    : null;
 }
 
-export function createBrowserState(): BrowserState {
-  return {
-    windows: 1,
-    activeTabId: null,
-    tabs: [],
-    currentUrl: 'browser-agent://newtab/',
-    securityState: { state: 'https' },
-    loading: false,
-    canGoBack: false,
-    canGoForward: false,
-    agentReady: false,
-    bridgeHandle: 0,
-  };
-}
+/**
+ * Shown when the runtime reports a state code this build does not know. The UI
+ * fails closed: it displays the honest statement and offers no control, rather
+ * than guessing an operation.
+ */
+export const UNKNOWN_READINESS_COPY = 'Model state not recognised by this build';
 
 /**
  * No model can be loaded until the managed browser host and the local runner
  * exist. Absence is reported as the canonical `NOT_INSTALLED` readiness state
- * with measured detail, never as a task failure ([BA-READY-001]).
+ * with no fabricated detail ([BA-READY-001]).
  */
 export function createAgentReadiness(): AgentReadiness {
   return {
     status: 'NOT_INSTALLED',
-    message: 'Model not installed',
+    label: READINESS_COPY.NOT_INSTALLED,
+    message: '',
   };
 }
 
 export function createAgentPanelState(): AgentPanelState {
   return {
     readiness: createAgentReadiness(),
-    task: null,
-    composerLocked: false,
-    focusOnCancel: true,
+    status: null,
+    activity: [],
+    ended: null,
     approval: null,
+    handoff: null,
+    error: null,
+    composerLocked: false,
+  };
+}
+
+/**
+ * Readiness as reported by the runtime. An unrecognised code renders
+ * `UNKNOWN_READINESS_COPY` with no controls.
+ */
+export function readinessFromView(view: ReadinessView | null): AgentReadiness {
+  if (view === null) return createAgentReadiness();
+  const status = asReadinessStatus(view.state);
+  if (status === null) {
+    return { status: 'RUNNER_FAILED', label: UNKNOWN_READINESS_COPY, message: view.cause ?? '' };
+  }
+  return {
+    status,
+    label: view.label,
+    message: view.cause ?? view.progress ?? '',
+  };
+}
+
+function isLocked(status: TaskStatusView | null): boolean {
+  if (status === null) return false;
+  const state = asTaskState(status.state);
+  return state !== null && !isTerminalTaskState(state);
+}
+
+/** Builds the panel projection from the latest validated runtime snapshot. */
+export function panelStateFromSnapshot(snapshot: RuntimeSnapshot): AgentPanelState {
+  const status = snapshot.task;
+  return {
+    readiness: readinessFromView(snapshot.readiness),
+    status,
+    activity: [...snapshot.activity],
+    ended: snapshot.ended,
+    approval: snapshot.approval,
+    handoff: snapshot.handoff,
+    error: snapshot.error,
+    composerLocked: isLocked(status),
   };
 }

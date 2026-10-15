@@ -1,0 +1,8 @@
+
+> browser-agent@0.1.0 typecheck
+> npm --workspace @browser-agent/ui run typecheck
+
+
+> @browser-agent/ui@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+

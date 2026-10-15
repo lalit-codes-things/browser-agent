@@ -169,15 +169,16 @@ export const VERIFICATION_COPY: Record<VerificationOutcome, VerificationCopy> = 
  * Outcome copy for an evaluated task. A blocked-before-dispatch action has no
  * outcome and must not display one.
  */
-export function verificationCopy(
-  outcome: VerificationOutcome | null,
-  state: TaskState,
-): VerificationCopy {
+export function verificationCopy(outcome: string | null, state: TaskState): VerificationCopy {
   if (outcome === null) {
     return {
       label: state === 'BLOCKED' ? VERIFICATION_NOT_RUN_COPY : 'No outcome recorded',
       verifiedSuccess: false,
     };
   }
-  return VERIFICATION_COPY[outcome];
+  if (!(VERIFICATION_OUTCOMES as readonly string[]).includes(outcome)) {
+    // An outcome this build does not know can never be treated as a success.
+    return { label: 'Outcome not recognised by this build', verifiedSuccess: false };
+  }
+  return VERIFICATION_COPY[outcome as VerificationOutcome];
 }

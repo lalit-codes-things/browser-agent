@@ -1,0 +1,17 @@
+[package]
+name = "ba-domain"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Browser-Agent shared domain schema: identifiers, origins, task states, typed actions and canonical copy."
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

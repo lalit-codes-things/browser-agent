@@ -2,13 +2,27 @@ name: CI
 
 # Merge gate for the current repository state.
 #
-# The npm workspace `ui/` is the only buildable application in this checkout.
-# Rust core / native CEF jobs are absent on purpose: the native stack was
-# removed and is being rewritten from DESIGN-FINAL-LOCKED.md. Re-add the
-# `rust` and `native-cef` jobs (plus the security/supply-chain reports required
-# by BA-CI-001 and BA-SUPPLY-001) in the same change that lands the new core.
-# Do not add jobs that require a Cargo workspace or a pnpm lockfile here while
-# neither exists.
+# Four jobs:
+#
+# * `rust` — formatting, tests and lints for the workspace core (`crates/*`).
+# * `registry` — the requirement-registry gate: `scripts/registry-check.mjs`
+#   enforces BA-REQ-LINT-001/002 (unique/known IDs, inline-to-registry coverage,
+#   resolvable source sections, test IDs for every release-critical requirement,
+#   known status values) and fails when Appendix D drifts from the registry. It
+#   also refuses a `PASS` status whose recorded commit, platform or evidence
+#   artifacts are missing or no longer on disk.
+# * `supply-chain` — the blocking advisories/bans/licenses/sources gate, the
+#   RustSec audit, the npm audit and the dependency inventory. It runs
+#   `scripts/supply-chain.sh`, which is the same script a developer runs locally,
+#   so the two cannot disagree. Failures fail the job; warnings are not advisory.
+# * `ui` — lint, typecheck, test and build for the first-party interface. Its
+#   contract tests diff the canonical copy table and the stdio wire format
+#   against the real `ba-core` binary, so this job builds that binary first.
+#
+# The native CEF host job is still absent on purpose: the CEF adapter was
+# removed with the previous native stack and is being rewritten from
+# DESIGN-FINAL-LOCKED.md (ADR-010). Do not add a job that claims the composition
+# proof passes until the macOS and Windows evidence exists.
 
 on:
   push:
@@ -19,7 +33,66 @@ on:
 permissions:
   contents: read
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
+  rust:
+    name: rust (fmt, clippy, test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Run tests
+        run: cargo test --workspace
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+  registry:
+    name: registry (requirement IDs, statuses, Appendix D parity)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Check requirement registry
+        run: npm run registry:check
+
+  supply-chain:
+    name: supply-chain (deny, audit, inventory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'npm'
+      - name: Install JavaScript dependencies
+        run: npm ci
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny,cargo-audit,cargo-cyclonedx
+      - name: Run supply-chain gates
+        run: ./scripts/supply-chain.sh
+      - name: Upload dependency inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-chain-inventory
+          path: target/sbom
+          if-no-files-found: error
+
   ui:
     name: ui (lint, typecheck, test, build)
     runs-on: ubuntu-latest
@@ -31,6 +104,11 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      # The interface contract tests run the real application core binary.
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build application core binary
+        run: cargo build -p ba-runtime --bin ba-core
       - name: Check formatting
         run: npm run format:check
       - name: Lint

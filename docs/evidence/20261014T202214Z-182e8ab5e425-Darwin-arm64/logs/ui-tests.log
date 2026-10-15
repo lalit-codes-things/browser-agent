@@ -1,0 +1,24 @@
+
+> browser-agent@0.1.0 test
+> npm --workspace @browser-agent/ui run test
+
+
+> @browser-agent/ui@0.1.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.4 [39m[90m/Users/lalitkrishna/Browser-Agent/ui[39m
+
+ [32m✓[39m src/__tests__/domain.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/__tests__/copy.spec.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/__tests__/protocol.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/__tests__/shortcuts.spec.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 116[2mms[22m[39m
+ [32m✓[39m src/__tests__/shell.spec.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 133[2mms[22m[39m
+ [32m✓[39m src/__tests__/runtime.spec.tsx [2m([22m[2m14 tests[22m[2m)[22m[32m 218[2mms[22m[39m
+ [32m✓[39m src/__tests__/contract.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m      Tests [22m [1m[32m88 passed[39m[22m[90m (88)[39m
+[2m   Start at [22m 01:52:21
+[2m   Duration [22m 1.01s[2m (environment 61%, import 15%, tests 12%, setup 9%, transform 2%, worker 1%)[22m
+

@@ -1,0 +1,11 @@
+
+> browser-agent@0.1.0 registry:check
+> node scripts/registry-check.mjs
+
+registry: 90 requirements, 40 release-critical, 40/40 with test IDs, 6 PASS
+advisory: requirement density (human review): BA-WIN-002, BA-NORMALIZE-001, BA-TABSCOPE-001, BA-STUCK-001 — paragraph starting "- Every transition is emitted by Rust with a monotonically i…"
+advisory: requirement density (human review): BA-EGRESS-001, BA-ALLOWLIST-001, BA-CLIPBOARD-001, BA-UNMASK-001, BA-GRANT-001 — paragraph starting "- Bind every authorization to a unique action ID, action typ…"
+advisory: requirement density (human review): BA-MODEL-PROFILE-001, BA-MODEL-ISOLATION-001 — paragraph starting "[BA-MODEL-PROFILE-001] Maintain one llama.cpp engine impleme…"
+advisory: requirement density (human review): BA-DOWNLOAD-001, BA-BRIDGE-002 — paragraph starting "- Use per-origin permission decisions for notifications, cam…"
+advisory: requirement density (human review): BA-A11Y-001, BA-A11Y-002 — paragraph starting "[BA-A11Y-001] Every interactive control must support keyboar…"
+registry check passed

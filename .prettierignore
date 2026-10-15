@@ -10,6 +10,10 @@ build
 coverage
 *.tsbuildinfo
 
+# Execution-evidence records produced by scripts/record-evidence.sh: timestamped
+# machine output that is quoted as an artifact, not formatted as source.
+docs/evidence
+
 # Local tool metadata
 .freebuff
 .impeccable

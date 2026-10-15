@@ -321,6 +321,12 @@ body {
   min-height: 0;
 }
 
+.ba-browser-view__title {
+  margin: 0 0 var(--ba-space-8) 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .ba-browser-view__status {
   font-size: 12px;
   padding: var(--ba-space-4) var(--ba-space-8);
@@ -640,6 +646,26 @@ body {
   margin: 0 0 var(--ba-space-8) 0;
 }
 
+/* A four-part error is stated plainly: the accent marks severity, never the
+ * text, and no glow or animation is used. */
+.ba-wait--error {
+  border-left: 3px solid var(--ba-crimson);
+}
+
+.ba-approval-detail dl,
+.ba-wait dl {
+  margin: 0 0 var(--ba-space-8) 0;
+}
+
+.ba-wait dt {
+  font-weight: 600;
+  margin-top: var(--ba-space-4);
+}
+
+.ba-wait dd {
+  margin: 0;
+}
+
 .ba-approval {
   display: flex;
   flex-direction: column;
@@ -743,6 +769,152 @@ body {
 .ba-secondary-body {
   margin: 0;
   font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-12);
+}
+
+.ba-secondary-subheading {
+  margin: var(--ba-space-12) 0 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ba-deep-navy);
+}
+
+.ba-secondary-absent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-4);
+}
+
+.ba-secondary-absent .ba-status,
+.ba-secondary-body .ba-status {
+  color: var(--ba-ink);
+}
+
+.ba-secondary-body .ba-status--muted {
+  color: var(--ba-light-secondary-text);
+  opacity: 1;
+}
+
+/* Tables stay plain: no zebra striping, no hover animation, no shadow. */
+.ba-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ba-table th,
+.ba-table td {
+  text-align: left;
+  padding: var(--ba-space-8) var(--ba-space-8) var(--ba-space-8) 0;
+  border-bottom: 1px solid var(--ba-light-raised);
+  vertical-align: top;
+}
+
+.ba-table th {
+  font-weight: 600;
+  color: var(--ba-deep-navy);
+}
+
+.ba-table-primary {
+  display: block;
+  font-weight: 600;
+}
+
+.ba-table-secondary {
+  display: block;
+  color: var(--ba-light-secondary-text);
+  font-size: 13px;
+}
+
+.ba-plain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-12);
+}
+
+.ba-plain-list--compact {
+  gap: var(--ba-space-4);
+  padding-left: var(--ba-space-16);
+  list-style: disc;
+}
+
+.ba-plain-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-4);
+  align-items: flex-start;
+}
+
+.ba-note-body {
+  margin: 0;
+  color: var(--ba-ink);
+}
+
+.ba-note-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-8);
+  border-top: 1px solid var(--ba-light-raised);
+  padding-top: var(--ba-space-12);
+}
+
+.ba-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-4);
+}
+
+.ba-field__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ba-deep-navy);
+}
+
+.ba-field__input {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ba-ink);
+  background: var(--ba-light-surface);
+  border: 1px solid var(--ba-light-border);
+  border-radius: var(--ba-radius-control);
+  padding: 6px 8px;
+}
+
+.ba-field__input--multiline {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.ba-field__input:focus-visible {
+  outline: 2px solid var(--ba-deep-teal);
+  outline-offset: 1px;
+}
+
+.ba-diagnostic {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.ba-task-figures {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  gap: var(--ba-space-4) var(--ba-space-12);
+  font-size: 13px;
+}
+
+.ba-task-figures dt {
+  font-weight: 600;
+}
+
+.ba-task-figures dd {
+  margin: 0;
 }
 
 /* --- Responsive: stacked below 960px --- */

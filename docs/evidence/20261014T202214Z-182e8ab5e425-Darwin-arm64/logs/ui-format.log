@@ -1,0 +1,16 @@
+
+> browser-agent@0.1.0 format:check
+> prettier . --check --ignore-unknown
+
+Checking formatting...
+[warn] CHANGELOG.md
+[warn] CODE_OF_CONDUCT.md
+[warn] CONTRIBUTING.md
+[warn] GOVERNANCE.md
+[warn] MAINTAINER_PREPUBLISH.md
+[warn] OPEN_SOURCE_RELEASE_CHECKLIST.md
+[warn] README.md
+[warn] SECURITY.md
+[warn] SUPPORT.md
+[warn] THIRD_PARTY_NOTICES.md
+[warn] Code style issues found in 10 files. Run Prettier with --write to fix.

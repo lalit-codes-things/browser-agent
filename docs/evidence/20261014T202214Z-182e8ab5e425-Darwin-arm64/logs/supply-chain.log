@@ -1,0 +1,47 @@
+== cargo deny check
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lalitkrishna/Browser-Agent/deny.toml:21:4
+   │
+21 │   "Apache-2.0 WITH LLVM-exception",
+   │    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lalitkrishna/Browser-Agent/deny.toml:22:4
+   │
+22 │   "BSD-2-Clause",
+   │    ━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lalitkrishna/Browser-Agent/deny.toml:27:4
+   │
+27 │   "CC0-1.0",
+   │    ━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lalitkrishna/Browser-Agent/deny.toml:24:4
+   │
+24 │   "ISC",
+   │    ━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lalitkrishna/Browser-Agent/deny.toml:19:4
+   │
+19 │   "MIT-0",
+   │    ━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+   ┌─ /Users/lalitkrishna/Browser-Agent/deny.toml:26:4
+   │
+26 │   "Zlib",
+   │    ━━━━ unmatched license allowance
+
+advisories ok, bans ok, licenses ok, sources ok
+== cargo audit
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1329 security advisories (from /Users/lalitkrishna/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (35 crate dependencies)
+== npm audit
+found 0 vulnerabilities
+== dependency inventory (CycloneDX 1.5 JSON)
+supply-chain: 309 components inventoried (308 with a declared license of 309)

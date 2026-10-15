@@ -2,27 +2,48 @@ import { useCallback } from 'react';
 import {
   AgentProvider,
   BrowserProvider,
-  READINESS_COPY,
+  RuntimeProvider,
   SecondaryViewProvider,
-  createBrowserState,
   useAgent,
   useBrowser,
   useSecondaryView,
+  useShortcuts,
 } from './domain';
-import type { AgentReadinessStatus } from './domain/types';
 import { AgentPanel } from './components/AgentPanel';
 import { BrowserView } from './components/BrowserView';
 import { SecondaryViewPortal } from './components/SecondaryViewPortal';
 import { TabStrip } from './components/TabStrip';
 import { Toolbar } from './components/Toolbar';
 import type { OverflowCommandId } from './components/Toolbar';
+import { AboutView } from './components/secondary/AboutView';
+import { AuditView } from './components/secondary/AuditView';
+import { DownloadsView } from './components/secondary/DownloadsView';
+import { ModelStatusView } from './components/secondary/ModelStatusView';
+import { SkillsNotesView } from './components/secondary/SkillsNotesView';
+import { SettingsView } from './components/secondary/SettingsView';
+import { TaskHistoryView } from './components/secondary/TaskHistoryView';
+import type { SecondaryView } from './domain/types';
 
 /**
  * Application shell. Layout contract ([BA-LAYOUT-001]): 34 px tab strip plus
  * 44 px navigation toolbar above a workspace; side-by-side above 960 logical
  * pixels and stacked below it. The Agent panel is permanent and is never a
  * drawer, modal or toggle.
+ *
+ * Every screen is rendered from the validated runtime event stream. When no host
+ * has attached, each one states that absence instead of showing sample data.
  */
+
+const SECONDARY_TITLES: Record<SecondaryView, string> = {
+  about: 'About Browser-Agent',
+  history: 'Task history',
+  downloads: 'Downloads',
+  model: 'Model status',
+  notes: 'Skills and notes',
+  audit: 'Audit and diagnostics',
+  settings: 'Settings',
+};
+
 function Shell() {
   const browser = useBrowser();
   const agent = useAgent();
@@ -30,14 +51,7 @@ function Shell() {
 
   const navigate = useCallback(
     (url: string) => {
-      const activeTabId = browser.state.activeTabId;
-      if (activeTabId === null) {
-        // The runtime owns tab creation. Forward the navigation and do not
-        // invent a tab record the runtime did not report.
-        void browser.navigate(url);
-        return;
-      }
-      browser.navigateTab(activeTabId, url);
+      browser.navigate(url);
     },
     [browser],
   );
@@ -49,19 +63,24 @@ function Shell() {
     [secondary],
   );
 
+  // The documented baseline shortcuts, wired to the commands that exist.
+  useShortcuts();
+
   const canRunAgent = agent.runtimeConnected;
+  const active = secondary.active;
 
   return (
     <div className="ba-shell">
       <TabStrip
         tabs={browser.state.tabs}
         activeTabId={browser.state.activeTabId}
-        onSelect={(id) => browser.selectTab(id)}
+        onSelect={(id) => browser.activateTab(id)}
         onClose={(id) => browser.closeTab(id)}
         emptyState={
           <p className="ba-tabstrip-empty">
-            No tabs. The managed Chromium host is not attached in this build, so no page can be
-            opened.
+            {browser.bridgeAttached
+              ? 'No tabs are open. The managed host has not reported one yet.'
+              : 'No tabs. The managed Chromium host is not attached in this build, so no page can be opened.'}
           </p>
         }
       />
@@ -76,78 +95,41 @@ function Shell() {
           runtimeConnected={agent.runtimeConnected}
           notice={agent.notice}
           onSubmit={agent.submitTask}
-          onPause={canRunAgent ? () => void agent.pause() : undefined}
-          onCancel={canRunAgent ? () => void agent.cancel() : undefined}
-          onTakeOver={canRunAgent ? () => void agent.takeOver() : undefined}
-          onResume={canRunAgent ? () => void agent.resume() : undefined}
-          onRespondToApproval={
-            canRunAgent
-              ? (actionId, approved) => void agent.respondToApproval(actionId, approved)
-              : undefined
-          }
+          onPause={canRunAgent ? agent.pause : undefined}
+          onCancel={canRunAgent ? agent.cancel : undefined}
+          onTakeOver={canRunAgent ? agent.takeOver : undefined}
+          onResume={canRunAgent ? agent.resume : undefined}
+          onExtendBudget={canRunAgent ? agent.extendBudget : undefined}
+          onFinishWithResults={canRunAgent ? agent.finishWithResults : undefined}
+          onRespondToApproval={canRunAgent ? agent.respondToApproval : undefined}
         />
       </div>
 
-      {secondary.active !== null && (
-        <SecondaryViewPortal name="About Browser-Agent" onClose={secondary.close}>
-          <AboutContent
-            readiness={agent.state.readiness.status}
-            readinessDetail={agent.state.readiness.message}
-            bridgeAttached={browser.bridgeAttached}
-          />
+      {active !== null && (
+        <SecondaryViewPortal name={SECONDARY_TITLES[active]} onClose={secondary.close}>
+          {active === 'about' && <AboutView />}
+          {active === 'history' && <TaskHistoryView />}
+          {active === 'downloads' && <DownloadsView />}
+          {active === 'model' && <ModelStatusView />}
+          {active === 'notes' && <SkillsNotesView />}
+          {active === 'audit' && <AuditView />}
+          {active === 'settings' && <SettingsView />}
         </SecondaryViewPortal>
       )}
     </div>
   );
 }
 
-/**
- * Diagnostic facts only: real artifact identifiers and reported runtime
- * attachment. No fabricated telemetry and no invented version numbers
- * (Section 0.2).
- */
-function AboutContent({
-  readiness,
-  readinessDetail,
-  bridgeAttached,
-}: {
-  readiness: AgentReadinessStatus;
-  readinessDetail: string;
-  bridgeAttached: boolean;
-}) {
-  return (
-    <dl className="ba-about">
-      <dt>Application</dt>
-      <dd>Browser-Agent {__BA_APP_VERSION__}</dd>
-
-      <dt>First-party UI</dt>
-      <dd>React and TypeScript bundle built from this checkout</dd>
-
-      <dt>Native browser host (CEF)</dt>
-      <dd>
-        {bridgeAttached
-          ? 'Attached'
-          : 'Not attached - removed with the previous native stack and being rewritten (ADR-010)'}
-      </dd>
-
-      <dt>Local model runtime (llama.cpp)</dt>
-      <dd>
-        {readinessDetail === ''
-          ? READINESS_COPY[readiness]
-          : `${READINESS_COPY[readiness]} - ${readinessDetail}`}
-      </dd>
-    </dl>
-  );
-}
-
 export function App() {
   return (
-    <SecondaryViewProvider>
-      <BrowserProvider initial={createBrowserState()} onBridgeReady={() => undefined}>
+    <RuntimeProvider>
+      <BrowserProvider>
         <AgentProvider>
-          <Shell />
+          <SecondaryViewProvider>
+            <Shell />
+          </SecondaryViewProvider>
         </AgentProvider>
       </BrowserProvider>
-    </SecondaryViewProvider>
+    </RuntimeProvider>
   );
 }

@@ -17,9 +17,11 @@
     "typecheck": "npm --workspace @browser-agent/ui run typecheck",
     "test": "npm --workspace @browser-agent/ui run test",
     "test:ci": "npm --workspace @browser-agent/ui run test:ci",
-    "build": "npm --workspace @browser-agent/ui run build"
+    "build": "npm --workspace @browser-agent/ui run build",
+    "registry:check": "node scripts/registry-check.mjs"
   },
   "devDependencies": {
+    "js-yaml": "^4.3.2",
     "prettier": "^3.3.3"
   }
 }

@@ -1,32 +1,21 @@
 import type { ReactNode } from 'react';
-import type { Tab, TabId } from '../domain/types';
+import type { TabSummary } from '../domain/types';
 
 /**
- * Tab strip. A tab's page title is never replaced by a status label; the status
- * is a textual suffix on the same control ([BA-TABSTATE-001]). Loading, crash
- * and audio states use text only: no extra app-owned icon and no ornamental
- * spinner animation.
+ * Tab strip (Section 2.4, [BA-TABSTATE-001]).
+ *
+ * The host owns the tab set and each title; the strip renders exactly what the
+ * host reported. A tab's title is never replaced by a status label, and no
+ * app-owned icon is added beyond the permitted close control.
  */
 
 interface Props {
-  tabs: readonly Tab[];
-  activeTabId: TabId | null;
-  onSelect: (id: TabId) => void;
-  onClose: (id: TabId) => void;
+  tabs: readonly TabSummary[];
+  activeTabId: string | null;
+  onSelect: (id: string) => void;
+  onClose: (id: string) => void;
   /** Rendered instead of tabs when the runtime reports none. */
   emptyState?: ReactNode;
-}
-
-const STATUS_SUFFIX: Record<Tab['status'], string> = {
-  loading: 'Loading',
-  ready: '',
-  blocked: 'Blocked',
-  error: 'Error',
-};
-
-function tabLabel(tab: Tab): string {
-  const suffix = STATUS_SUFFIX[tab.status];
-  return suffix === '' ? tab.title : `${tab.title} — ${suffix}`;
 }
 
 export function TabStrip({ tabs, activeTabId, onSelect, onClose, emptyState }: Props) {
@@ -49,7 +38,7 @@ export function TabStrip({ tabs, activeTabId, onSelect, onClose, emptyState }: P
           }}
         >
           <span className="ba-tab-title" title={tab.title}>
-            {tabLabel(tab)}
+            {tab.title}
           </span>
           <button
             type="button"

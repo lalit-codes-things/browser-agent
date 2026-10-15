@@ -1,12 +1,72 @@
-import { createTaskEvent, createTaskSummary } from '../domain';
-import { TaskState, WaitReason, VerificationOutcome, ActionClass } from '../domain/types';
+import {
+  panelStateFromSnapshot,
+  readinessFromView,
+  asTaskState,
+  asReadinessStatus,
+  UNKNOWN_READINESS_COPY,
+} from '../domain/state';
+import type { RuntimeSnapshot } from '../bridge/client';
+import type { TaskState, WaitReason } from '../domain/types';
 
-function now() {
-  return Date.now();
+/**
+ * Projection from validated runtime events to renderable state.
+ *
+ * These tests use the exact wire shapes `crates/ba-ipc` emits, so a change to
+ * the Rust field names or value vocabulary fails here rather than rendering an
+ * empty field in the interface.
+ */
+
+function snapshot(overrides: Partial<RuntimeSnapshot>): RuntimeSnapshot {
+  return {
+    attached: true,
+    browser: null,
+    tabs: [],
+    activeTab: null,
+    readiness: null,
+    task: null,
+    activity: [],
+    ended: null,
+    approval: null,
+    handoff: null,
+    history: null,
+    notes: null,
+    skills: null,
+    downloads: null,
+    audit: null,
+    error: null,
+    lastRefusal: null,
+    refusals: 0,
+    ...overrides,
+  };
 }
 
-describe('Task state machine', () => {
-  it('assigns each state a distinct label', () => {
+function status(state: string, waitReason: string | null) {
+  return {
+    task_id: 'task-1',
+    state,
+    label: 'Task received',
+    wait_reason: waitReason,
+    action_class: null,
+    verification: null,
+    budget: {
+      action_proposals: { limit: 40, used: 1 },
+      dispatched_actions: { limit: 25, used: 0 },
+      navigations: { limit: 12, used: 0 },
+      input_tokens: { limit: 200000, used: 0 },
+      output_tokens: { limit: 20000, used: 0 },
+      active_ms: { limit: 600000, used: 0 },
+      waiting_ms: 0,
+      extensions_used: 0,
+    },
+    elapsed_active_ms: 0,
+    elapsed_waiting_ms: 0,
+    last_event_at_unix_ms: 1_700_000_000_000,
+    task_tabs: ['tab-1'],
+  };
+}
+
+describe('task state vocabulary', () => {
+  it('accepts only declared states and reasons', () => {
     const states: TaskState[] = [
       'CREATED',
       'NORMALIZING',
@@ -24,9 +84,11 @@ describe('Task state machine', () => {
       'COMPLETED',
     ];
     expect(new Set(states).size).toBe(states.length);
-  });
+    for (const state of states) {
+      expect(asTaskState(state)).toBe(state);
+    }
+    expect(asTaskState('TELEPORTING')).toBeNull();
 
-  it('enforces a single wait reason per WAITING_FOR_USER transition', () => {
     const reasons: WaitReason[] = [
       'ACTION_APPROVAL',
       'USER_INPUT',
@@ -34,62 +96,89 @@ describe('Task state machine', () => {
       'TASK_BUDGET',
     ];
     expect(new Set(reasons).size).toBe(reasons.length);
-    expect('ACTION_APPROVAL').toBe('ACTION_APPROVAL');
-    expect('USER_INPUT').toBe('USER_INPUT');
-    expect('AUTHENTICATION').toBe('AUTHENTICATION');
-    expect('TASK_BUDGET').toBe('TASK_BUDGET');
   });
 });
 
-describe('Task event creation', () => {
-  it('binds revision, sequence and timestamps deterministically', () => {
-    const taskId = 'task-1';
-    const t = createTaskEvent(taskId, 1, 1, 'CREATED', null, now(), 'Task received', '');
-    expect(t.taskId).toBe(taskId);
-    expect(t.revision).toBe(1);
-    expect(t.sequence).toBe(1);
-    expect(t.state).toBe('CREATED');
-    expect(t.waitReason).toBeNull();
-    expect(t.actionLabel).toBe('Task received');
+describe('readiness projection ([BA-READY-001])', () => {
+  it('uses the canonical runtime label and its measured cause', () => {
+    const readiness = readinessFromView({
+      state: 'INSTALLING',
+      label: 'Installing model',
+      controls: ['Cancel'],
+      cause: 'Downloading artifact',
+      progress: '42% (440 of 1048 MB)',
+    });
+    expect(readiness.status).toBe('INSTALLING');
+    expect(readiness.label).toBe('Installing model');
+    expect(readiness.message).toBe('Downloading artifact');
+  });
+
+  it('fails closed for a state code this build does not know', () => {
+    const readiness = readinessFromView({
+      state: 'QUANTUM',
+      label: 'Something else',
+      controls: [],
+      cause: null,
+      progress: null,
+    });
+    expect(readiness.label).toBe(UNKNOWN_READINESS_COPY);
+    expect(asReadinessStatus('QUANTUM')).toBeNull();
+  });
+
+  it('reports no installed model when the runtime has said nothing', () => {
+    const readiness = readinessFromView(null);
+    expect(readiness.status).toBe('NOT_INSTALLED');
+    expect(readiness.label).toBe('Model not installed');
+    expect(readiness.message).toBe('');
   });
 });
 
-describe('Task summary construction', () => {
-  it('rounds trips through the API shape', () => {
-    const t = createTaskSummary(
-      'task-1',
-      'open the home page',
-      'CREATED',
-      null,
-      null,
-      0,
-      [createTaskEvent('task-1', 1, 1, 'CREATED', null, now(), 'Task received', '')],
-      'UNKNOWN',
+describe('panel projection', () => {
+  it('keeps readiness, lifecycle, budget and verification independent', () => {
+    const panel = panelStateFromSnapshot(
+      snapshot({
+        readiness: {
+          state: 'READY',
+          label: 'Model ready',
+          controls: [],
+          cause: null,
+          progress: null,
+        },
+        task: status('WAITING_FOR_USER', 'ACTION_APPROVAL'),
+      }),
     );
-    expect(t.taskId).toBe('task-1');
-    expect(t.originalText).toBe('open the home page');
-    expect(t.state).toBe('CREATED');
-    expect(t.currentAction).toBeNull();
-    expect(t.elapsedMs).toBe(0);
-    expect(t.verification).toBe('UNKNOWN');
+    expect(panel.readiness.label).toBe('Model ready');
+    expect(panel.status?.state).toBe('WAITING_FOR_USER');
+    expect(panel.status?.wait_reason).toBe('ACTION_APPROVAL');
+    expect(panel.status?.budget.dispatched_actions.limit).toBe(25);
+    expect(panel.ended).toBeNull();
   });
-});
 
-describe('Action classes', () => {
-  it('keeps the four approved classes', () => {
-    expect('READ').toBe('READ');
-    expect('REVERSIBLE_WRITE').toBe('REVERSIBLE_WRITE');
-    expect('IRREVERSIBLE').toBe('IRREVERSIBLE');
-    expect('UNKNOWN').toBe('UNKNOWN');
+  it('locks the composer only for a non-terminal task', () => {
+    expect(
+      panelStateFromSnapshot(snapshot({ task: status('EXECUTING', null) })).composerLocked,
+    ).toBe(true);
+    expect(
+      panelStateFromSnapshot(snapshot({ task: status('COMPLETED', null) })).composerLocked,
+    ).toBe(false);
+    expect(panelStateFromSnapshot(snapshot({})).composerLocked).toBe(false);
   });
-});
 
-describe('Verification outcomes', () => {
-  it('lists the vocabulary', () => {
-    expect('VERIFIED_SUCCESS').toBe('VERIFIED_SUCCESS');
-    expect('LIKELY_SUCCESS').toBe('LIKELY_SUCCESS');
-    expect('UNKNOWN').toBe('UNKNOWN');
-    expect('LIKELY_FAILURE').toBe('LIKELY_FAILURE');
-    expect('VERIFIED_FAILURE').toBe('VERIFIED_FAILURE');
+  it('keeps the terminal report separate from an active status', () => {
+    const panel = panelStateFromSnapshot(
+      snapshot({
+        ended: {
+          task_id: 'task-1',
+          state: 'COMPLETED',
+          state_label: 'Task ended',
+          verification: 'UNKNOWN',
+          verification_label: 'Result unknown',
+          detail: 'The page did not expose a confirmation.',
+        },
+      }),
+    );
+    expect(panel.status).toBeNull();
+    expect(panel.ended?.state_label).toBe('Task ended');
+    expect(panel.ended?.verification_label).toBe('Result unknown');
   });
 });

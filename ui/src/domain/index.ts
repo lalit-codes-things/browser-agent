@@ -1,34 +1,36 @@
-/** Browser-Agent domain model. These types are the single source of truth for
- * the native/frontend contract. Values cannot grant authority on their own;
- * the Rust policy layer owns authorization and this data only reflects runtime
- * state observed through the native bridge. */
+/**
+ * Browser-Agent domain layer.
+ *
+ * The vocabulary here mirrors the Rust schema, and the hooks render state that
+ * arrived as validated runtime events. Nothing in this layer can grant
+ * authority: the policy layer decides, the orchestrator advances, the verifier
+ * concludes and React renders.
+ */
 export type {
-  Scheme,
-  TaskState,
-  WaitReason,
-  Tab,
-  TabId,
-  UrlParts,
-  BrowserState,
-  ApprovalState,
-  TaskEvent,
-  TaskSummary,
-  VerificationOutcome,
   ActionClass,
-  ApprovalDetails,
-  ApprovalAction,
-  AgentReadiness,
   AgentPanelState,
-  NativeBridge,
-  BridgeEvent,
-  BrowserApi,
-  TabsApi,
-  BridgeApi,
-  SecondaryView,
+  AgentReadiness,
   AgentReadinessStatus,
+  ApprovalView,
+  AuditStatusView,
+  BrowserStateView,
+  BudgetField,
+  DownloadView,
+  HandoffView,
+  NoteView,
+  ReadinessView,
+  RuntimeErrorView,
+  SecondaryView,
+  SkillView,
+  TabSummary,
+  TaskBudgetView,
+  TaskEventView,
+  TaskHistoryEntryView,
+  TaskState,
+  TaskStatusView,
+  VerificationOutcome,
+  WaitReason,
 } from './types';
-
-export { NATIVE_BRIDGE_ABSENT_HANDLE } from './types';
 
 /** Canonical Section 2.9.1 / 2.9.2 / 15.5 copy contract. Components render
  * these strings instead of inventing their own status vocabulary. */
@@ -49,16 +51,45 @@ export {
   type VerificationCopy,
 } from './copy';
 
-/** Runtime state defaults (owned by the Rust orchestrator). */
+/** Projection from validated runtime events to renderable panel state. */
 export {
-  createBrowserState,
-  createAgentReadiness,
+  UNKNOWN_READINESS_COPY,
+  asReadinessStatus,
+  asTaskState,
   createAgentPanelState,
-  createTaskEvent,
-  createTaskSummary,
+  createAgentReadiness,
+  panelStateFromSnapshot,
+  readinessFromView,
 } from './state';
 
-/** React hooks for the permanent Agent panel. */
+/** React context for the connection to the Rust application core. */
+export { RuntimeProvider, useRuntime, type RuntimeContextValue } from './useRuntime';
+
+/** React context for the managed browser. */
+export { BrowserProvider, useBrowser } from './useBrowser';
+
+/** Commands and state for the secondary screens. */
+export { useRuntimeData } from './useRuntimeData';
+
+/** Core shortcut baseline (Section 18.2). */
+export {
+  SHORTCUTS,
+  UNIMPLEMENTED_SHORTCUTS,
+  isMacPlatform,
+  shortcutText,
+  useShortcuts,
+  type ShortcutDefinition,
+  type ShortcutId,
+} from './useShortcuts';
+
+/** React context for optional secondary-screen overlays. */
+export {
+  SecondaryViewProvider,
+  useSecondaryView,
+  type SecondaryViewName,
+} from './useSecondaryView';
+
+/** React context for the permanent Agent panel. */
 export {
   AgentProvider,
   useAgent,
@@ -67,19 +98,8 @@ export {
   RUNTIME_NOT_CONNECTED_COPY,
   RUNTIME_NOT_CONNECTED_DETAIL,
   TASK_NOT_STARTED_COPY,
+  NO_MANAGED_WINDOW_COPY,
+  TASK_ALREADY_RUNNING_COPY,
   COMPOSER_OVER_LIMIT_COPY,
   type AgentContextValue,
 } from './useAgent';
-
-/** React context for the managed browser. */
-export { BrowserProvider, useBrowser } from './useBrowser';
-
-/** React hook for tab collection ownership. */
-export { useTabs } from './useTabs';
-
-/** React context for optional secondary-screen overlays. */
-export {
-  SecondaryViewProvider,
-  useSecondaryView,
-  type SecondaryViewName,
-} from './useSecondaryView';

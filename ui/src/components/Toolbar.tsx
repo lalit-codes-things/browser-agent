@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { BrowserApi } from '../domain/types';
+import type { BrowserContextValue } from '../domain/useBrowser';
 
 /**
  * Browser chrome.
@@ -12,24 +12,37 @@ import type { BrowserApi } from '../domain/types';
  * A control ships only when its operation exists and can report a real result.
  * Undo and Redo render disabled with an explanation because no app-owned
  * operation currently has a recorded precondition plus a tested compensator
- * (Section 2.7). Bookmarks and Downloads are omitted entirely: their runtime
- * operations do not exist yet, and a control without real behavior may not ship.
+ * (Section 2.7). Bookmarks is omitted entirely: no bookmark runtime operation
+ * exists yet, and a control without real behavior may not ship. Downloads is a
+ * menu entry that opens the real download list reported by the managed host.
  *
  * No ripple, glow, gradient or decorative animation is used anywhere here.
  */
 
-export const OVERFLOW_COMMANDS = [{ id: 'about', label: 'About Browser-Agent' }] as const;
+/**
+ * Overflow menu entries. Each one opens a screen that renders real runtime data;
+ * a screen without a backing runtime operation is not listed.
+ */
+export const OVERFLOW_COMMANDS = [
+  { id: 'history', label: 'Task history' },
+  { id: 'downloads', label: 'Downloads' },
+  { id: 'model', label: 'Model status' },
+  { id: 'notes', label: 'Skills and notes' },
+  { id: 'audit', label: 'Audit and diagnostics' },
+  { id: 'settings', label: 'Settings' },
+  { id: 'about', label: 'About Browser-Agent' },
+] as const;
 
 export type OverflowCommandId = (typeof OVERFLOW_COMMANDS)[number]['id'];
 
 interface Props {
-  browser: BrowserApi;
+  browser: BrowserContextValue;
   onNavigate: (url: string) => void;
   onCommand: (command: OverflowCommandId) => void;
 }
 
 export function Toolbar({ browser, onNavigate, onCommand }: Props) {
-  const runtimeUrl = browser.state.currentUrl;
+  const runtimeUrl = browser.state.address;
   const [address, setAddress] = useState(runtimeUrl);
 
   // The runtime owns the current URL; the field never keeps a URL the runtime
@@ -52,7 +65,7 @@ export function Toolbar({ browser, onNavigate, onCommand }: Props) {
       <button
         type="button"
         className="ba-toolbar-text"
-        onClick={() => void browser.back()}
+        onClick={() => browser.back()}
         disabled={!browser.state.canGoBack}
       >
         Back
@@ -60,7 +73,7 @@ export function Toolbar({ browser, onNavigate, onCommand }: Props) {
       <button
         type="button"
         className="ba-toolbar-text"
-        onClick={() => void browser.forward()}
+        onClick={() => browser.forward()}
         disabled={!browser.state.canGoForward}
       >
         Forward
@@ -97,11 +110,7 @@ export function Toolbar({ browser, onNavigate, onCommand }: Props) {
           disabled
           explanation="Nothing has been compensated, so there is nothing to redo."
         />
-        <ToolbarIconControl
-          label="Reload"
-          modifier="reload"
-          onClick={() => void browser.reload()}
-        />
+        <ToolbarIconControl label="Reload" modifier="reload" onClick={() => browser.reload()} />
         <OverflowMenu onCommand={onCommand} />
       </div>
     </div>

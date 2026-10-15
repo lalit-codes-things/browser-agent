@@ -1,14 +1,16 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import type { SecondaryView } from './types';
 
 /**
- * State for optional secondary screens (Settings, History, About, Downloads).
- * The provider holds only which screen is open; the owning shell renders it
- * through `SecondaryViewPortal` with real content. No secondary screen may ship
- * placeholder copy ([BA-2.8]).
+ * Which optional secondary screen is open (Sections 2.8, 2.13).
+ *
+ * The provider holds only that selection; the owning shell renders the screen
+ * with real runtime content. A screen may not ship placeholder copy, so only
+ * screens backed by real runtime operations are listed here.
  */
 
-export type SecondaryViewName = 'about';
+export type SecondaryViewName = SecondaryView;
 
 interface SecondaryViewContextValue {
   active: SecondaryViewName | null;

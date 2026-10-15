@@ -1,3 +1,46 @@
+/**
+ * Browser-Agent domain vocabulary.
+ *
+ * State machines and their copy are owned by the Rust core; this module names
+ * what the UI is allowed to render and re-exports the validated wire views so a
+ * component never re-declares a runtime shape. Values here cannot grant
+ * authority: the policy layer decides what may happen.
+ */
+import type {
+  ApprovalView,
+  AuditStatusView,
+  BrowserStateView,
+  BudgetField,
+  DownloadView,
+  HandoffView,
+  NoteView,
+  ReadinessView,
+  RuntimeErrorView,
+  SkillView,
+  TaskBudgetView,
+  TaskEventView,
+  TaskHistoryEntryView,
+  TaskStatusView,
+} from '../bridge/protocol';
+
+export type {
+  ApprovalView,
+  AuditStatusView,
+  BrowserStateView,
+  BudgetField,
+  DownloadView,
+  HandoffView,
+  NoteView,
+  ReadinessView,
+  RuntimeErrorView,
+  SkillView,
+  TaskBudgetView,
+  TaskEventView,
+  TaskHistoryEntryView,
+  TaskStatusView,
+};
+
+/** Task lifecycle states, as declared by the Rust orchestrator (Section 12.2). */
 export type TaskState =
   | 'CREATED'
   | 'NORMALIZING'
@@ -21,31 +64,6 @@ export type VerificationOutcome =
 
 export type ActionClass = 'READ' | 'REVERSIBLE_WRITE' | 'IRREVERSIBLE' | 'UNKNOWN';
 
-export interface Scheme {
-  scheme: 'http' | 'https' | 'file' | 'browser-agent';
-}
-
-export interface UrlParts {
-  scheme: Scheme;
-  host: string;
-  port: number | null;
-  path: string;
-  query: string;
-  fragment: string;
-}
-
-export interface SecurityState {
-  state: 'https' | 'http' | 'mixed-content' | 'unknown';
-}
-
-export interface ApprovalState {
-  state: 'idle' | 'pending' | 'approved' | 'rejected';
-}
-
-export interface ApprovalAction {
-  action: 'click' | 'type' | 'navigate' | 'scroll' | 'screenshot' | 'read';
-}
-
 /**
  * Capability readiness vocabulary, transcribed from [BA-READY-001]. Readiness
  * is an independent field from task lifecycle, task budget and verification
@@ -64,137 +82,43 @@ export type AgentReadinessStatus =
 
 export interface AgentReadiness {
   status: AgentReadinessStatus;
+  /** Canonical label reported by the runtime, or the local table copy. */
+  label: string;
   /** Measured detail from the runtime; never a fabricated progress claim. */
   message: string;
 }
 
-export interface Tab {
+/** One tab as reported by the managed host: identity plus its current title. */
+export interface TabSummary {
   id: string;
-  url: string;
   title: string;
-  status: 'loading' | 'ready' | 'blocked' | 'error';
-  lastUpdated: number;
-  observationEpoch: string;
 }
 
-export type TabId = string;
-
-export interface BrowserState {
-  windows: number;
-  activeTabId: TabId | null;
-  tabs: readonly Tab[];
-  currentUrl: string;
-  securityState: SecurityState;
-  loading: boolean;
-  canGoBack: boolean;
-  canGoForward: boolean;
-  agentReady: boolean;
-  /**
-   * Handle reported by the native CEF host. `NATIVE_BRIDGE_ABSENT_HANDLE`
-   * means no host has attached, so the UI must not claim runtime state.
-   */
-  bridgeHandle: number;
-}
-
-/**
- * A native bridge has not attached. The UI must render honest absence rather
- * than substituting a stub for runtime behavior.
- */
-export const NATIVE_BRIDGE_ABSENT_HANDLE = 0;
-
-export interface TaskAction {
-  actionType: ActionClass;
-  targetOrigin: string;
-  targetSelector: string | null;
-  targetText?: string;
-}
-
-export interface ApprovalDetails {
-  actionId: string;
-  action: TaskAction;
-}
-
-export interface TaskEvent {
-  taskId: string;
-  revision: number;
-  sequence: number;
-  state: TaskState;
-  waitReason: WaitReason | null;
-  timestamp: number;
-  actionLabel: string | null;
-  detail: string;
-}
-
-export interface TaskSummary {
-  taskId: string;
-  originalText: string;
-  state: TaskState;
-  waitReason: WaitReason | null;
-  currentAction: string | null;
-  elapsedMs: number;
-  events: readonly TaskEvent[];
-  verification: VerificationOutcome | null;
-}
-
-export interface NativeBridge {
-  bridgeHandle: number;
-  approvalState: { actionId: string } | null;
-  onEvent: (listener: (event: BridgeEvent) => void) => () => void;
-  navigate: (url: string) => Promise<void>;
-  back: () => Promise<void>;
-  forward: () => Promise<void>;
-  reload: () => Promise<void>;
-  stop: () => Promise<void>;
-  focusAddress: () => Promise<void>;
-  tabsCreate: (url: string, title: string) => Promise<string>;
-  tabsClose: (tabId: string) => Promise<void>;
-  tabsActivate: (tabId: string) => Promise<void>;
-  agentSubmitTask: (taskText: string) => Promise<string>;
-  agentPause: () => Promise<void>;
-  agentCancel: () => Promise<void>;
-  agentTakeOver: () => Promise<void>;
-  agentResume: () => Promise<void>;
-  agentRespondToApproval: (actionId: string, approved: boolean) => Promise<void>;
-}
-
-export interface BridgeEvent {
-  kind: string;
-  payload: unknown;
-}
-
-export interface BrowserApi {
-  state: BrowserState;
-  openTab: (url: string, title: string) => Tab;
-  closeTab: (id: TabId) => void;
-  navigateTab: (id: TabId, url: string) => void;
-  selectTab: (id: TabId) => void;
-  activateTab: (id: TabId) => void;
-  back: () => Promise<void>;
-  forward: () => Promise<void>;
-  reload: () => Promise<void>;
-  focusAddress: () => Promise<void>;
-}
-
-export interface TabsApi {
-  create: (url: string, title: string) => Tab;
-  remove: (id: TabId) => void;
-  navigate: (id: TabId, url: string) => void;
-  activeTabId: Tab['id'] | null;
-}
-
-export interface BridgeApi {
-  openTab: (url: string, title: string) => Tab;
-  closeTab: (tabId: string) => void;
-  activateTab: (tabId: string) => void;
-  navigate: (tabId: string, url: string) => void;
-}
-
-export type SecondaryView = string;
+/** Optional secondary screens. Every one renders real runtime content. */
+export type SecondaryView =
+  'about' | 'history' | 'downloads' | 'model' | 'notes' | 'audit' | 'settings';
 
 export interface AgentPanelState {
   readiness: AgentReadiness;
-  task: TaskSummary | null;
+  /** Latest authoritative task status, or `null` when no task is active. */
+  status: TaskStatusView | null;
+  /** Task activity as reported by the runtime, oldest first. */
+  activity: TaskEventView[];
+  /** Terminal report, when the runtime reported one. */
+  ended: {
+    task_id: string;
+    state: string;
+    state_label: string;
+    verification: string | null;
+    verification_label: string | null;
+    detail: string;
+  } | null;
+  /** A structured action approval is pending. */
+  approval: ApprovalView | null;
+  /** The user must complete a step the agent may not perform. */
+  handoff: HandoffView | null;
+  /** Most recent four-part error from the runtime. */
+  error: RuntimeErrorView | null;
+  /** True while a non-terminal task is in flight ([BA-WIN-002]). */
   composerLocked: boolean;
-  focusOnCancel: boolean;
-  approval: ApprovalDetails | null;
 }

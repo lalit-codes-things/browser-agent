@@ -6,20 +6,18 @@
  * outside the Undo/Redo/Reload/Bookmarks/Downloads/three-dot whitelist.
  */
 export {
+  RuntimeProvider,
   BrowserProvider,
-  useBrowser,
-  type BrowserState,
-  type Tab,
-  type TabId,
-  type BrowserApi,
-  type TabsApi,
-  type BridgeApi,
-  type NativeBridge,
-  type BridgeEvent,
-} from './domain';
-export {
   AgentProvider,
+  SecondaryViewProvider,
+  useRuntime,
+  useBrowser,
   useAgent,
+  useRuntimeData,
+  useSecondaryView,
+  useShortcuts,
+  SHORTCUTS,
+  shortcutText,
   MAX_TASK_CODE_POINTS,
   countCodePoints,
   TASK_STATES,
@@ -32,24 +30,57 @@ export {
   verificationCopy,
   isTerminalTaskState,
   hasValidWaitReason,
-  type AgentReadinessStatus,
-  type SecondaryViewName,
+  type AgentContextValue,
   type AgentPanelState,
-  type TaskSummary,
-  type TaskEvent,
   type AgentReadiness,
+  type AgentReadinessStatus,
+  type ApprovalView,
+  type AuditStatusView,
+  type BrowserStateView,
+  type BudgetField,
+  type DownloadView,
+  type HandoffView,
+  type NoteView,
+  type ReadinessView,
+  type RuntimeContextValue,
+  type RuntimeErrorView,
   type SecondaryView,
-  type ApprovalDetails,
-  type ApprovalAction,
+  type SecondaryViewName,
+  type SkillView,
+  type TabSummary,
+  type TaskBudgetView,
+  type TaskEventView,
+  type TaskHistoryEntryView,
   type TaskState,
-  type WaitReason,
+  type TaskStatusView,
   type VerificationOutcome,
+  type WaitReason,
   type ActionClass,
 } from './domain';
-export { SecondaryViewProvider, useSecondaryView } from './domain';
 export { SecondaryViewPortal } from './components/SecondaryViewPortal';
 export { Button } from './components/Button';
 export { TabStrip } from './components/TabStrip';
 export { Toolbar } from './components/Toolbar';
 export { BrowserView } from './components/BrowserView';
 export { AgentPanel } from './components/AgentPanel';
+
+/** The validated runtime bridge, for hosts and integration tests. */
+export {
+  SCHEMA_VERSION,
+  MAX_IPC_FRAME_BYTES,
+  EVENT_KINDS,
+  decodeEventLine,
+  encodeCommandLine,
+  createRuntimeClient,
+  attachHostChannel,
+  isHostChannel,
+  commands,
+  type CommandBody,
+  type DecodeFailure,
+  type DecodeResult,
+  type EventKind,
+  type HostChannel,
+  type RuntimeClient,
+  type RuntimeEvent,
+  type RuntimeSnapshot,
+} from './bridge';

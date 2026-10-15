@@ -1,0 +1,49 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "MIT"
+publish = false
+repository = "https://example.invalid/browser-agent"
+
+[workspace.dependencies]
+ba-audit = { path = "crates/ba-audit" }
+ba-domain = { path = "crates/ba-domain" }
+ba-executor = { path = "crates/ba-executor" }
+ba-ipc = { path = "crates/ba-ipc" }
+ba-model = { path = "crates/ba-model" }
+ba-orchestrator = { path = "crates/ba-orchestrator" }
+ba-perception = { path = "crates/ba-perception" }
+ba-policy = { path = "crates/ba-policy" }
+ba-verify = { path = "crates/ba-verify" }
+hmac = "0.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+zeroize = "1"
+
+# Section 20.6: `unsafe_code` is denied workspace-wide and every non-FFI crate
+# additionally carries a crate-level `#![forbid(unsafe_code)]`. The single
+# exception is `ba-cef-bridge`, which narrows the exception locally with a
+# documented rationale.
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+# Conservative correctness/performance baseline. Pedantic groups are not enabled
+# blindly; additions need a documented rationale.
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+await_holding_lock = "deny"
+lossy_float_literal = "deny"

@@ -1,0 +1,20 @@
+[package]
+name = "ba-orchestrator"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Browser-Agent task orchestrator: lifecycle transitions, budgets, approvals, no-progress detection and recovery."
+
+[dependencies]
+ba-domain.workspace = true
+ba-executor.workspace = true
+ba-perception.workspace = true
+ba-policy.workspace = true
+ba-verify.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

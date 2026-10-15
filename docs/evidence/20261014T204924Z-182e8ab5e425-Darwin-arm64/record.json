@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-14T20:49:24Z",
+  "commit": "182e8ab5e425e103ae26dbd66f671744d5c1db0a",
+  "work_tree_dirty": true,
+  "work_tree_digest": "7c27e851ad17b06c19abf118c27f68af474fc5b0a586fabccc6c5e74df91f147",
+  "content_digest": "9849aa954266140959fdac1b02587ede7b7e82da68fcad0c76b4f833b4d522a8",
+  "content_files": 133,
+  "untracked_files": 88,
+  "platform": "Darwin-arm64",
+  "os_version": "macOS 27.0",
+  "toolchain": {
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+    "node": "v24.21.0",
+    "npm": "11.19.0"
+  },
+  "checks": [
+    {"id": "rust-format", "command": "cargo fmt --all -- --check", "outcome": "passed", "exit_code": 0, "log": "logs/rust-format.log"},
+    {"id": "rust-clippy", "command": "cargo clippy --workspace --all-targets -- -D warnings", "outcome": "passed", "exit_code": 0, "log": "logs/rust-clippy.log"},
+    {"id": "rust-tests", "command": "cargo test --workspace", "outcome": "passed", "exit_code": 0, "log": "logs/rust-tests.log"},
+    {"id": "core-binary", "command": "cargo build -p ba-runtime --bin ba-core", "outcome": "passed", "exit_code": 0, "log": "logs/core-binary.log"},
+    {"id": "ui-format", "command": "npm run format:check", "outcome": "passed", "exit_code": 0, "log": "logs/ui-format.log"},
+    {"id": "ui-lint", "command": "npm run lint", "outcome": "passed", "exit_code": 0, "log": "logs/ui-lint.log"},
+    {"id": "ui-types", "command": "npm run typecheck", "outcome": "passed", "exit_code": 0, "log": "logs/ui-types.log"},
+    {"id": "ui-tests", "command": "npm test", "outcome": "passed", "exit_code": 0, "log": "logs/ui-tests.log"},
+    {"id": "ui-build", "command": "npm run build", "outcome": "passed", "exit_code": 0, "log": "logs/ui-build.log"},
+    {"id": "registry", "command": "npm run registry:check", "outcome": "passed", "exit_code": 0, "log": "logs/registry.log"},
+    {"id": "supply-chain", "command": "./scripts/supply-chain.sh", "outcome": "passed", "exit_code": 0, "log": "logs/supply-chain.log"}
+  ],
+  "not_run": [
+    "CEF native view composition, focus and input routing ([BA-BROWSER-001], [BA-CEF-001])",
+    "window resize, multiple monitors, high-DPI, full-screen ([BA-BROWSER-001])",
+    "Windows x64 results (Section 20.3, Section 21)",
+    "packaged installers, signing and notarization (Phase 8)",
+    "local model install and inference (Section 16, Phase 5)",
+    "CDP-disabled production inspection (Section 11.5)"
+  ]
+}

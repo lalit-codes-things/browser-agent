@@ -1,0 +1,17 @@
+
+> browser-agent@0.1.0 build
+> npm --workspace @browser-agent/ui run build
+
+
+> @browser-agent/ui@0.1.0 build
+> tsc --noEmit -p tsconfig.app.json && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 97 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.18 kB │ gzip:  0.61 kB
+dist/assets/index-L3cxGjNo.css   13.47 kB │ gzip:  3.09 kB
+dist/assets/index-Bzzf9_0c.js   223.05 kB │ gzip: 68.09 kB
+✓ built in 413ms

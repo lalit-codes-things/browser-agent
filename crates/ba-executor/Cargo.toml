@@ -1,0 +1,16 @@
+[package]
+name = "ba-executor"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Browser-Agent executor: performs only policy-authorized typed actions through a managed browser port."
+
+[dependencies]
+ba-domain.workspace = true
+ba-policy.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

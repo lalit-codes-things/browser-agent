@@ -1,0 +1,27 @@
+[package]
+name = "ba-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Browser-Agent application core: command handling, event emission and the stdio IPC loop."
+
+[[bin]]
+name = "ba-core"
+path = "src/bin/ba_core.rs"
+
+[dependencies]
+ba-domain.workspace = true
+ba-executor.workspace = true
+ba-ipc.workspace = true
+ba-model.workspace = true
+ba-orchestrator.workspace = true
+ba-policy.workspace = true
+ba-verify.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

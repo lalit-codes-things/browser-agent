@@ -24,8 +24,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Blocked: no design review has been run and no screenshots of the Section 21.1 states exist. The interface currently reports the absence of the managed browser host rather than rendering a page, so the state set cannot be captured as specified."
 - id: BA-CEF-001
   source_section: '11.1'
   summary: CEF lifecycle/sandboxing, process shutdown/restart and production-debugging-disabled tests
@@ -42,8 +41,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Blocked: the CEF native host does not exist in this checkout yet (ADR-010), so CEF lifecycle, sandboxing, shutdown/restart and production-debugging-disabled tests cannot run. What is implemented today is the honest boundary: with no host attached the interface reports 'Native browser host not attached', issues no page command, and every browser command returns a four-part error instead of simulating a page."
 - id: BA-POLICY-001
   source_section: '13.1'
   summary: Tests proving model/page content cannot authorize actions and executor requires Rust authorization
@@ -168,8 +166,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Blocked: no local runner is integrated, so no memory/latency/thermal report exists. The honest behaviour is implemented and tested instead: readiness stays NOT_INSTALLED, an install request for an artifact not registered in this build downloads nothing, and no progress is simulated."
 - id: BA-A11Y-001
   source_section: '18.1'
   summary: Keyboard/screen reader/focus/target-size tests on supported platforms
@@ -204,8 +201,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: .github/workflows/ci.yml now defines blocking rust, supply-chain and ui jobs, and the ui job builds the ba-core binary before the interface contract tests. The named status-check report, the native CEF job and the security/supply-chain report artifacts required by this ID are not complete, so this remains UNVERIFIED."
 - id: BA-SUPPLY-001
   source_section: '20.10'
   summary: Dependency, secrets, native binary, license, SBOM and workflow-security reports
@@ -222,8 +218,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented and blocking: scripts/supply-chain.sh runs cargo deny check (advisories, bans, licenses, sources), cargo audit --deny warnings, npm audit and generates CycloneDX 1.5 inventories for both the Rust and JavaScript graphs. Verified to fail the run (exit 2) when a denied dependency is present. Secrets scanning, native-binary inspection and workflow-security scanning are absent, so the requirement is not fully met."
 - id: BA-RELEASE-001
   source_section: '20.11'
   summary: Signed platform packages, provenance, SBOM, update/rollback validation
@@ -331,8 +326,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: scripts/record-evidence.sh produces a per-run record with commit, content digest, platform, OS, toolchain versions, exact commands, exit status and full logs, and lists the proofs that were not run. The evidence matrix itself is incomplete (no native-host or Windows evidence), so this ID stays UNVERIFIED."
 - id: BA-UNDO-001
   source_section: '2.7'
   summary: Unit/integration tests for supported undo, unsupported inverse, stale state, Agent pause and redo reauthorization
@@ -468,16 +462,20 @@ requirements:
   owner_module: ui/ + cross-layer contract tests
   test_ids:
   - T-BA-STATE-001
-  evidence_artifacts: []
-  status: UNVERIFIED
-  last_verified_commit: null
-  last_verified_at: null
+  evidence_artifacts:
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.md
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/rust-tests.log
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/ui-tests.log
+  - ui/src/__tests__/copy.spec.ts
+  - ui/src/__tests__/contract.spec.ts
+  - crates/ba-domain/src/copy.rs
+  status: PASS
+  last_verified_commit: "182e8ab5e425e103ae26dbd66f671744d5c1db0a"
+  last_verified_at: "2026-10-14T20:22:14Z"
   platform:
   - macOS Apple silicon
-  - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "PASS on macOS Apple silicon only. Table-driven tests cover every task state and every wait reason: ui/src/__tests__/copy.spec.ts asserts each canonical label, and ui/src/__tests__/contract.spec.ts diffs the interface table against `ba-core export-copy` emitted by the built runtime binary. Tested working tree: commit 182e8ab5e425e103ae26dbd66f671744d5c1db0a plus uncommitted changes (content digest inside the evidence record at docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.json). Windows x64 has not been run."
 - id: BA-STATE-002
   source_section: '12.2'
   summary: Schema validation rejecting missing/unknown wait_reason values
@@ -486,16 +484,20 @@ requirements:
   owner_module: ui/ + cross-layer contract tests
   test_ids:
   - T-BA-STATE-002
-  evidence_artifacts: []
-  status: UNVERIFIED
-  last_verified_commit: null
-  last_verified_at: null
+  evidence_artifacts:
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.md
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/rust-tests.log
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/ui-tests.log
+  - ui/src/__tests__/copy.spec.ts
+  - ui/src/__tests__/runtime.spec.tsx
+  - crates/ba-domain/src/event.rs
+  status: PASS
+  last_verified_commit: "182e8ab5e425e103ae26dbd66f671744d5c1db0a"
+  last_verified_at: "2026-10-14T20:22:14Z"
   platform:
   - macOS Apple silicon
-  - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "PASS on macOS Apple silicon only. Missing and unknown wait reasons are rejected in Rust (crates/ba-domain event validation tests) and fail closed in the interface: copy.spec.ts asserts the invalid-state copy and no controls, and runtime.spec.tsx asserts that a WAITING_FOR_USER event without a reason renders no approval control. Windows x64 has not been run."
 - id: BA-BRIDGE-001
   source_section: 9.1, 20.7
   summary: Bundle/eager-load check and bridge allow-list/command-boundary tests
@@ -512,8 +514,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: the interface reaches the core only through a validated host channel (runtime shape check, schema version, closed event-kind set, strictly increasing sequence), remote frames never receive it, and absence is reported instead of simulated. The bundle/eager-load check and the drift assertion against the typed bridge method list are not implemented."
 - id: BA-BROWSER-001
   source_section: '11.2'
   summary: Native CEF view, input/focus/IME/resizing and multi-window smoke tests on both OS targets
@@ -530,8 +531,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Blocked: no native view, input, focus, IME or multi-window proof exists because the CEF host is not built. Navigation availability is host-reported (can_go_back/can_go_forward) and unproven against a real Chromium instance."
 - id: BA-REV-001
   source_section: '13.2'
   summary: Positive and negative reversibility fixtures; compensation precondition/postcondition and residual-effect
@@ -614,16 +614,19 @@ requirements:
   owner_module: crates/policy + crates/app-core
   test_ids:
   - T-BA-VERIFY-001
-  evidence_artifacts: []
-  status: UNVERIFIED
-  last_verified_commit: null
-  last_verified_at: null
+  evidence_artifacts:
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.md
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/rust-tests.log
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/ui-tests.log
+  - ui/src/__tests__/copy.spec.ts
+  - ui/src/__tests__/contract.spec.ts
+  status: PASS
+  last_verified_commit: "182e8ab5e425e103ae26dbd66f671744d5c1db0a"
+  last_verified_at: "2026-10-14T20:22:14Z"
   platform:
   - macOS Apple silicon
-  - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "PASS on macOS Apple silicon only. All five outcomes are asserted against the canonical table including the reserved success treatment (only VERIFIED_SUCCESS), the blocked-before-dispatch case renders 'Verification not run' with no outcome, and an outcome code this build does not know is never treated as a success. Crash ambiguity and resume are covered by the orchestrator and runtime suites. Windows x64 has not been run."
 - id: BA-AMEND-001
   source_section: '0.7'
   summary: Reviewed amendment with rationale, impacted IDs, tests and ADR linkage
@@ -758,16 +761,20 @@ requirements:
   owner_module: ui/ + cross-layer contract tests
   test_ids:
   - T-BA-READY-001
-  evidence_artifacts: []
-  status: UNVERIFIED
-  last_verified_commit: null
-  last_verified_at: null
+  evidence_artifacts:
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.md
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/rust-tests.log
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/ui-tests.log
+  - ui/src/__tests__/copy.spec.ts
+  - ui/src/__tests__/contract.spec.ts
+  - ui/src/__tests__/runtime.spec.tsx
+  status: PASS
+  last_verified_commit: "182e8ab5e425e103ae26dbd66f671744d5c1db0a"
+  last_verified_at: "2026-10-14T20:22:14Z"
   platform:
   - macOS Apple silicon
-  - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "PASS on macOS Apple silicon only. Every readiness state's label and supported controls are asserted against the canonical table emitted by `ba-core export-copy`, and the Model status screen is tested to offer only the controls the reported state supports. A state code this build does not know fails closed with no control. Windows x64 has not been run."
 - id: BA-COMPOSER-001
   source_section: 2.9.2
   summary: Unicode code-point cap/warn-no-truncate, local draft retention and private-mode tests
@@ -776,16 +783,17 @@ requirements:
   owner_module: ui/ + cross-layer contract tests
   test_ids:
   - T-BA-COMPOSER-001
-  evidence_artifacts: []
-  status: UNVERIFIED
-  last_verified_commit: null
-  last_verified_at: null
+  evidence_artifacts:
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.md
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/ui-tests.log
+  - ui/src/__tests__/shell.spec.tsx
+  status: PASS
+  last_verified_commit: "182e8ab5e425e103ae26dbd66f671744d5c1db0a"
+  last_verified_at: "2026-10-14T20:22:14Z"
   platform:
   - macOS Apple silicon
-  - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "PASS on macOS Apple silicon only. The composer warns above 8,000 code points, keeps the text instead of truncating, and disables submit; a draft is retained when the task cannot be handed to the runtime. Private-Window exclusion is proven at the runtime boundary (crates/ba-runtime test: private_browser_state_blocks_submission) rather than in the interface. Windows x64 has not been run."
 - id: BA-TRANSPARENCY-001
   source_section: 2.9.2, 13.3
   summary: Disclosure-content test plus blocked-state policy-manifest drill-in test
@@ -802,8 +810,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: the pre-task disclosure ('What the agent will see') is asserted by test, and a runtime error shows its blocking rule code inside the diagnostic detail. A dedicated blocked-state policy-manifest drill-in does not exist yet."
 - id: BA-BUDGET-001
   source_section: 2.9.2
   summary: Visible budget accounting, extension authorization and budget-exhaustion UI
@@ -1378,8 +1385,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: the interface renders runtime-reported history with masked task text and the canonical terminal label, and asks the runtime for its own record. The 90-day retention, similar-task prefill, private-window exclusion and redacted export are not implemented or verified."
 - id: BA-DOWNLOAD-001
   source_section: '17.1'
   summary: Per-file approval, path/size checks, quarantine, origin provenance and no-auto-open tests
@@ -1396,8 +1402,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: the Downloads screen shows per-file origin, provenance and the host's own textual progress. Per-file approval, path/size checks, quarantine, no-auto-open and external-protocol handling do not exist yet, so this critical gate stays UNVERIFIED."
 - id: BA-A11Y-002
   source_section: '18.1'
   summary: Cancel-default focus, coalesced live regions, target text, focus restoration and screen readers
@@ -1414,8 +1419,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: the approval confirmation places focus on the safest non-approving option, never on Approve, and returns focus to the Agent panel when it closes; the lifecycle label is a live region and every state is also visible as text. The screen-reader, dark/light appearance, reduced-motion and target-outline matrix has not been run, so this ID stays UNVERIFIED."
 - id: BA-ERROR-COPY-001
   source_section: '19'
   summary: Worked error states and copy contract tests
@@ -1424,16 +1428,20 @@ requirements:
   owner_module: cross-layer; assign in CODEOWNERS during Phase 0
   test_ids:
   - T-BA-ERROR-COPY-001
-  evidence_artifacts: []
-  status: UNVERIFIED
-  last_verified_commit: null
-  last_verified_at: null
+  evidence_artifacts:
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/record.md
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/rust-tests.log
+  - docs/evidence/20261014T202214Z-182e8ab5e425-Darwin-arm64/logs/ui-tests.log
+  - ui/src/__tests__/contract.spec.ts
+  - ui/src/__tests__/runtime.spec.tsx
+  - crates/ba-domain/src/errorcopy.rs
+  status: PASS
+  last_verified_commit: "182e8ab5e425e103ae26dbd66f671744d5c1db0a"
+  last_verified_at: "2026-10-14T20:22:14Z"
   platform:
   - macOS Apple silicon
-  - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "PASS on macOS Apple silicon only. The ten required worked examples (navigation, model not ready, runner crash, policy block, approval expiry, unknown verification, download rejection, audit-write failure, resource stop, missing browser host) are asserted to exist with all four parts and no generic filler, and the interface is tested to render attempted/observed/known/next-action with the error id and rule code confined to the diagnostic detail. Windows x64 has not been run."
 - id: BA-FAULT-001
   source_section: '20'
   summary: Fault-injection matrix for audit disk-full, renderer/network/model failures
@@ -1540,8 +1548,7 @@ requirements:
   - macOS Apple silicon
   - Windows x64
   approved_deviation_id: null
-  notes: Test identifier is planned. Implementation and execution evidence must be added; this entry does not imply
-    the requirement has passed.
+  notes: "Partially implemented: notes are created, listed and deleted through real runtime commands with their source URL and capture time, and the interface only renders what the runtime reports. Search, export and private-window exclusion are not implemented."
 - id: BA-DATA-MAP-001
   source_section: Appendix E
   summary: Artifact inventory, sensitivity, retention and deletion-path audit

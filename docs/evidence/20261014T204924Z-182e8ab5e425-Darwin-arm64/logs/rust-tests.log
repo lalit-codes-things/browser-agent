@@ -1,0 +1,300 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (target/debug/deps/ba_audit-53dd93014b1a9705)
+
+running 9 tests
+test tests::missing_key_is_fail_closed ... ok
+test tests::retention_windows_are_validated ... ok
+test tests::macs_survive_hex_round_trips ... ok
+test tests::targets_are_redacted_before_storage ... ok
+test tests::tampering_breaks_the_chain_and_degrades_the_log ... ok
+test tests::a_write_failure_degrades_and_blocks_further_records ... ok
+test tests::pruning_changes_the_integrity_claim ... ok
+test tests::rotation_starts_a_new_segment_carrying_the_previous_mac ... ok
+test tests::records_chain_and_verify ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_domain-23a5ec5d675b160f)
+
+running 46 tests
+test action::tests::control_characters_are_rejected ... ok
+test action::tests::rejects_authority_bearing_extra_fields ... ok
+test action::tests::digest_hex_round_trips ... ok
+test action::tests::rejects_unknown_action_kinds ... ok
+test action::tests::deserializing_a_validated_action_runs_the_bounds_check ... ok
+test action::tests::normalized_digest_ignores_typed_text_but_keeps_grounding ... ok
+test action::tests::validated_action_rejects_out_of_range_numbers ... ok
+test action::tests::validated_action_enforces_field_bounds ... ok
+test copy::tests::every_state_has_a_label_and_waiting_needs_a_reason ... ok
+test action::tests::digest_changes_when_parameters_change ... ok
+test copy::tests::labels_are_distinct ... ok
+test copy::tests::only_verified_success_is_marked_verified ... ok
+test copy::tests::task_budget_controls_match_the_specification ... ok
+test errorcopy::tests::audit_failure_copy_never_claims_a_verified_chain ... ok
+test errorcopy::tests::error_ids_are_unique ... ok
+test event::tests::blocked_must_not_claim_a_verification_outcome ... ok
+test errorcopy::tests::every_error_has_all_four_parts_and_no_placeholder ... ok
+test event::tests::budget_fields_saturate_instead_of_going_negative ... ok
+test event::tests::canonical_json_sorts_keys ... ok
+test event::tests::deserialization_reenforces_the_copy_contract ... ok
+test event::tests::deserialization_rejects_unknown_fields ... ok
+test event::tests::labels_must_come_from_the_canonical_table ... ok
+test event::tests::rfc3339_rendering_is_utc_and_exact ... ok
+test event::tests::wait_reason_is_rejected_outside_waiting_state ... ok
+test event::tests::waiting_for_user_requires_exactly_one_reason ... ok
+test ids::tests::accepts_expected_identifiers ... ok
+test ids::tests::derived_identifiers_are_always_valid ... ok
+test ids::tests::rejects_hostile_identifiers ... ok
+test ids::tests::sequence_overflow_is_explicit ... ok
+test origin::tests::accepts_local_app_scheme_and_ipv6 ... ok
+test origin::tests::detects_credential_disclosure_in_urls ... ok
+test origin::tests::exact_origin_comparison_is_strict ... ok
+test origin::tests::http_is_labelled_insecure ... ok
+test origin::tests::keeps_explicit_non_default_ports ... ok
+test origin::tests::normalises_default_ports_and_case ... ok
+test origin::tests::rejects_hostile_input ... ok
+test redact::tests::masks_only_the_secret_token ... ok
+test redact::tests::masks_values_after_a_sensitive_assignment_key ... ok
+test redact::tests::redaction_keeps_origin_visible ... ok
+test redact::tests::recognises_otp_and_token_shapes ... ok
+test redact::tests::redacts_userinfo_and_sensitive_query_values ... ok
+test task::tests::only_read_and_reversible_write_are_agent_executable ... ok
+test task::tests::only_verified_success_is_verified ... ok
+test task::tests::transition_table_matches_the_specification ... ok
+test task::tests::wire_codes_are_stable ... ok
+test copy::tests::contract_json_is_stable_and_complete ... ok
+
+test result: ok. 46 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_executor-5ff196016b9d97ad)
+
+running 7 tests
+test tests::digest_helper_is_used_consistently ... ok
+test tests::an_irreversible_authorization_is_never_executed ... ok
+test tests::parameter_mutation_is_rejected ... ok
+test tests::replay_is_rejected_before_the_port_is_called ... ok
+test tests::the_engine_and_executor_agree_on_the_authorization_binding ... ok
+test tests::an_absent_host_never_pretends_to_act ... ok
+test tests::an_ambiguous_dispatch_reports_unknown_rather_than_success ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_ipc-cac28fc2c77f9377)
+
+running 9 tests
+test tests::readiness_controls_come_from_the_canonical_table ... ok
+test tests::oversized_and_empty_frames_are_rejected_before_parsing ... ok
+test tests::events_are_single_line_jsonl ... ok
+test tests::bad_identifiers_in_commands_are_rejected ... ok
+test tests::a_valid_command_is_accepted ... ok
+test tests::extra_top_level_fields_are_rejected ... ok
+test tests::approval_arguments_are_fully_typed ... ok
+test tests::schema_and_sequence_are_enforced ... ok
+test tests::unknown_domains_operations_and_fields_are_rejected ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_model-4507a66c96687843)
+
+running 8 tests
+test tests::memory_profiles_park_before_the_total_cap ... ok
+test tests::cancelling_an_install_removes_the_partial_artifact ... ok
+test tests::a_verified_install_moves_through_loading_to_ready ... ok
+test tests::artifacts_are_only_accepted_when_the_bytes_match ... ok
+test tests::manifests_must_be_complete_and_benchmarked ... ok
+test tests::reverify_uses_the_installed_manifest ... ok
+test tests::a_failed_integrity_check_never_reaches_ready ... ok
+test tests::parking_and_runner_failures_keep_their_own_copy ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_orchestrator-0dfa875a4c118567)
+
+running 28 tests
+test budget::tests::reference_defaults_match_the_specification ... ok
+test budget::tests::extending_nothing_is_refused ... ok
+test budget::tests::waiting_time_is_tracked_separately ... ok
+test budget::tests::extension_raises_only_exhausted_ceilings_and_only_once ... ok
+test budget::tests::consumption_stops_at_the_ceiling ... ok
+test tests::active_time_and_waiting_time_are_tracked_separately ... ok
+test tests::a_fresh_task_starts_created_then_observes ... ok
+test tests::a_task_mismatch_is_refused ... ok
+test tests::a_page_change_clears_a_pending_approval ... ok
+test tests::a_plain_navigation_is_authorized_then_verified ... ok
+test tests::a_hard_stop_fails_the_task_and_reports_unknown ... ok
+test tests::an_irreversible_action_hands_control_to_the_user ... ok
+test tests::cancellation_is_not_a_failure_and_keeps_the_result_unknown ... ok
+test tests::blocked_policy_never_claims_a_verification_outcome ... ok
+test tests::an_approvable_write_waits_for_one_decision ... ok
+test tests::empty_and_oversized_instructions_are_refused ... ok
+test tests::clarification_is_limited_to_two_rounds ... ok
+test tests::finished_tasks_keep_a_masked_history_entry ... ok
+test tests::expiry_is_reported_without_executing_anything ... ok
+test tests::only_one_task_may_be_active_process_wide ... ok
+test tests::readiness_copy_is_shared_with_the_panel ... ok
+test tests::an_absent_host_results_in_no_page_action_and_a_pause_then_reobserve ... ok
+test tests::private_windows_and_secret_literals_are_refused ... ok
+test tests::terminal_states_are_never_mutated ... ok
+test tests::invalid_transitions_are_refused_rather_than_coerced ... ok
+test tests::two_identical_actions_without_progress_pause_the_task ... ok
+test tests::copy_contract_is_available_from_the_orchestrator ... ok
+test tests::the_budget_ceiling_waits_for_the_user_and_can_be_extended_once ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_perception-fbdb98308d7cd937)
+
+running 9 tests
+test tests::epoch_change_rate_is_measurable ... ok
+test tests::dangling_graph_references_are_rejected ... ok
+test tests::invalidation_drops_the_observation_entirely ... ok
+test tests::resolves_a_live_target ... ok
+test tests::hidden_disabled_and_non_actionable_targets_are_rejected ... ok
+test tests::rejects_stale_epochs_and_replaced_contexts ... ok
+test tests::token_budget_clamps_before_the_node_bound ... ok
+test tests::actionable_candidates_are_capped ... ok
+test tests::bounds_report_what_was_omitted ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_policy-e3af0b4a298e62a6)
+
+running 33 tests
+test approval::tests::approvals_expire_after_five_minutes ... ok
+test approval::tests::expired_requests_are_never_approvable ... ok
+test approval::tests::approving_the_wrong_action_leaves_the_request_pending ... ok
+test approval::tests::invalidation_reports_the_cause ... ok
+test approval::tests::only_one_approval_may_be_pending ... ok
+test authz::tests::identifier_is_derived_from_the_sequence ... ok
+test approval::tests::a_valid_approval_grants_once ... ok
+test authz::tests::consumes_exactly_once ... ok
+test authz::tests::rejects_expired_tokens ... ok
+test approval::tests::binding_drift_clears_the_request_and_requires_fresh_review ... ok
+test capability::tests::builtin_records_are_valid_and_selectable ... ok
+test capability::tests::records_without_evidence_are_rejected ... ok
+test capability::tests::expired_records_are_rejected ... ok
+test capability::tests::revoking_a_record_removes_it ... ok
+test capability::tests::residual_external_effects_disqualify_a_record ... ok
+test classify::tests::click_hints_can_only_tighten ... ok
+test classify::tests::expired_capability_downgrades_to_unknown ... ok
+test classify::tests::plain_navigation_is_read_but_credential_urls_are_not ... ok
+test classify::tests::read_actions_stay_read ... ok
+test classify::tests::select_and_secure_fill_classification ... ok
+test classify::tests::submitting_or_typing_a_secret_is_irreversible ... ok
+test classify::tests::typing_is_reversible_only_with_a_capability_record ... ok
+test egress::tests::page_supplied_values_always_need_a_user_decision ... ok
+test egress::tests::raw_secret_fingerprints_are_refused_outright ... ok
+test egress::tests::user_and_task_text_need_explicit_intent ... ok
+test authz::tests::rejects_every_binding_mismatch ... ok
+test egress::tests::vault_values_only_go_to_the_bound_origin ... ok
+test presentation::tests::action_presentation_includes_undo_when_evidence_exists ... ok
+test presentation::tests::handoff_copy_distinguishes_unknown_from_irreversible ... ok
+test presentation::tests::navigation_presentation_redacts_credentials_in_the_url ... ok
+test presentation::tests::secure_fill_presentation_carries_only_the_opaque_reference ... ok
+test presentation::tests::typed_secret_shaped_text_is_masked_in_the_presentation ... ok
+test rules::tests::rule_codes_are_unique_and_namespaced ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_runtime-266ba3208e63c66d)
+
+running 14 tests
+test tests::browser_commands_report_the_missing_host_without_simulating_a_page ... ok
+test tests::a_task_cannot_be_submitted_without_the_managed_host ... ok
+test tests::a_task_submitted_with_the_host_attached_emits_canonical_copy ... ok
+test tests::installing_an_unregistered_artifact_downloads_nothing ... ok
+test tests::audit_status_never_claims_a_verified_chain_when_degraded ... ok
+test tests::a_second_task_is_rejected_without_a_hidden_queue ... ok
+test tests::events_are_sequenced_and_encodable ... ok
+test tests::model_status_is_truthful_about_an_uninstalled_model ... ok
+test tests::a_finished_task_produces_a_history_entry ... ok
+test tests::policy_context_uses_the_cores_own_browser_state ... ok
+test tests::notes_and_skills_are_local_user_actions ... ok
+test tests::private_browser_state_blocks_submission ... ok
+test tests::rule_codes_round_trip_for_the_diagnostic_view ... ok
+test tests::an_approval_request_carries_the_binding_the_user_was_shown ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/ba_core.rs (target/debug/deps/ba_core-91974bcfd4e57aa3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ba_verify-9f0861dd6df3ebe8)
+
+running 10 tests
+test tests::empty_postconditions_never_report_success ... ok
+test tests::no_evidence_at_all_is_unknown ... ok
+test tests::definitive_mismatch_is_verified_failure ... ok
+test tests::all_conditions_satisfied_is_verified_success ... ok
+test tests::evidence_references_are_recorded_for_audit ... ok
+test tests::contradictory_evidence_is_unknown ... ok
+test tests::authentication_success_is_independent_of_a_page_message ... ok
+test tests::downloads_need_completion_plus_a_plausible_file ... ok
+test tests::partial_evidence_is_likely_success_and_never_green ... ok
+test tests::stale_evidence_is_never_success ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_audit
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_domain
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_executor
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_ipc
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_model
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_orchestrator
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_perception
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_policy
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_runtime
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ba_verify
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
